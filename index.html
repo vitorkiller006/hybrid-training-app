@@ -13,14 +13,15 @@
         <header class="glass-header">
             <h1 class="logo">O<span class="neon-text">N</span>E</h1>
             <nav>
-                <button class="nav-btn active">Treino</button>
-                <button class="nav-btn">Nutrição</button>
-                <button class="nav-btn">Histórico</button>
+                <button class="nav-btn active" data-tab="treino">Treino</button>
+                <button class="nav-btn" data-tab="nutricao">Nutrição</button>
+                <button class="nav-btn" data-tab="historico">Histórico</button>
             </nav>
         </header>
 
         <main class="dashboard">
-            <section class="card training-today glass-panel">
+            <!-- ABA: TREINO -->
+            <section id="tab-treino" class="card training-today glass-panel tab-section">
                 <div class="card-header">
                     <h2>Treino de Hoje</h2>
                     <span class="badge badge-hybrid">LISS / Recovery</span>
@@ -31,7 +32,8 @@
                 </div>
             </section>
 
-            <section class="card nutrition-today glass-panel">
+            <!-- ABA: NUTRIÇÃO -->
+            <section id="tab-nutricao" class="card nutrition-today glass-panel tab-section" style="display: none;">
                 <div class="card-header">
                     <h2>Nutrição (Ciclo)</h2>
                     <span class="badge badge-carb-low">Carboidratos Baixos</span>
@@ -52,6 +54,16 @@
                             <span class="value">70g</span>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <!-- ABA: HISTÓRICO -->
+            <section id="tab-historico" class="card history glass-panel tab-section" style="display: none;">
+                <div class="card-header">
+                    <h2>Histórico</h2>
+                </div>
+                <div class="card-body">
+                    <p class="rpe-status">Nenhum treino armazenado no IndexedDB ainda.</p>
                 </div>
             </section>
         </main>

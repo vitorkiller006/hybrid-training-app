@@ -5,6 +5,23 @@ import { DB } from './src/js/store/db.js';
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Anti-Gravity Engine Initialized");
     
+    // Tab Navigation Logic
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const tabSections = document.querySelectorAll('.tab-section');
+
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons and hide all sections
+            navButtons.forEach(b => b.classList.remove('active'));
+            tabSections.forEach(s => s.style.display = 'none');
+
+            // Add active class to clicked button and show target section
+            btn.classList.add('active');
+            const targetId = 'tab-' + btn.getAttribute('data-tab');
+            document.getElementById(targetId).style.display = 'block';
+        });
+    });
+
     // User data (Base)
     const userWeightKg = 80;
     const userBF = 20;
