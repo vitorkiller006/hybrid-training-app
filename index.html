@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Training & Nutrition</title>
+    <meta name="description" content="App híbrido focado em recomposição corporal, força e corrida.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="glass-header">
+            <h1 class="logo">O<span class="neon-text">N</span>E</h1>
+            <nav>
+                <button class="nav-btn active">Treino</button>
+                <button class="nav-btn">Nutrição</button>
+                <button class="nav-btn">Histórico</button>
+            </nav>
+        </header>
+
+        <main class="dashboard">
+            <section class="card training-today glass-panel">
+                <div class="card-header">
+                    <h2>Treino de Hoje</h2>
+                    <span class="badge badge-hybrid">LISS / Recovery</span>
+                </div>
+                <div class="card-body">
+                    <p class="rpe-status">Volume de base reduzido em 40% devido ao foco em via oxidativa (corrida) e restrição lombar documentada no treino B.</p>
+                    <button class="btn-primary start-workout">Iniciar Sessão</button>
+                </div>
+            </section>
+
+            <section class="card nutrition-today glass-panel">
+                <div class="card-header">
+                    <h2>Nutrição (Ciclo)</h2>
+                    <span class="badge badge-carb-low">Carboidratos Baixos</span>
+                </div>
+                <div class="card-body">
+                    <p class="rpe-status">TDEE ajustado para preservação de glicogênio e priorização de queima lipídica.</p>
+                    <div class="macros">
+                        <div class="macro-item">
+                            <span class="label">PRO</span>
+                            <span class="value">180g</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="label">CARB</span>
+                            <span class="value">120g</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="label">FAT</span>
+                            <span class="value">70g</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
