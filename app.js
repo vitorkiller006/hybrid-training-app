@@ -143,6 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
             planHtml += `</div></div>`;
             container.insertAdjacentHTML('afterbegin', planHtml);
         }
+        
+        // Alerta Dinâmico do Motor
+        const alertBox = document.getElementById('dynamic-engine-alert');
+        if (alertBox) {
+            if (workoutType === 'LISS_RUN' || workoutType === 'HIIT') {
+                alertBox.textContent = `Aviso do Motor: Hoje o foco é cardiovascular (${workoutType}). A fadiga sistêmica será alta, preserve a musculatura.`;
+            } else if (workoutType === 'LEGS FULL') {
+                alertBox.textContent = 'Aviso do Motor: Treino de alta demanda do Sistema Nervoso Central (SNC). Monitore a lombar.';
+            } else {
+                alertBox.textContent = '';
+            }
+        }
     };
 
     renderHistory();
