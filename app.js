@@ -39,6 +39,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (profile) {
             document.getElementById('login-error').style.display = 'none';
             checkAuth();
+            
+            // --- GABI BREAKFAST DATA FIX ---
+            if (username === 'gabi') {
+                setTimeout(() => {
+                    const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
+                    if (nHist['2026-07-01'] && nHist['2026-07-01'][0] && nHist['2026-07-01'][0].type === 'Café da Manhã' && nHist['2026-07-01'][0].macros.kcal === 124) {
+                        nHist['2026-07-01'][0].macros = { kcal: 580, p: 12, c: 80, f: 23, fib: 3 };
+                        nHist['2026-07-01'][0].items[0].macros = { kcal: 400, p: 5, c: 57, f: 17, fib: 2 };
+                        if (nHist['2026-07-01'][0].items[2]) {
+                            nHist['2026-07-01'][0].items[2].macros = { kcal: 56, p: 1, c: 13, f: 0, fib: 1 };
+                        }
+                        DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
+                        console.log("Fixed Gabi's breakfast!");
+                    }
+                }, 2000); // give time for CloudSync to load locally
+            }
         } else {
             document.getElementById('login-error').style.display = 'block';
         }
@@ -549,6 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     customInput.focus();
                 } else {
                     customInput.style.display = 'none';
+                    customInput.value = '';
                 }
             });
         });
