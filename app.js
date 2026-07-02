@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let todayWorkoutType = null;
     
     const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-    const localToday = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
+    let localToday = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
 
     // --- AUTHENTICATION LOGIC ---
     const checkAuth = async () => {
@@ -67,6 +67,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- APP INITIALIZATION ---
     const initApp = () => {
+        const dp = document.getElementById('global-date-picker');
+        if (dp) {
+            dp.value = localToday;
+            dp.addEventListener('change', (e) => {
+                localToday = e.target.value;
+                if (todayWorkoutType) {
+                    updateTrainingUI(todayWorkoutType);
+                    updateNutritionUI(todayWorkoutType);
+                }
+                renderNutritionHistory();
+                renderHistory();
+            });
+        }
+
         // MIGRATION: Force inject Vitor's history to Firebase (Runs only once)
         if (activeProfile?.name === 'Vitor' && !localStorage.getItem('v3_firebase_force_migration')) {
             const workouts = {
