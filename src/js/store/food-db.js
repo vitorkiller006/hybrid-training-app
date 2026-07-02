@@ -16,9 +16,10 @@ export const FoodDB = {
     'Banana Prata (Crua)': { kcal: 89, p: 1.1, c: 22.8, f: 0.3, fib: 2.6, baseQty: 1, unit: 'unidade' },
     'Mexerica Média': { kcal: 45, p: 1.0, c: 11.0, f: 0.0, fib: 2.0, baseQty: 1, unit: 'unidade' },
     
-    // Refeições do Usuário (Hardcoded for AI Sync)
     'Bolo de Laranja': { kcal: 200, p: 2.6, c: 28.3, f: 8.3, fib: 1.0, baseQty: 1, unit: 'pedaço' },
     'Macarrão': { kcal: 157, p: 5.8, c: 30.9, f: 0.9, fib: 1.8, baseQty: 100, unit: 'g' },
+    'Macarrão Cozido': { kcal: 157, p: 5.8, c: 30.9, f: 0.9, fib: 1.8, baseQty: 100, unit: 'g' },
+    'Brigadeiro': { kcal: 65, p: 1.0, c: 10.0, f: 2.0, fib: 0, baseQty: 1, unit: 'colher' },
     'Molho de Estrogonoffe': { kcal: 300, p: 5.0, c: 15.0, f: 25.0, fib: 0, baseQty: 100, unit: 'g' },
     'Molho de Strogonoff': { kcal: 300, p: 5.0, c: 15.0, f: 25.0, fib: 0, baseQty: 100, unit: 'g' },
     'Frango Cozido': { kcal: 165, p: 31.0, c: 0.0, f: 3.6, fib: 0, baseQty: 100, unit: 'g' },

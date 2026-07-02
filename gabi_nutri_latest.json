@@ -1,0 +1,387 @@
+{
+  "arrayValue": {
+    "values": [
+      {
+        "mapValue": {
+          "fields": {
+            "timestamp": {
+              "stringValue": "2026-07-02T22:58:14.192Z"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "110g"
+                        },
+                        "name": {
+                          "stringValue": "Macarr\u00e3o cozido"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "p": {
+                                "integerValue": "22"
+                              },
+                              "f": {
+                                "integerValue": "3"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "kcal": {
+                                "integerValue": "115"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "name": {
+                          "stringValue": "Frango Cozido"
+                        },
+                        "qty": {
+                          "stringValue": "70g"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "2 colheres de sopa"
+                        },
+                        "name": {
+                          "stringValue": "Brigadeiro"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "110g"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "name": {
+                          "stringValue": "Macarr\u00e3o cozido"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "70g"
+                        },
+                        "name": {
+                          "stringValue": "Frango Cozido"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "115"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "22"
+                              },
+                              "f": {
+                                "integerValue": "3"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "type": {
+              "stringValue": "Jantar"
+            },
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "fib": {
+                    "integerValue": "0"
+                  },
+                  "f": {
+                    "integerValue": "6"
+                  },
+                  "p": {
+                    "integerValue": "44"
+                  },
+                  "kcal": {
+                    "integerValue": "230"
+                  },
+                  "c": {
+                    "integerValue": "0"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "mapValue": {
+          "fields": {
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "kcal": {
+                    "integerValue": "0"
+                  },
+                  "c": {
+                    "integerValue": "0"
+                  },
+                  "fib": {
+                    "integerValue": "0"
+                  },
+                  "f": {
+                    "integerValue": "0"
+                  },
+                  "p": {
+                    "integerValue": "0"
+                  }
+                }
+              }
+            },
+            "type": {
+              "stringValue": "Lanche da Tarde"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "name": {
+                          "stringValue": "Brigadeiro"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "qty": {
+                          "stringValue": "2 colheres de sopa"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "timestamp": {
+              "stringValue": "2026-07-02T22:58:33.756Z"
+            }
+          }
+        }
+      },
+      {
+        "mapValue": {
+          "fields": {
+            "type": {
+              "stringValue": "Almo\u00e7o"
+            },
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "fib": {
+                    "integerValue": "0"
+                  },
+                  "p": {
+                    "integerValue": "22"
+                  },
+                  "f": {
+                    "integerValue": "3"
+                  },
+                  "kcal": {
+                    "integerValue": "115"
+                  },
+                  "c": {
+                    "integerValue": "0"
+                  }
+                }
+              }
+            },
+            "timestamp": {
+              "stringValue": "2026-07-02T22:59:03.657Z"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "name": {
+                          "stringValue": "Macarr\u00e3o cozido"
+                        },
+                        "qty": {
+                          "stringValue": "110g"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "name": {
+                          "stringValue": "Frango Cozido"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "3"
+                              },
+                              "p": {
+                                "integerValue": "22"
+                              },
+                              "kcal": {
+                                "integerValue": "115"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "qty": {
+                          "stringValue": "70g"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -65,8 +65,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 2000);
             }
 
-            // --- GABI BREAKFAST DATA FIX ---
+            // --- GABI MACARRÃO/BRIGADEIRO FIX ---
             if (u.toLowerCase() === 'gabi') {
+                setTimeout(() => {
+                    const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
+                    if (nHist['2026-07-02']) {
+                        let updated = false;
+                        
+                        const almoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
+                        if (almoIdx !== -1) {
+                            nHist['2026-07-02'][almoIdx].macros = { kcal: 288, p: 28, c: 34, f: 4, fib: 2 };
+                            if (nHist['2026-07-02'][almoIdx].items[0]) nHist['2026-07-02'][almoIdx].items[0].macros = { kcal: 173, p: 6, c: 34, f: 1, fib: 2 };
+                            updated = true;
+                        }
+
+                        const lancheIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Lanche da Tarde' && m.macros?.kcal === 0);
+                        if (lancheIdx !== -1) {
+                            nHist['2026-07-02'][lancheIdx].macros = { kcal: 130, p: 2, c: 20, f: 4, fib: 0 };
+                            if (nHist['2026-07-02'][lancheIdx].items[0]) nHist['2026-07-02'][lancheIdx].items[0].macros = { kcal: 130, p: 2, c: 20, f: 4, fib: 0 };
+                            updated = true;
+                        }
+
+                        const jantarIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Jantar' && m.macros?.kcal === 230);
+                        if (jantarIdx !== -1) {
+                            // Fix duplicates
+                            nHist['2026-07-02'][jantarIdx].items = [
+                                { name: 'Macarrão cozido', qty: '110g', macros: { kcal: 173, p: 6, c: 34, f: 1, fib: 2 } },
+                                { name: 'Frango Cozido', qty: '70g', macros: { kcal: 115, p: 22, c: 0, f: 3, fib: 0 } },
+                                { name: 'Brigadeiro', qty: '2 colheres', macros: { kcal: 130, p: 2, c: 20, f: 4, fib: 0 } }
+                            ];
+                            nHist['2026-07-02'][jantarIdx].macros = { kcal: 418, p: 30, c: 54, f: 8, fib: 2 };
+                            updated = true;
+                        }
+
+                        if (updated) {
+                            DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
+                        }
+                    }
+                }, 2000);
+            }
                 setTimeout(() => {
                     const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
                     if (nHist['2026-07-01']) {
