@@ -21,16 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const workoutEngine = new WorkoutEngine();
     
-    // Seed Initial History
+    // Seed Initial History with CORRECT DATES and NEW STRUCTURE (Per-Set Tracking)
     let existingData = localStorage.getItem('workout_history');
     let parsedData = existingData ? JSON.parse(existingData) : {};
     
-    if (!existingData) {
-        DB.saveWorkout('2026-06-29', { type: 'HIIT', exercises: [{name: 'Tiro na Esteira', sets: '6 ciclos', reps: '40s/20s', load: '9km/h', notes: 'Fácil.'}] });
-        DB.saveWorkout('2026-06-30', { type: 'PUSH', exercises: [{name: 'Supino Reto', sets: '3', reps: '12', load: '30kg/lado', notes: 'Falha.'}] });
+    // Reset se estiver usando a estrutura velha (sem arrays em sets)
+    if (!existingData || (parsedData['2026-06-30'] === undefined) || (parsedData['2026-06-30'] && typeof parsedData['2026-06-30'].exercises[0].sets === 'string')) {
+        DB.saveWorkout('2026-06-30', {
+            type: 'PUSH',
+            exercises: [
+                { name: 'Supino Reto', sets: [{ reps: 12, load: '30kg' }, { reps: 10, load: '30kg' }, { reps: 8, load: '30kg' }], tags: ['falha'], notes: 'Isolamento total.' },
+                { name: 'Peck Deck', sets: [{ reps: 15, load: '45kg' }, { reps: 12, load: '45kg' }], tags: ['cadencia'], notes: 'Sem inércia.' }
+            ]
+        });
+        DB.saveWorkout('2026-07-01', {
+            type: 'LEGS FULL',
+            exercises: [
+                { name: 'Leg Press 45º', sets: [{ reps: 15, load: '50kg' }, { reps: 12, load: '50kg' }], tags: ['falha'], notes: 'Foco no quadríceps.' },
+                { name: 'Stiff', sets: [{ reps: 10, load: '10kg' }], tags: ['lombar'], notes: 'Abortado por segurança.' }
+            ]
+        });
     }
 
-    // Determine Today's Workout based on completed count
     const history = JSON.parse(localStorage.getItem('workout_history') || '{}');
     const completedCount = Object.keys(history).length;
     const todayWorkoutType = workoutEngine.getNextWorkoutType(completedCount);
@@ -55,13 +67,20 @@ document.addEventListener('DOMContentLoaded', () => {
             let exercisesHtml = '';
             if (w.exercises && w.exercises.length > 0) {
                 w.exercises.forEach(ex => {
+                    let setsHtml = '';
+                    if (Array.isArray(ex.sets)) {
+                        ex.sets.forEach((set, i) => {
+                            setsHtml += `<div style="font-size: 0.85rem; color: #ccc; margin-left: 1rem; border-left: 2px solid var(--border-color); padding-left: 0.5rem; margin-bottom: 0.2rem;">Série ${i+1}: <strong>${set.reps} reps</strong> @ ${set.load}</div>`;
+                        });
+                    }
+                    
                     exercisesHtml += `
                         <div class="exercise-card">
-                            <div class="ex-header">
+                            <div class="ex-header" style="margin-bottom: 0.5rem;">
                                 <span class="ex-name">${ex.name}</span>
-                                <span class="ex-stats">${ex.sets}x${ex.reps} | ${ex.load || 'BW'}</span>
                             </div>
-                            <div class="ex-notes" style="color:var(--text-primary)">Tags: ${ex.tags ? ex.tags.join(', ') : 'Nenhuma'}</div>
+                            ${setsHtml}
+                            <div class="ex-notes" style="color:var(--text-primary); margin-top: 0.5rem;">Tags: ${ex.tags ? ex.tags.join(', ') : 'Nenhuma'}</div>
                             <div class="ex-notes" style="color:var(--secondary-color)">Ação (IA): ${workoutEngine.evaluateTags(ex.tags || []).recommendation}</div>
                             ${ex.notes ? `<div class="ex-notes">"${ex.notes}"</div>` : ''}
                         </div>
@@ -109,11 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             lastWorkout.exercises.forEach(ex => {
                 const aiAction = workoutEngine.evaluateTags(ex.tags || []).recommendation;
+                const topSet = Array.isArray(ex.sets) && ex.sets.length > 0 ? ex.sets[0] : { reps: '?', load: '?' };
+                
                 planHtml += `
                     <div class="exercise-card">
                         <div class="ex-header">
                             <span class="ex-name">${ex.name}</span>
-                            <span class="ex-stats" style="background: rgba(255, 51, 102, 0.2); color: var(--primary-color);">Feito: ${ex.sets}x${ex.reps} @ ${ex.load}</span>
+                            <span class="ex-stats" style="background: rgba(255, 51, 102, 0.2); color: var(--primary-color);">Top Set: ${topSet.reps}x @ ${topSet.load}</span>
                         </div>
                         <div class="ex-notes">Sugestão: ${aiAction}</div>
                     </div>
@@ -150,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const wmNext = document.getElementById('wm-next');
     const wmFinish = document.getElementById('wm-finish');
     let currentSlide = 0;
-    let templateExercises = [];
 
     const updateWorkoutUI = () => {
         const slides = document.querySelectorAll('.wm-slide');
@@ -168,26 +188,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.querySelector('.start-workout')?.addEventListener('click', () => {
-        // Build Slides
-        templateExercises = workoutEngine.getTemplateForType(todayWorkoutType);
-        if(templateExercises.length === 0) return alert('Template vazio.');
+        // Criar 5 Slides Vazios para o usuário preencher os exercícios do dia
+        const library = workoutEngine.getExerciseLibrary(todayWorkoutType);
+        let optionsHtml = '<option value="">Selecione o Exercício...</option>';
+        library.forEach(ex => optionsHtml += `<option value="${ex}">${ex}</option>`);
         
         let slidesHtml = '';
-        templateExercises.forEach((ex, idx) => {
+        for (let i = 0; i < 5; i++) {
             slidesHtml += `
-            <div class="wm-slide" data-idx="${idx}">
-                <h3 style="color: var(--primary-color); font-size: 1.5rem; font-family: var(--font-heading);">${idx + 1}. ${ex.name}</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Meta: ${ex.sets} séries x ${ex.reps}</p>
-                
-                <div class="input-row">
-                    <div class="input-group">
-                        <label>Carga Utilizada</label>
-                        <input type="text" class="inp-load" placeholder="Ex: 30kg ou BW">
-                    </div>
+            <div class="wm-slide" data-idx="${i}">
+                <div style="margin-bottom: 1.5rem;">
+                    <select class="inp-ex-name" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 12px; font-family: var(--font-heading); font-size: 1.2rem; outline: none;">
+                        ${optionsHtml}
+                    </select>
                 </div>
+                
+                <div class="sets-container">
+                    <!-- Lines injected here -->
+                </div>
+                <button class="nav-btn btn-add-set" style="width: 100%; text-align: center; border: 1px dashed var(--secondary-color); color: var(--secondary-color); margin-top: 1rem;">+ Adicionar Série</button>
 
-                <div class="input-group" style="margin-top: 1.5rem;">
-                    <label>Como foi a execução? (Múltipla Escolha)</label>
+                <div class="input-group" style="margin-top: 2rem;">
+                    <label>Tags de Execução</label>
                     <div class="tag-group">
                         <div class="tag-chip" data-tag="facil">Estava Fácil</div>
                         <div class="tag-chip" data-tag="falha">Atingi Falha Téc.</div>
@@ -202,10 +224,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="text" class="inp-notes" placeholder="Anotações extras...">
                 </div>
             </div>`;
-        });
+        }
         
         wmCarousel.innerHTML = slidesHtml;
         
+        // Bind Add Set Buttons
+        document.querySelectorAll('.btn-add-set').forEach((btn, slideIdx) => {
+            btn.addEventListener('click', (e) => {
+                const container = e.target.parentElement.querySelector('.sets-container');
+                const setNumber = container.children.length + 1;
+                const setHtml = `
+                    <div class="input-row set-row" style="align-items: center;">
+                        <span style="color: var(--text-secondary); font-size: 0.8rem; width: 40px;">S${setNumber}</span>
+                        <div class="input-group" style="margin-top:0;">
+                            <input type="number" class="inp-reps" placeholder="Reps" style="padding: 0.5rem;">
+                        </div>
+                        <div class="input-group" style="margin-top:0;">
+                            <input type="text" class="inp-load" placeholder="Peso (ex: 20kg)" style="padding: 0.5rem;">
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', setHtml);
+            });
+            // Click to add the first set by default
+            btn.click();
+        });
+
         // Bind Tag Clicks
         document.querySelectorAll('.tag-chip').forEach(chip => {
             chip.addEventListener('click', () => {
@@ -219,15 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateWorkoutUI();
     });
 
-    wmNext?.addEventListener('click', () => {
-        currentSlide++;
-        updateWorkoutUI();
-    });
-
-    wmPrev?.addEventListener('click', () => {
-        currentSlide--;
-        updateWorkoutUI();
-    });
+    wmNext?.addEventListener('click', () => { currentSlide++; updateWorkoutUI(); });
+    wmPrev?.addEventListener('click', () => { currentSlide--; updateWorkoutUI(); });
 
     document.getElementById('wm-cancel')?.addEventListener('click', () => {
         wmContainer.style.display = 'none';
@@ -238,25 +275,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const slides = document.querySelectorAll('.wm-slide');
         let finalData = [];
         
-        slides.forEach((s, idx) => {
-            const exName = templateExercises[idx].name;
-            const exSets = templateExercises[idx].sets;
-            const exReps = templateExercises[idx].reps;
-            const load = s.querySelector('.inp-load').value || 'Não informada';
+        slides.forEach(s => {
+            const exName = s.querySelector('.inp-ex-name').value;
+            if (!exName) return; // Skip empty slides
+
+            const setRows = s.querySelectorAll('.set-row');
+            let sets = [];
+            setRows.forEach(row => {
+                const reps = row.querySelector('.inp-reps').value;
+                const load = row.querySelector('.inp-load').value;
+                if (reps || load) sets.push({ reps: reps || '0', load: load || 'BW' });
+            });
+
             const notes = s.querySelector('.inp-notes').value;
             const selectedTags = Array.from(s.querySelectorAll('.tag-chip.selected')).map(t => t.getAttribute('data-tag'));
             
-            finalData.push({
-                name: exName, sets: exSets, reps: exReps, load, notes, tags: selectedTags
-            });
+            finalData.push({ name: exName, sets: sets, notes, tags: selectedTags });
         });
 
-        DB.saveWorkout(new Date().toISOString().split('T')[0], {
+        if (finalData.length === 0) {
+            alert('Nenhum exercício preenchido!');
+            return;
+        }
+
+        // Usa a data atual real, formatada localmente
+        const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
+        
+        DB.saveWorkout(localISOTime, {
             type: todayWorkoutType,
             exercises: finalData
         });
         
-        alert('Treino Salvo com Sucesso! Seu histórico foi atualizado e o ciclo avançou.');
-        window.location.reload(); // Reload to refresh dash states
+        alert('Treino Salvo com Sucesso! Seu histórico foi atualizado.');
+        window.location.reload();
     });
 });

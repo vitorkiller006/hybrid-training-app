@@ -9,35 +9,19 @@ export class WorkoutEngine {
         return this.cycleSequence[index];
     }
 
-    getTemplateForType(type) {
-        const templates = {
-            'HIIT': [{ name: 'Tiro na Esteira', sets: '6 ciclos', reps: '40s/20s' }],
-            'PUSH': [
-                { name: 'Supino Reto', sets: '3', reps: '10-12' },
-                { name: 'Peck Deck', sets: '3', reps: '12-15' },
-                { name: 'Desenvolvimento', sets: '3', reps: '10' },
-                { name: 'Tríceps Polia', sets: '3', reps: '12-15' },
-                { name: 'Abdominal Solo', sets: '3', reps: 'FALHA' }
-            ],
-            'LEGS FULL': [
-                { name: 'Agachamento / Leg Press', sets: '4', reps: '10-12' },
-                { name: 'Cadeira Flexora', sets: '3', reps: '12-15' },
-                { name: 'Stiff', sets: '3', reps: '10' },
-                { name: 'Panturrilha', sets: '4', reps: '15' }
-            ],
-            'PULL': [
-                { name: 'Puxada Alta', sets: '3', reps: '10-12' },
-                { name: 'Remada Baixa', sets: '3', reps: '10-12' },
-                { name: 'Rosca Direta', sets: '3', reps: '12-15' },
-                { name: 'Encolhimento', sets: '3', reps: '15' }
-            ],
-            'LISS_RUN': [{ name: 'Corrida Longa', sets: '1', reps: '40 min' }]
+    getExerciseLibrary(type) {
+        const library = {
+            'HIIT': ['Tiro na Esteira', 'Bike Erg', 'Remo', 'Burpees', 'Corda Naval'],
+            'PUSH': ['Supino Reto', 'Supino Inclinado (Halteres)', 'Peck Deck', 'Crucifixo', 'Desenvolvimento (Halteres)', 'Elevação Lateral', 'Tríceps Polia', 'Tríceps Testa', 'Abdominal Solo'],
+            'LEGS FULL': ['Agachamento Livre', 'Leg Press 45º', 'Cadeira Extensora', 'Stiff', 'Cadeira Flexora', 'Mesa Flexora', 'Elevação Pélvica', 'Panturrilha Máquina', 'Panturrilha Sentado', 'Abdominal Máquina'],
+            'PULL': ['Barra Fixa', 'Puxada Alta (Frente)', 'Remada Curvada', 'Remada Baixa (Triângulo)', 'Crucifixo Inverso', 'Rosca Direta', 'Rosca Martelo', 'Rosca Scott', 'Encolhimento (Halteres)'],
+            'LISS_RUN': ['Corrida Contínua', 'Trote', 'Caminhada Inclinada']
         };
-        return templates[type] || [];
+        return library[type] || ['Exercício Livre'];
     }
 
     evaluateTags(tags) {
-        let recommendation = 'Manter carga e consolidar execução.';
+        let recommendation = 'Manter carga/séries e consolidar execução.';
         let danger = false;
         if (tags.includes('facil')) recommendation = 'Aumentar carga (Sobrecarga Progressiva).';
         if (tags.includes('falha') && !tags.includes('facil')) recommendation = 'Manter carga (atingiu falha técnica).';
@@ -59,29 +43,5 @@ export class WorkoutEngine {
             };
         }
         return { triggerActivated: false };
-    }
-
-    calculateCompensationVolume(completedSets, targetVolume) {
-        const remaining = targetVolume - completedSets;
-        return remaining > 0 ? remaining : 0;
-    }
-
-    canProgressLoad(amplitudeMaxima, controleCadencia, rpe) {
-        return (amplitudeMaxima && controleCadencia && rpe >= 8 && rpe <= 9);
-    }
-
-    adjustVolumeForHybridDay(baseVolume, isHybridDay) {
-        return isHybridDay ? Math.ceil(baseVolume * 0.6) : baseVolume;
-    }
-
-    evaluateCalfQuality(repDropPercentage) {
-        if (repDropPercentage > 20) {
-            return {
-                lockLoad: true,
-                loadReductionNextSet: 0.15,
-                focus: 'Priorizar Squeeze (contração isométrica no pico) e amplitude.'
-            };
-        }
-        return { lockLoad: false, loadReductionNextSet: 0 };
     }
 }
