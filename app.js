@@ -347,13 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
         container.innerHTML = html;
-        if (currentMealItems.length > 0) {
-            document.getElementById('meal-kcal').value = totK;
-            document.getElementById('meal-p').value = totP;
-            document.getElementById('meal-c').value = totC;
-            document.getElementById('meal-f').value = totF;
-            document.getElementById('meal-fib').value = totFib;
-        }
         document.querySelectorAll('.btn-remove-plate-item').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const idx = parseInt(e.target.getAttribute('data-idx'));
@@ -429,11 +422,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const m = nHist[localToday][mealIdx];
                 document.getElementById('meal-type-select').value = m.type;
                 currentMealItems = [...m.items];
-                document.getElementById('meal-kcal').value = m.macros?.kcal || '';
-                document.getElementById('meal-p').value = m.macros?.p || '';
-                document.getElementById('meal-c').value = m.macros?.c || '';
-                document.getElementById('meal-f').value = m.macros?.f || '';
-                document.getElementById('meal-fib').value = m.macros?.fib || '';
                 renderCurrentPlate();
                 nHist[localToday].splice(mealIdx, 1);
                 DB.saveNutrition(localToday, nHist[localToday]);
@@ -445,12 +433,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-save-meal')?.addEventListener('click', () => {
         if (currentMealItems.length === 0) return alert('Adicione alimentos ao prato primeiro.');
         const mealType = document.getElementById('meal-type-select').value;
+        
+        // Sum macros directly from the items in memory
+        let totalKcal = 0, totalP = 0, totalC = 0, totalF = 0, totalFib = 0;
+        currentMealItems.forEach(item => {
+            const m = item.macros || {};
+            totalKcal += m.kcal || 0;
+            totalP += m.p || 0;
+            totalC += m.c || 0;
+            totalF += m.f || 0;
+            totalFib += m.fib || 0;
+        });
+
         const macros = {
-            kcal: parseInt(document.getElementById('meal-kcal').value) || 0,
-            p: parseInt(document.getElementById('meal-p').value) || 0,
-            c: parseInt(document.getElementById('meal-c').value) || 0,
-            f: parseInt(document.getElementById('meal-f').value) || 0,
-            fib: parseInt(document.getElementById('meal-fib').value) || 0
+            kcal: totalKcal,
+            p: totalP,
+            c: totalC,
+            f: totalF,
+            fib: totalFib
         };
         const nutHistory = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
         if (!nutHistory[localToday]) nutHistory[localToday] = [];
@@ -464,11 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
         DB.saveNutrition(localToday, nutHistory[localToday]);
         
         currentMealItems = [];
-        document.getElementById('meal-kcal').value = '';
-        document.getElementById('meal-p').value = '';
-        document.getElementById('meal-c').value = '';
-        document.getElementById('meal-f').value = '';
-        document.getElementById('meal-fib').value = '';
         renderCurrentPlate();
         renderNutritionHistory();
     });
