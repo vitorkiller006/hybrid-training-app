@@ -12,12 +12,24 @@ export class WorkoutEngine {
     getExerciseLibrary(type) {
         const library = {
             'HIIT': ['Tiro na Esteira', 'Bike Erg', 'Remo', 'Burpees', 'Corda Naval'],
-            'PUSH': ['Supino Reto', 'Supino Inclinado (Halteres)', 'Peck Deck', 'Crucifixo', 'Desenvolvimento (Halteres)', 'Elevação Lateral', 'Tríceps Polia', 'Tríceps Testa', 'Abdominal Solo'],
-            'LEGS FULL': ['Agachamento Livre', 'Leg Press 45º', 'Cadeira Extensora', 'Stiff', 'Cadeira Flexora', 'Mesa Flexora', 'Elevação Pélvica', 'Panturrilha Máquina', 'Panturrilha Sentado', 'Abdominal Máquina'],
+            'PUSH': ['Supino Reto', 'Supino Inclinado (Halteres)', 'Peck Deck', 'Crucifixo', 'Desenvolvimento (Halteres)', 'Elevação Lateral', 'Tríceps Polia', 'Tríceps Testa'],
+            'LEGS FULL': ['Agachamento Livre', 'Leg Press 45º', 'Cadeira Extensora', 'Stiff', 'Cadeira Flexora', 'Mesa Flexora', 'Elevação Pélvica', 'Panturrilha Máquina', 'Panturrilha Sentado'],
             'PULL': ['Barra Fixa', 'Puxada Alta (Frente)', 'Remada Curvada', 'Remada Baixa (Triângulo)', 'Crucifixo Inverso', 'Rosca Direta', 'Rosca Martelo', 'Rosca Scott', 'Encolhimento (Halteres)'],
             'LISS_RUN': ['Corrida Contínua', 'Trote', 'Caminhada Inclinada']
         };
-        return library[type] || ['Exercício Livre'];
+        
+        const coreAndCardio = [
+            '--- ACESSÓRIOS ---',
+            'Abdominal Solo', 
+            'Abdominal Máquina', 
+            'Prancha Isométrica', 
+            'Esteira (Cardio Pós)', 
+            'Bike (Cardio Pós)', 
+            'Escada (Cardio Pós)'
+        ];
+
+        const specificExercises = library[type] || ['Exercício Livre'];
+        return specificExercises.concat(coreAndCardio);
     }
 
     evaluateTags(tags) {
