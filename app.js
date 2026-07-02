@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('meal-fib').value = m.macros?.fib || '';
                 renderCurrentPlate();
                 nHist[localToday].splice(mealIdx, 1);
-                localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
+                DB.saveNutrition(localToday, nHist[localToday]);
                 renderNutritionHistory();
             });
         });
@@ -460,7 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
             macros: macros,
             timestamp: new Date().toISOString()
         });
-        localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nutHistory));
+        
+        DB.saveNutrition(localToday, nutHistory[localToday]);
+        
         currentMealItems = [];
         document.getElementById('meal-kcal').value = '';
         document.getElementById('meal-p').value = '';
