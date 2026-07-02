@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             
             // --- GABI BREAKFAST DATA FIX ---
-            if (username === 'gabi') {
+            if (u.toLowerCase() === 'gabi') {
                 setTimeout(() => {
                     const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
                     if (nHist['2026-07-01'] && nHist['2026-07-01'][0] && nHist['2026-07-01'][0].type === 'Café da Manhã' && nHist['2026-07-01'][0].macros.kcal === 124) {
