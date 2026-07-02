@@ -214,6 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let optionsHtml = '<option value="">Selecione o Exercício...</option>';
         library.forEach(ex => optionsHtml += `<option value="${ex}">${ex}</option>`);
         
+        // Dynamic Tags Rendering
+        const workoutTags = workoutEngine.getTagsForType(todayWorkoutType);
+        let tagsHtml = '';
+        workoutTags.forEach(t => {
+            const dangerClass = t.type === 'danger' ? 'danger' : '';
+            tagsHtml += `<div class="tag-chip ${dangerClass}" data-tag="${t.id}">${t.label}</div>`;
+        });
+
         let slidesHtml = '';
         for (let i = 0; i < 5; i++) {
             slidesHtml += `
@@ -232,11 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="input-group" style="margin-top: 2rem;">
                     <label>Tags de Execução</label>
                     <div class="tag-group">
-                        <div class="tag-chip" data-tag="facil">Estava Fácil</div>
-                        <div class="tag-chip" data-tag="falha">Atingi Falha Téc.</div>
-                        <div class="tag-chip" data-tag="cadencia">Boa Cadência</div>
-                        <div class="tag-chip danger" data-tag="lombar">Dor Lombar</div>
-                        <div class="tag-chip danger" data-tag="articulacao">Dor Articular</div>
+                        ${tagsHtml}
                     </div>
                 </div>
 
@@ -254,18 +258,30 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', (e) => {
                 const container = e.target.parentElement.querySelector('.sets-container');
                 const setNumber = container.children.length + 1;
-                const setHtml = `
-                    <div class="input-row set-row" style="align-items: center;">
-                        <span style="color: var(--text-secondary); font-size: 0.8rem; width: 40px;">S${setNumber}</span>
-                        <div class="input-group" style="margin-top:0;">
-                            <input type="number" class="inp-reps" placeholder="Reps" style="padding: 0.5rem;">
-                        </div>
-                        <div class="input-group" style="margin-top:0;">
-                            <input type="text" class="inp-load" placeholder="Peso (ex: 20kg)" style="padding: 0.5rem;">
-                        </div>
+                const setRow = document.createElement('div');
+                setRow.className = 'input-row set-row';
+                setRow.style.alignItems = 'center';
+                
+                setRow.innerHTML = `
+                    <span style="color: var(--text-secondary); font-size: 0.8rem; width: 40px;">S${setNumber}</span>
+                    <div class="input-group" style="margin-top:0;">
+                        <input type="number" class="inp-reps" placeholder="Reps" style="padding: 0.5rem;">
                     </div>
+                    <div class="input-group" style="margin-top:0;">
+                        <input type="text" class="inp-load" placeholder="Peso (ex: 20kg)" style="padding: 0.5rem;">
+                    </div>
+                    <button class="btn-remove-set" style="background: transparent; border: none; color: var(--primary-color); font-size: 1.2rem; cursor: pointer; padding: 0.5rem;">&times;</button>
                 `;
-                container.insertAdjacentHTML('beforeend', setHtml);
+                
+                setRow.querySelector('.btn-remove-set').addEventListener('click', () => {
+                    setRow.remove();
+                    // Re-index remaining sets visually
+                    Array.from(container.children).forEach((row, idx) => {
+                        row.querySelector('span').textContent = `S${idx + 1}`;
+                    });
+                });
+
+                container.appendChild(setRow);
             });
             // Click to add the first set by default
             btn.click();

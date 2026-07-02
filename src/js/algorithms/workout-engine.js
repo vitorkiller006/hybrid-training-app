@@ -35,6 +35,35 @@ export class WorkoutEngine {
         return specificExercises.concat(coreAndCardio);
     }
 
+    getTagsForType(type) {
+        const baseTags = [
+            { id: 'facil', label: 'Estava Fácil', type: 'normal' },
+            { id: 'falha', label: 'Atingi Falha', type: 'normal' },
+            { id: 'cadencia', label: 'Boa Cadência', type: 'normal' },
+            { id: 'articulacao', label: 'Dor Articular', type: 'danger' }
+        ];
+
+        const specificTags = {
+            'HIIT': [
+                { id: 'facil', label: 'Fôlego Sobrando', type: 'normal' },
+                { id: 'falha', label: 'Exaustão Cardíaca', type: 'normal' },
+                { id: 'canelite', label: 'Dor Canela (Shin Splint)', type: 'danger' },
+                { id: 'articulacao', label: 'Dor Joelho', type: 'danger' }
+            ],
+            'LEGS FULL': [
+                ...baseTags,
+                { id: 'lombar', label: 'Fisgada Lombar', type: 'danger' }
+            ],
+            'PULL': [
+                ...baseTags,
+                { id: 'lombar', label: 'Tensão Lombar', type: 'danger' },
+                { id: 'antibraco', label: 'Falha Antebraço Primeiro', type: 'normal' }
+            ]
+        };
+
+        return specificTags[type] || baseTags;
+    }
+
     evaluateTags(tags) {
         let recommendation = 'Manter carga/séries e consolidar execução.';
         let danger = false;
