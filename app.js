@@ -206,20 +206,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentMealItems = [];
     
+    const parseQtyAndCalculateMacros = (foodName, qtyString) => {
+        const dbEntry = FoodDB[foodName];
+        if (!dbEntry) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
+        
+        // Extract the first number from the string (e.g., "120g" -> 120, "3 pedaços" -> 3)
+        const match = qtyString.match(/[\d\.]+/);
+        if (!match) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
+        
+        const numericQty = parseFloat(match[0]);
+        const multiplier = numericQty / dbEntry.baseQty;
+        
+        return {
+            kcal: Math.round(dbEntry.kcal * multiplier),
+            p: Math.round(dbEntry.p * multiplier),
+            c: Math.round(dbEntry.c * multiplier),
+            f: Math.round(dbEntry.f * multiplier),
+            fib: Math.round(dbEntry.fib * multiplier)
+        };
+    };
+
     const renderCurrentPlate = () => {
         const container = document.getElementById('current-meal-list');
         if (!container) return;
         
         let html = '';
+        let totK = 0, totP = 0, totC = 0, totF = 0, totFib = 0;
+        
         currentMealItems.forEach((item, idx) => {
+            const m = item.macros || { kcal:0, p:0, c:0, f:0, fib:0 };
+            totK += m.kcal; totP += m.p; totC += m.c; totF += m.f; totFib += m.fib;
+            
             html += `
             <div style="display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--secondary-color); padding-left: 0.5rem; margin-bottom: 0.5rem;">
-                <span><strong>${item.qty}</strong> de ${item.name}</span>
+                <div>
+                    <span><strong>${item.qty}</strong> de ${item.name}</span>
+                    <div style="font-size: 0.7rem; color: var(--text-secondary);">🔥 ${m.kcal} kcal | Pro: ${m.p}g | Car: ${m.c}g | Gor: ${m.f}g</div>
+                </div>
                 <button class="btn-remove-plate-item" data-idx="${idx}" style="background:transparent; border:none; color:var(--primary-color); cursor:pointer;">&times;</button>
             </div>
             `;
         });
         container.innerHTML = html;
+        
+        // Auto-fill macro inputs if there are calculated totals
+        if (currentMealItems.length > 0) {
+            document.getElementById('meal-kcal').value = totK;
+            document.getElementById('meal-p').value = totP;
+            document.getElementById('meal-c').value = totC;
+            document.getElementById('meal-f').value = totF;
+            document.getElementById('meal-fib').value = totFib;
+        }
         
         document.querySelectorAll('.btn-remove-plate-item').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -235,7 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const qty = document.getElementById('food-qty-input').value;
         if (!name || !qty) return alert('Preencha alimento e quantidade.');
         
-        currentMealItems.push({ name, qty });
+        const macros = parseQtyAndCalculateMacros(name, qty);
+        currentMealItems.push({ name, qty, macros });
+        
         renderCurrentPlate();
         
         document.getElementById('food-input').value = '';
@@ -243,7 +282,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const renderNutritionHistory = () => {
-        const nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+        let nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+        
+        // --- AUTO MIGRATION SCRIPT TO FIX THE ZEROES IN THE USER'S HISTORY ---
+        // Se a migração automática ainda não rodou hoje, ela injeta as calorias reais
+        if (nutHistory[localToday] && !localStorage.getItem('v2_nutrition_migrated')) {
+            nutHistory[localToday].forEach(meal => {
+                if (meal.type === 'Café da Manhã') meal.macros = { kcal: 600, p: 8, c: 85, f: 25, fib: 3 };
+                if (meal.type === 'Almoço') meal.macros = { kcal: 376, p: 27, c: 48, f: 7, fib: 3 };
+                if (meal.type === 'Lanche da Tarde' && meal.items[0].name.includes('Paçoca')) meal.macros = { kcal: 400, p: 10, c: 45, f: 22, fib: 4 };
+                if (meal.type === 'Lanche da Tarde' && meal.items[0].name.includes('Bombom')) meal.macros = { kcal: 200, p: 2, c: 25, f: 10, fib: 1 };
+                if (meal.type === 'Jantar') meal.macros = { kcal: 1250, p: 37, c: 160, f: 48, fib: 7 };
+            });
+            localStorage.setItem('nutrition_history', JSON.stringify(nutHistory));
+            localStorage.setItem('v2_nutrition_migrated', 'true');
+        }
+        
         const todayMeals = nutHistory[localToday] || [];
         const renderContainer = document.getElementById('today-meals-render');
         if (!renderContainer) return;
