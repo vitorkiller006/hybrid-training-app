@@ -525,10 +525,8 @@ document.addEventListener('DOMContentLoaded', () => {
         wmPrev.style.display = currentSlide === 0 ? 'none' : 'block';
         if (currentSlide === slides.length - 1) {
             wmNext.style.display = 'none';
-            wmFinish.style.display = 'block';
         } else {
             wmNext.style.display = 'block';
-            wmFinish.style.display = 'none';
         }
     };
 
@@ -678,11 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Usa a data atual real, formatada localmente
-        const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-        const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
-        
-        DB.saveWorkout(localISOTime, {
+        DB.saveWorkout(localToday, {
             type: todayWorkoutType,
             exercises: finalData
         });
