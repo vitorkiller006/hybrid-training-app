@@ -6,60 +6,54 @@ export class NutritionEngine {
         this.baseBMR = 370 + (21.6 * this.lbm);
     }
 
-    calculateDynamicTDEE(workoutType) {
-        let multiplier = 1.2;
-        switch (workoutType) {
-            case 'REST': multiplier = 1.2; break;
-            case 'PUSH': 
-            case 'PULL': multiplier = 1.375; break;
-            case 'HIIT': multiplier = 1.45; break;
-            case 'LEGS_FULL': multiplier = 1.55; break;
-            case 'LISS_RUN': multiplier = 1.6; break;
-        }
-        return Math.round(this.baseBMR * multiplier);
-    }
+    calculateDailyTDEE(workoutForDay) {
+        let neatMultiplier = 1.2; 
+        let tdee = Math.round(this.baseBMR * neatMultiplier);
 
-    calculateMacros(workoutType) {
-        const tdee = this.calculateDynamicTDEE(workoutType);
-        const proteinGrams = Math.round(this.weight * 2.2);
-        const proteinCals = proteinGrams * 4;
+        let workoutCalories = 0;
+        let proteinMacro = Math.round(this.weight * 2.2); 
+        let fatMacro = Math.round(this.weight * 0.9);     
 
-        let carbMultiplier = 1.0;
-        let fatMultiplier = 1.0;
-
-        if (['LEGS_FULL', 'LISS_RUN'].includes(workoutType)) {
-            carbMultiplier = 3.5;
-            fatMultiplier = 0.8;
-        } else if (['PUSH', 'PULL'].includes(workoutType)) {
-            carbMultiplier = 2.0;
-            fatMultiplier = 1.0;
-        } else {
-            carbMultiplier = 1.2;
-            fatMultiplier = 1.2;
+        if (!workoutForDay || !workoutForDay.exercises || workoutForDay.exercises.length === 0) {
+            let carbsRest = Math.round((tdee - (proteinMacro * 4) - (fatMacro * 9)) / 4);
+            return {
+                tdee,
+                burned: 0,
+                macros: { protein: proteinMacro, carbs: carbsRest, fat: fatMacro },
+                type: 'REST (LOW CARB)'
+            };
         }
 
-        const carbGrams = Math.round(this.weight * carbMultiplier);
-        const carbCals = carbGrams * 4;
+        workoutForDay.exercises.forEach(ex => {
+            if (!ex.sets) return;
+            const setCount = Array.isArray(ex.sets) ? ex.sets.length : parseInt(ex.sets) || 1;
+            const nameLower = ex.name.toLowerCase();
+            
+            const isCompound = ['agachamento', 'press', 'supino', 'remada', 'puxada', 'desenvolvimento'].some(kw => nameLower.includes(kw));
+            const isCardio = ['tiro', 'corrida', 'bike', 'esteira', 'escada'].some(kw => nameLower.includes(kw));
+            
+            if (isCardio) {
+                workoutCalories += (setCount * 30); 
+            } else if (isCompound) {
+                workoutCalories += (setCount * 25); 
+            } else {
+                workoutCalories += (setCount * 15); 
+            }
+        });
 
-        let fatGrams = Math.round(this.weight * fatMultiplier);
-        let fatCals = fatGrams * 9;
-
-        const currentCals = proteinCals + carbCals + fatCals;
-        const diff = tdee - currentCals;
-        
-        if (diff > 0 && ['LEGS_FULL', 'LISS_RUN'].includes(workoutType)) {
-             fatGrams += Math.round(diff / 9);
-        }
+        const finalTDEE = tdee + workoutCalories;
+        const carbMacro = Math.round((finalTDEE - (proteinMacro * 4) - (fatMacro * 9)) / 4);
 
         return {
-            tdee,
-            macros: {
-                protein: proteinGrams,
-                carbs: carbGrams,
-                fat: fatGrams
-            },
-            type: ['LEGS_FULL', 'LISS_RUN'].includes(workoutType) ? 'HIGH CARB' : 
-                  (['PUSH', 'PULL'].includes(workoutType) ? 'MODERATE CARB' : 'LOW CARB')
+            tdee: finalTDEE,
+            burned: workoutCalories,
+            macros: { protein: proteinMacro, carbs: carbMacro, fat: fatMacro },
+            type: workoutForDay.type
         };
+    }
+
+    // Mantido por retrocompatibilidade se for chamado em outro lugar
+    calculateMacros(workoutType) {
+        return this.calculateDailyTDEE({ type: workoutType, exercises: [] });
     }
 }
