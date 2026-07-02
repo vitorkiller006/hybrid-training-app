@@ -39,20 +39,24 @@
                     <span class="badge badge-carb-low" id="nutri-badge-type">Calculando...</span>
                 </div>
                 <div class="card-body">
-                    <p class="rpe-status">Gasto Calórico Estimado (TDEE): <strong id="tdee-display" style="color: var(--secondary-color); font-size: 1.3rem;">--</strong> kcal <br><span style="font-size: 0.8rem;">(Treino de Hoje queimou aprox: <span id="burned-display" style="color: var(--primary-color);">--</span> kcal)</span></p>
+                    <p class="rpe-status">
+                        Gasto Calórico Estimado (TDEE): <strong id="tdee-display" style="color: var(--secondary-color); font-size: 1.3rem;">--</strong> kcal 
+                        <br><span style="font-size: 0.8rem;">(Treino de Hoje queimou aprox: <span id="burned-display" style="color: var(--primary-color);">--</span> kcal)</span>
+                        <br><span style="font-size: 1.1rem; color: #fff; margin-top:0.8rem; display:block; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem;">Consumido: <strong id="kcal-consumed" style="color: var(--primary-color);">0</strong> kcal</span>
+                    </p>
                     
                     <div class="macros" style="margin-bottom: 2rem;">
                         <div class="macro-item">
-                            <span class="label">PROTEÍNA (META)</span>
-                            <span class="value" id="macro-p-goal">--g</span>
+                            <span class="label">PROTEÍNA</span>
+                            <span class="value"><span id="macro-p-consumed">0</span> / <span id="macro-p-goal">--</span>g</span>
                         </div>
                         <div class="macro-item">
-                            <span class="label">CARBOIDRATO (META)</span>
-                            <span class="value" id="macro-c-goal">--g</span>
+                            <span class="label">CARBOIDRATO</span>
+                            <span class="value"><span id="macro-c-consumed">0</span> / <span id="macro-c-goal">--</span>g</span>
                         </div>
                         <div class="macro-item">
-                            <span class="label">GORDURA (META)</span>
-                            <span class="value" id="macro-f-goal">--g</span>
+                            <span class="label">GORDURA</span>
+                            <span class="value"><span id="macro-f-consumed">0</span> / <span id="macro-f-goal">--</span>g</span>
                         </div>
                     </div>
 
@@ -82,12 +86,23 @@
                             </div>
                         </div>
 
-                        <button class="nav-btn" id="btn-add-food" style="width: 100%; border: 1px dashed var(--secondary-color); color: var(--secondary-color);">+ Adicionar ao Prato</button>
+                        <button class="nav-btn" id="btn-add-food" style="width: 100%; border: 1px dashed var(--secondary-color); color: var(--secondary-color); margin-bottom: 1rem;">+ Adicionar ao Prato</button>
 
                         <div id="current-meal-list" style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
                             <!-- Itens do prato atual -->
                         </div>
                         
+                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <label style="color: var(--text-secondary); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">Macros Totais da Refeição (Insira os valores da IA):</label>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <input type="number" id="meal-kcal" placeholder="Kcal" style="flex: 1; padding: 0.5rem; min-width: 60px;">
+                                <input type="number" id="meal-p" placeholder="Pro(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
+                                <input type="number" id="meal-c" placeholder="Car(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
+                                <input type="number" id="meal-f" placeholder="Gor(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
+                                <input type="number" id="meal-fib" placeholder="Fib(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
+                            </div>
+                        </div>
+
                         <button class="btn-primary" id="btn-save-meal" style="margin-top: 1.5rem;">Salvar Refeição no Diário</button>
                     </div>
 

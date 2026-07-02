@@ -191,9 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.getElementById('tdee-display').textContent = todayNutrition.tdee;
         document.getElementById('burned-display').textContent = todayNutrition.burned;
-        document.getElementById('macro-p-goal').textContent = `${todayNutrition.macros.protein}g`;
-        document.getElementById('macro-c-goal').textContent = `${todayNutrition.macros.carbs}g`;
-        document.getElementById('macro-f-goal').textContent = `${todayNutrition.macros.fat}g`;
+        document.getElementById('macro-p-goal').textContent = todayNutrition.macros.protein;
+        document.getElementById('macro-c-goal').textContent = todayNutrition.macros.carbs;
+        document.getElementById('macro-f-goal').textContent = todayNutrition.macros.fat;
     }
 
     // Lógica do Diário Alimentar
@@ -250,15 +250,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (todayMeals.length === 0) {
             renderContainer.innerHTML = '<p style="color:var(--text-secondary); font-size:0.9rem;">Nenhuma refeição registrada hoje.</p>';
+            document.getElementById('kcal-consumed').textContent = '0';
+            document.getElementById('macro-p-consumed').textContent = '0';
+            document.getElementById('macro-c-consumed').textContent = '0';
+            document.getElementById('macro-f-consumed').textContent = '0';
             return;
         }
 
         let html = '';
+        let totalKcal = 0, totalP = 0, totalC = 0, totalF = 0;
+
         todayMeals.forEach((meal, idx) => {
+            const mCals = meal.macros?.kcal || 0;
+            const mP = meal.macros?.p || 0;
+            const mC = meal.macros?.c || 0;
+            const mF = meal.macros?.f || 0;
+            const mFib = meal.macros?.fib || 0;
+
+            totalKcal += mCals; totalP += mP; totalC += mC; totalF += mF;
+
             html += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <h4 style="color: var(--secondary-color); margin: 0;">${meal.type}</h4>
                     <button class="btn-edit-meal" data-meal-idx="${idx}" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); padding:0.2rem 0.5rem; border-radius:4px; font-size:0.8rem; cursor:pointer;">Editar</button>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <span style="color: var(--primary-color);">🔥 ${mCals} kcal</span>
+                    <span>🥩 ${mP}g Pro</span>
+                    <span>🍚 ${mC}g Car</span>
+                    <span>🥑 ${mF}g Gor</span>
+                    <span>🥦 ${mFib}g Fibra</span>
                 </div>`;
             meal.items.forEach(item => {
                 html += `<div style="font-size: 0.9rem; margin-left: 0.5rem;">- ${item.qty} de ${item.name}</div>`;
@@ -267,6 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         renderContainer.innerHTML = html;
         
+        // Update top header totals
+        document.getElementById('kcal-consumed').textContent = totalKcal;
+        document.getElementById('macro-p-consumed').textContent = totalP;
+        document.getElementById('macro-c-consumed').textContent = totalC;
+        document.getElementById('macro-f-consumed').textContent = totalF;
+
         // Bind Edit Buttons
         document.querySelectorAll('.btn-edit-meal').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -277,6 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Load into editor
                 document.getElementById('meal-type-select').value = m.type;
                 currentMealItems = [...m.items];
+                
+                document.getElementById('meal-kcal').value = m.macros?.kcal || '';
+                document.getElementById('meal-p').value = m.macros?.p || '';
+                document.getElementById('meal-c').value = m.macros?.c || '';
+                document.getElementById('meal-f').value = m.macros?.f || '';
+                document.getElementById('meal-fib').value = m.macros?.fib || '';
+
                 renderCurrentPlate();
                 
                 // Remove from DB so they can re-save it
@@ -284,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('nutrition_history', JSON.stringify(nHist));
                 renderNutritionHistory();
                 
-                alert('Refeição carregada no editor! Você pode adicionar ou remover itens e Salvar novamente.');
+                alert('Refeição carregada no editor! Você pode adicionar/remover itens e preencher os Macros da IA antes de Salvar novamente.');
                 document.getElementById('food-input').focus();
             });
         });
@@ -294,21 +328,35 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentMealItems.length === 0) return alert('Adicione alimentos ao prato primeiro.');
         const mealType = document.getElementById('meal-type-select').value;
         
+        const macros = {
+            kcal: parseInt(document.getElementById('meal-kcal').value) || 0,
+            p: parseInt(document.getElementById('meal-p').value) || 0,
+            c: parseInt(document.getElementById('meal-c').value) || 0,
+            f: parseInt(document.getElementById('meal-f').value) || 0,
+            fib: parseInt(document.getElementById('meal-fib').value) || 0
+        };
+
         const nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
         if (!nutHistory[localToday]) nutHistory[localToday] = [];
         
         nutHistory[localToday].push({
             type: mealType,
             items: currentMealItems,
+            macros: macros,
             timestamp: new Date().toISOString()
         });
         
         localStorage.setItem('nutrition_history', JSON.stringify(nutHistory));
         
         currentMealItems = [];
+        document.getElementById('meal-kcal').value = '';
+        document.getElementById('meal-p').value = '';
+        document.getElementById('meal-c').value = '';
+        document.getElementById('meal-f').value = '';
+        document.getElementById('meal-fib').value = '';
+        
         renderCurrentPlate();
         renderNutritionHistory();
-        alert('Refeição salva no diário!');
     });
 
     renderNutritionHistory();
