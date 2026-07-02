@@ -21,26 +21,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const workoutEngine = new WorkoutEngine();
     
-    // Seed Initial History with CORRECT DATES and NEW STRUCTURE (Per-Set Tracking)
-    let existingData = localStorage.getItem('workout_history');
-    let parsedData = existingData ? JSON.parse(existingData) : {};
-    
-    // Reset se estiver usando a estrutura velha (sem arrays em sets)
-    if (!existingData || (parsedData['2026-06-30'] === undefined) || (parsedData['2026-06-30'] && typeof parsedData['2026-06-30'].exercises[0].sets === 'string')) {
+    // MIGRATION: Limpar bagunça anterior e cravar os treinos exatos
+    if (!localStorage.getItem('v2_history_exact_migration')) {
+        localStorage.removeItem('workout_history');
+        
         DB.saveWorkout('2026-06-30', {
             type: 'PUSH',
             exercises: [
-                { name: 'Supino Reto', sets: [{ reps: 12, load: '30kg' }, { reps: 10, load: '30kg' }, { reps: 8, load: '30kg' }], tags: ['falha'], notes: 'Isolamento total.' },
-                { name: 'Peck Deck', sets: [{ reps: 15, load: '45kg' }, { reps: 12, load: '45kg' }], tags: ['cadencia'], notes: 'Sem inércia.' }
+                { name: 'Supino Reto', sets: [{ reps: '10', load: 'Não informada' }, { reps: '10', load: 'Não informada' }], tags: ['cadencia'], notes: 'Foco: Sobrecarga progressiva e controle excêntrico (2 segundos na descida).' },
+                { name: 'Peck Deck', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Isolamento total da musculatura alvo, sem utilizar inércia.' },
+                { name: 'Abdominal Solo', sets: [{ reps: '15', load: 'BW' }, { reps: '10', load: 'BW' }], tags: ['falha'], notes: 'Giro do quadril. Falha muscular atingida por volta da 10ª repetição da segunda série.' },
+                { name: 'Esteira (Cardio Pós)', sets: [{ reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }], tags: [], notes: '6 ciclos. Recuperação totalmente passiva.' }
             ]
         });
+
         DB.saveWorkout('2026-07-01', {
             type: 'LEGS FULL',
             exercises: [
-                { name: 'Leg Press 45º', sets: [{ reps: 15, load: '50kg' }, { reps: 12, load: '50kg' }], tags: ['falha'], notes: 'Foco no quadríceps.' },
-                { name: 'Stiff', sets: [{ reps: 10, load: '10kg' }], tags: ['lombar'], notes: 'Abortado por segurança.' }
+                { name: 'Leg Press 45º', sets: [{ reps: '15', load: '50kg/lado' }, { reps: '15', load: '50kg/lado' }, { reps: '11', load: '50kg/lado' }, { reps: '10', load: '50kg/lado' }], tags: ['falha'], notes: 'Amplitude extrema. Falha percebida na 11ª repetição da penúltima série (fadiga metabólica).' },
+                { name: 'Stiff', sets: [{ reps: '10', load: '10kg/lado' }, { reps: '4', load: '10kg/lado' }], tags: ['lombar'], notes: 'Abortado na 2ª série por falha precoce na musculatura lombar (core perdeu estabilidade).' },
+                { name: 'Cadeira Flexora', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Substituição de Emergência. Isometria 1s, excêntrica 3s. Alta percepção de esforço (RPE 9).' },
+                { name: 'Panturrilha em Pé na Máquina', sets: [{ reps: '12', load: '30kg' }, { reps: '9', load: '30kg' }, { reps: '12', load: '25kg' }], tags: ['falha'], notes: 'Isometria em cima, alongamento embaixo. Falha aguda na 2ª série, carga ajustada para 25kg.' },
+                { name: 'Abdominal Máquina', sets: [{ reps: '15', load: '5kg' }, { reps: '12', load: '5kg' }, { reps: '10', load: '5kg' }], tags: ['falha'], notes: '3s voltando. Exaustão precoce devido ao cansaço acumulado.' }
             ]
         });
+
+        localStorage.setItem('v2_history_exact_migration', 'true');
     }
 
     const history = JSON.parse(localStorage.getItem('workout_history') || '{}');
