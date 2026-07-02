@@ -147,55 +147,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderHistory = () => {
         const historyContainer = document.querySelector('#tab-historico .card-body');
-        const h = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
-        
-        if (Object.keys(h).length === 0) {
-            historyContainer.innerHTML = '<p class="rpe-status">Nenhum treino armazenado.</p>';
+        const wHist = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
+        const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
+        historyContainer.innerHTML = '';
+
+        const allDates = [...new Set([...Object.keys(wHist), ...Object.keys(nHist)])].sort().reverse();
+
+        if (allDates.length === 0) {
+            historyContainer.innerHTML = '<p class="rpe-status">Nenhum dado registrado ainda.</p>';
             return;
         }
 
-        let html = '';
-        const sortedDates = Object.keys(h).sort((a, b) => new Date(b) - new Date(a));
-        
-        sortedDates.forEach(date => {
-            const w = h[date];
-            let exercisesHtml = '';
-            if (w.exercises && w.exercises.length > 0) {
-                w.exercises.forEach(ex => {
-                    let setsHtml = '';
-                    if (Array.isArray(ex.sets)) {
-                        ex.sets.forEach((set, i) => {
-                            setsHtml += `<div style="font-size: 0.85rem; color: #ccc; margin-left: 1rem; border-left: 2px solid var(--border-color); padding-left: 0.5rem; margin-bottom: 0.2rem;">Série ${i+1}: <strong>${set.reps} reps</strong> @ ${set.load}</div>`;
-                        });
+        allDates.forEach(date => {
+            const w = wHist[date];
+            const n = nHist[date];
+            const dateStr = date.split('-').reverse().join('/');
+
+            let html = `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                <h3 style="color: #fff; margin-bottom: 0.8rem; font-family: var(--font-heading); font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">🗓️ ${dateStr}</h3>`;
+            
+            // 🍎 NUTRITION BLOCK
+            if (n) {
+                let totalKcal = 0, totalPro = 0, totalCar = 0, totalGor = 0, totalFib = 0;
+                n.forEach(meal => {
+                    if (meal.macros) {
+                        totalKcal += meal.macros.kcal || 0;
+                        totalPro += meal.macros.p || 0;
+                        totalCar += meal.macros.c || 0;
+                        totalGor += meal.macros.f || 0;
+                        totalFib += meal.macros.fib || 0;
                     }
-                    
-                    exercisesHtml += `
-                        <div class="exercise-card">
-                            <div class="ex-header" style="margin-bottom: 0.5rem;">
-                                <span class="ex-name">${ex.name}</span>
-                            </div>
-                            ${setsHtml}
-                            <div class="ex-notes" style="color:var(--text-primary); margin-top: 0.5rem;">Tags: ${ex.tags ? ex.tags.join(', ') : 'Nenhuma'}</div>
-                            <div class="ex-notes" style="color:var(--secondary-color)">Ação (IA): ${workoutEngine.evaluateTags(ex.tags || []).recommendation}</div>
-                            ${ex.notes ? `<div class="ex-notes">"${ex.notes}"</div>` : ''}
-                        </div>
-                    `;
                 });
+                html += `
+                <div style="background: rgba(46, 204, 113, 0.1); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.8rem; border-left: 3px solid #2ecc71;">
+                    <h4 style="color:#2ecc71; font-size: 0.95rem; margin-bottom: 0.4rem; font-family: var(--font-heading);">Nutrição Resumida</h4>
+                    <p style="font-size: 0.85rem; color:#fff; margin:0;">
+                        <strong>🔥 ${Math.round(totalKcal)} kcal</strong><br>
+                        🥩 ${Math.round(totalPro)}g Pro | 🍚 ${Math.round(totalCar)}g Car | 🥑 ${Math.round(totalGor)}g Gor | 🥦 ${Math.round(totalFib)}g Fibra
+                    </p>
+                </div>`;
             }
 
-            html += `
-            <div class="history-item">
-                <div class="history-date">
-                    <span>${w.type}</span>
-                    <span class="badge badge-info">${date}</span>
-                </div>
-                <div class="exercise-list">
-                    ${exercisesHtml}
-                </div>
-            </div>`;
+            // 💪 WORKOUT BLOCK
+            if (w) {
+                html += `
+                <div style="background: rgba(255, 69, 0, 0.1); padding: 0.8rem; border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                    <h4 style="color:var(--primary-color); font-size: 0.95rem; margin-bottom: 0.4rem; font-family: var(--font-heading);">Treino: ${w.type}</h4>`;
+                
+                w.exercises?.forEach(ex => {
+                    html += `<div style="margin-bottom: 0.5rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,69,0,0.3);">
+                        <strong style="color:#ccc; font-size: 0.85rem;">${ex.name}</strong><br>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">`;
+                    
+                    ex.sets.forEach((s, idx) => {
+                        html += `S${idx+1}: ${s.reps} reps (${s.load}) | `;
+                    });
+                    
+                    if (ex.notes) {
+                        html += `<br><span style="color:#aaa; font-style:italic;">Nota: ${ex.notes}</span>`;
+                    }
+                    html += `</span></div>`;
+                });
+                html += `</div>`;
+            } else {
+                 html += `<div style="padding: 0.5rem; font-size: 0.8rem; color: var(--text-secondary); text-align: center; border: 1px dashed var(--border-color); border-radius: 8px;">Nenhum treino registrado neste dia (Descanso?).</div>`;
+            }
+
+            html += `</div>`;
+            historyContainer.innerHTML += html;
         });
-        
-        historyContainer.innerHTML = html;
     };
 
     const renderProgressionPlan = (workoutType) => {
