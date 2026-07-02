@@ -1,0 +1,348 @@
+{
+  "mapValue": {
+    "fields": {
+      "exercises": {
+        "arrayValue": {
+          "values": [
+            {
+              "mapValue": {
+                "fields": {
+                  "tags": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "stringValue": "falha"
+                        },
+                        {
+                          "stringValue": "cadencia"
+                        },
+                        {
+                          "stringValue": "antibraco"
+                        }
+                      ]
+                    }
+                  },
+                  "sets": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "15"
+                              },
+                              "load": {
+                                "stringValue": "30kg"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "12"
+                              },
+                              "load": {
+                                "stringValue": "40kg"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "load": {
+                                "stringValue": "45kg"
+                              },
+                              "reps": {
+                                "stringValue": "12"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "10"
+                              },
+                              "load": {
+                                "stringValue": "45kg"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": {
+                    "stringValue": "Puxada Frontal"
+                  },
+                  "notes": {
+                    "stringValue": "Terceira serie eu falhei, quarta serie antebra\u00e7o falhou na 6"
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "sets": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "12"
+                              },
+                              "load": {
+                                "stringValue": "8kg"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "load": {
+                                "stringValue": "8kg"
+                              },
+                              "reps": {
+                                "stringValue": "9"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "load": {
+                                "stringValue": "8kg"
+                              },
+                              "reps": {
+                                "stringValue": "7"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "tags": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "stringValue": "falha"
+                        },
+                        {
+                          "stringValue": "cadencia"
+                        }
+                      ]
+                    }
+                  },
+                  "notes": {
+                    "stringValue": "Atingi falha monstra a partir do 2 ate a 3 serie, foram com halteres 8kg de cada lado no caso"
+                  },
+                  "name": {
+                    "stringValue": "Rosca Direta"
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "tags": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "stringValue": "falha"
+                        }
+                      ]
+                    }
+                  },
+                  "sets": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "load": {
+                                "stringValue": "8kg"
+                              },
+                              "reps": {
+                                "stringValue": "10"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "load": {
+                                "stringValue": "8kg"
+                              },
+                              "reps": {
+                                "stringValue": "8"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "9"
+                              },
+                              "load": {
+                                "stringValue": "8kg"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": {
+                    "stringValue": "Rosca Martelo"
+                  },
+                  "notes": {
+                    "stringValue": "Atingi falha em todas series, foram com halteres tbm, 8kg cada lado sempre"
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "notes": {
+                    "stringValue": "3 serie, falghou biceps na 8 rep, 4 serie falhou biceps e antebra\u00e7o na 8 rep e parei ali o treino de muscula\u00e7\u00e3o"
+                  },
+                  "name": {
+                    "stringValue": "Remada Baixa"
+                  },
+                  "sets": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "12"
+                              },
+                              "load": {
+                                "stringValue": "35kg"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "10"
+                              },
+                              "load": {
+                                "stringValue": "40kg"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "10"
+                              },
+                              "load": {
+                                "stringValue": "40kg"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "tags": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "stringValue": "falha"
+                        },
+                        {
+                          "stringValue": "antibraco"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "tags": {
+                    "arrayValue": {}
+                  },
+                  "sets": {
+                    "arrayValue": {
+                      "values": [
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "1"
+                              },
+                              "load": {
+                                "stringValue": "5km/h"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "7"
+                              },
+                              "load": {
+                                "stringValue": "9km/h"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "mapValue": {
+                            "fields": {
+                              "reps": {
+                                "stringValue": "2"
+                              },
+                              "load": {
+                                "stringValue": "5km/h"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": {
+                    "stringValue": "Hit 40/20"
+                  },
+                  "notes": {
+                    "stringValue": "Foi Hit 40/20 na esteira, primeiro minuto aqueci 5km por hora, dps 7 tiros 40/20 a 9km por hora, dps finalizei 2 min a 5km por hora"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "type": {
+        "stringValue": "PULL"
+      }
+    }
+  }
+}

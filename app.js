@@ -40,6 +40,31 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('login-error').style.display = 'none';
             checkAuth();
             
+            // --- VITOR MACARRÃO DATA FIX ---
+            if (u.toLowerCase() === 'vitor') {
+                setTimeout(() => {
+                    const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
+                    if (nHist['2026-07-02']) {
+                        let updated = false;
+                        const almocoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
+                        if (almocoIdx !== -1) {
+                            nHist['2026-07-02'][almocoIdx].macros = { kcal: 319, p: 30, c: 40, f: 4, fib: 2 };
+                            if (nHist['2026-07-02'][almocoIdx].items[0]) nHist['2026-07-02'][almocoIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
+                            updated = true;
+                        }
+                        const jantarIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Jantar' && m.macros?.kcal === 195);
+                        if (jantarIdx !== -1) {
+                            nHist['2026-07-02'][jantarIdx].macros = { kcal: 399, p: 30, c: 60, f: 4, fib: 2 };
+                            if (nHist['2026-07-02'][jantarIdx].items[0]) nHist['2026-07-02'][jantarIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
+                            updated = true;
+                        }
+                        if (updated) {
+                            DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
+                        }
+                    }
+                }, 2000);
+            }
+
             // --- GABI BREAKFAST DATA FIX ---
             if (u.toLowerCase() === 'gabi') {
                 setTimeout(() => {
