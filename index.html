@@ -66,6 +66,21 @@
                     <p class="rpe-status">Nenhum treino armazenado no IndexedDB ainda.</p>
                 </div>
             </section>
+            <!-- MODO DE TREINO ATIVO -->
+            <section id="workout-mode" class="glass-panel" style="display: none; grid-column: 1 / -1;">
+                <div class="card-header">
+                    <h2 id="wm-title">Sessão em Andamento</h2>
+                    <button class="nav-btn" id="wm-cancel" style="color: var(--primary-color);">Abortar</button>
+                </div>
+                <div class="wm-carousel">
+                    <!-- Cards will be injected by JS -->
+                </div>
+                <div class="wm-controls" style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                    <button class="nav-btn" id="wm-prev" style="display: none;">Anterior</button>
+                    <button class="btn-primary" id="wm-next" style="width: 48%; margin-top: 0;">Próximo</button>
+                    <button class="btn-primary" id="wm-finish" style="display: none; width: 48%; margin-top: 0; background: linear-gradient(135deg, #00e676, #1b5e20);">Finalizar</button>
+                </div>
+            </section>
         </main>
     </div>
     <script type="module" src="app.js"></script>
