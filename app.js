@@ -44,22 +44,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (u.toLowerCase() === 'gabi') {
                 setTimeout(() => {
                     const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
-                    if (nHist['2026-07-01'] && nHist['2026-07-01'][0] && nHist['2026-07-01'][0].type === 'Café da Manhã' && nHist['2026-07-01'][0].macros.kcal === 124) {
-                        nHist['2026-07-01'][0].macros = { kcal: 580, p: 12, c: 80, f: 23, fib: 3 };
-                        nHist['2026-07-01'][0].items[0].macros = { kcal: 400, p: 5, c: 57, f: 17, fib: 2 };
-                        if (nHist['2026-07-01'][0].items[2]) {
-                            nHist['2026-07-01'][0].items[2].macros = { kcal: 56, p: 1, c: 13, f: 0, fib: 1 };
+                    if (nHist['2026-07-01']) {
+                        const cafeIdx = nHist['2026-07-01'].findIndex(m => m.type === 'Café da Manhã' && m.macros?.kcal === 124);
+                        if (cafeIdx !== -1) {
+                            nHist['2026-07-01'][cafeIdx].macros = { kcal: 580, p: 12, c: 80, f: 23, fib: 3 };
+                            if (nHist['2026-07-01'][cafeIdx].items[0]) nHist['2026-07-01'][cafeIdx].items[0].macros = { kcal: 400, p: 5, c: 57, f: 17, fib: 2 };
+                            if (nHist['2026-07-01'][cafeIdx].items[2]) nHist['2026-07-01'][cafeIdx].items[2].macros = { kcal: 56, p: 1, c: 13, f: 0, fib: 1 };
+                            DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
                         }
-                        DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
-                        console.log("Fixed Gabi's breakfast!");
-                    }
-                    
-                    if (nHist['2026-07-01'] && nHist['2026-07-01'][1] && nHist['2026-07-01'][1].type === 'Almoço' && nHist['2026-07-01'][1].macros.kcal === 130) {
-                        nHist['2026-07-01'][1].macros = { kcal: 306, p: 26, c: 31, f: 8, fib: 0 };
-                        nHist['2026-07-01'][1].items[1].macros = { kcal: 116, p: 22, c: 0, f: 3, fib: 0 };
-                        nHist['2026-07-01'][1].items[2].macros = { kcal: 60, p: 1, c: 3, f: 5, fib: 0 };
-                        DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
-                        console.log("Fixed Gabi's lunch!");
+                        
+                        const almocoIdx = nHist['2026-07-01'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 130);
+                        if (almocoIdx !== -1) {
+                            nHist['2026-07-01'][almocoIdx].macros = { kcal: 306, p: 26, c: 31, f: 8, fib: 0 };
+                            if (nHist['2026-07-01'][almocoIdx].items[1]) nHist['2026-07-01'][almocoIdx].items[1].macros = { kcal: 116, p: 22, c: 0, f: 3, fib: 0 };
+                            if (nHist['2026-07-01'][almocoIdx].items[2]) nHist['2026-07-01'][almocoIdx].items[2].macros = { kcal: 60, p: 1, c: 3, f: 5, fib: 0 };
+                            DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
+                        }
                     }
                 }, 2000); // give time for CloudSync to load locally
             }
