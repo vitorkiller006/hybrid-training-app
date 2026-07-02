@@ -313,11 +313,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMealItems = [];
     
     const parseQtyAndCalculateMacros = (foodName, qtyString) => {
-        const dbEntry = FoodDB[foodName];
+        // Case-insensitive exact match
+        const exactKey = Object.keys(FoodDB).find(k => k.toLowerCase() === foodName.toLowerCase());
+        const dbEntry = FoodDB[exactKey];
         if (!dbEntry) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
-        const match = qtyString.match(/[\d\.]+/);
+        
+        const match = qtyString.match(/[\d\.,]+/);
         if (!match) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
-        const numericQty = parseFloat(match[0]);
+        const numericQty = parseFloat(match[0].replace(',', '.'));
         const multiplier = numericQty / dbEntry.baseQty;
         return {
             kcal: Math.round(dbEntry.kcal * multiplier),

@@ -24,5 +24,15 @@ export const FoodDB = {
     'Pizza de Marguerita': { kcal: 250, p: 11.0, c: 25.0, f: 10.0, fib: 1.5, baseQty: 1, unit: 'pedaço' },
     'Pizza de Chocolate': { kcal: 325, p: 7.5, c: 42.5, f: 14.0, fib: 2.0, baseQty: 1, unit: 'pedaço' },
     'Guaraná Taubaiana Cristalina': { kcal: 40, p: 0, c: 10.0, f: 0, fib: 0, baseQty: 100, unit: 'ml' },
-    'Café Preto com adoçante': { kcal: 0, p: 0, c: 0, f: 0, fib: 0, baseQty: 100, unit: 'ml' }
+    'Café Preto com adoçante': { kcal: 0, p: 0, c: 0, f: 0, fib: 0, baseQty: 100, unit: 'ml' },
+    
+    // Novos Adicionados
+    'Nescau': { kcal: 74, p: 0.7, c: 17, f: 0.4, fib: 1.0, baseQty: 20, unit: 'g' }, // ~2 colheres
+    'Pão Francês': { kcal: 135, p: 4.0, c: 25.0, f: 1.5, fib: 1.0, baseQty: 1, unit: 'unidade' },
+    'Queijo Mussarela': { kcal: 90, p: 7.0, c: 0.5, f: 6.5, fib: 0, baseQty: 30, unit: 'g' },
+    'Presunto': { kcal: 45, p: 5.0, c: 0.5, f: 2.5, fib: 0, baseQty: 30, unit: 'g' },
+    'Tapioca (Goma)': { kcal: 168, p: 0, c: 42.0, f: 0, fib: 0, baseQty: 50, unit: 'g' },
+    'Iogurte Natural': { kcal: 125, p: 7.0, c: 9.0, f: 7.0, fib: 0, baseQty: 170, unit: 'g' },
+    'Aveia em Flocos': { kcal: 118, p: 4.3, c: 17.0, f: 2.2, fib: 2.9, baseQty: 30, unit: 'g' },
+    'Azeite de Oliva': { kcal: 119, p: 0, c: 0, f: 13.5, fib: 0, baseQty: 13, unit: 'ml' }
 };
