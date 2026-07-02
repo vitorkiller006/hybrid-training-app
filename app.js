@@ -50,6 +50,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- APP INITIALIZATION ---
     const initApp = () => {
+        // MIGRATION: Force inject Vitor's history to Firebase (Runs only once)
+        if (activeProfile?.name === 'Vitor' && !localStorage.getItem('v3_firebase_force_migration')) {
+            const workouts = {
+                '2026-06-30': {
+                    type: 'PUSH',
+                    completedAt: '2026-06-30T10:00:00Z',
+                    exercises: [
+                        { name: 'Supino Reto', sets: [{ reps: '10', load: 'Não informada' }, { reps: '10', load: 'Não informada' }], tags: ['cadencia'], notes: 'Foco: Sobrecarga progressiva e controle excêntrico (2 segundos na descida).' },
+                        { name: 'Peck Deck', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Isolamento total da musculatura alvo, sem utilizar inércia.' },
+                        { name: 'Abdominal Solo', sets: [{ reps: '15', load: 'BW' }, { reps: '10', load: 'BW' }], tags: ['falha'], notes: 'Giro do quadril. Falha muscular atingida por volta da 10ª repetição da segunda série.' },
+                        { name: 'Esteira (Cardio Pós)', sets: [{ reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }], tags: [], notes: '6 ciclos. Recuperação totalmente passiva.' }
+                    ]
+                },
+                '2026-07-01': {
+                    type: 'LEGS FULL',
+                    completedAt: '2026-07-01T18:00:00Z',
+                    exercises: [
+                        { name: 'Leg Press 45º', sets: [{ reps: '15', load: '50kg/lado' }, { reps: '15', load: '50kg/lado' }, { reps: '11', load: '50kg/lado' }, { reps: '10', load: '50kg/lado' }], tags: ['falha'], notes: 'Amplitude extrema. Falha percebida na 11ª repetição da penúltima série (fadiga metabólica).' },
+                        { name: 'Stiff', sets: [{ reps: '10', load: '10kg/lado' }, { reps: '4', load: '10kg/lado' }], tags: ['lombar'], notes: 'Abortado na 2ª série por falha precoce na musculatura lombar (core perdeu estabilidade).' },
+                        { name: 'Cadeira Flexora', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Substituição de Emergência. Isometria 1s, excêntrica 3s. Alta percepção de esforço (RPE 9).' },
+                        { name: 'Panturrilha em Pé na Máquina', sets: [{ reps: '12', load: '30kg' }, { reps: '9', load: '30kg' }, { reps: '12', load: '25kg' }], tags: ['falha'], notes: 'Isometria em cima, alongamento embaixo. Falha aguda na 2ª série, carga ajustada para 25kg.' },
+                        { name: 'Abdominal Máquina', sets: [{ reps: '15', load: '5kg' }, { reps: '12', load: '5kg' }, { reps: '10', load: '5kg' }], tags: ['falha'], notes: '3s voltando. Exaustão precoce devido ao cansaço acumulado.' }
+                    ]
+                }
+            };
+            localStorage.setItem(DB._getKey('workout_history'), JSON.stringify(workouts));
+
+            const meals = {
+                '2026-07-01': [
+                    { type: 'Café da Manhã', items: [{ name: 'Bolo de Laranja', qty: '3 pedaços médios' }, { name: 'Café Preto (Adoçante)', qty: '50ml' }], macros: { kcal: 600, p: 8, c: 85, f: 25, fib: 3 } },
+                    { type: 'Almoço', items: [{ name: 'Arroz Branco (Cozido)', qty: '120g' }, { name: 'Peito de Frango em Cubos', qty: '70g' }, { name: 'Molho de Estrogonofe', qty: '20g' }, { name: 'Mexerica', qty: '1 unidade' }], macros: { kcal: 376, p: 27, c: 48, f: 7, fib: 3 } },
+                    { type: 'Lanche da Tarde', items: [{ name: 'Paçoca', qty: '80g' }, { name: 'Café Preto (Adoçante)', qty: '50ml' }], macros: { kcal: 400, p: 10, c: 45, f: 22, fib: 4 } },
+                    { type: 'Lanche da Tarde', items: [{ name: 'Bombom', qty: '2 unidades' }], macros: { kcal: 200, p: 2, c: 25, f: 10, fib: 1 } },
+                    { type: 'Jantar', items: [{ name: 'Pizza de Marguerita', qty: '2 pedaços' }, { name: 'Pizza de Chocolate', qty: '2 pedaços' }, { name: 'Guaraná Taubaiana Cristalina', qty: '250ml' }], macros: { kcal: 1250, p: 37, c: 160, f: 48, fib: 7 } }
+                ]
+            };
+            localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(meals));
+
+            localStorage.setItem('v3_firebase_force_migration', 'true');
+            CloudSync.pushUp('vitor'); // Force to firebase immediately!
+        }
+
         // Initialize engines with dynamic user profile data
         workoutEngine = new WorkoutEngine(activeProfile);
         nutritionEngine = new NutritionEngine(activeProfile);
@@ -101,51 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('tab-' + btn.getAttribute('data-tab')).style.display = 'block';
         });
     });
-
-    // MIGRATION: Force inject Vitor's history to Firebase (Runs only once)
-    if (activeProfile?.name === 'Vitor' && !localStorage.getItem('v3_firebase_force_migration')) {
-        
-        // 1. Force Workouts
-        const workouts = {
-            '2026-06-30': {
-                type: 'PUSH',
-                completedAt: '2026-06-30T10:00:00Z',
-                exercises: [
-                    { name: 'Supino Reto', sets: [{ reps: '10', load: 'Não informada' }, { reps: '10', load: 'Não informada' }], tags: ['cadencia'], notes: 'Foco: Sobrecarga progressiva e controle excêntrico (2 segundos na descida).' },
-                    { name: 'Peck Deck', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Isolamento total da musculatura alvo, sem utilizar inércia.' },
-                    { name: 'Abdominal Solo', sets: [{ reps: '15', load: 'BW' }, { reps: '10', load: 'BW' }], tags: ['falha'], notes: 'Giro do quadril. Falha muscular atingida por volta da 10ª repetição da segunda série.' },
-                    { name: 'Esteira (Cardio Pós)', sets: [{ reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }], tags: [], notes: '6 ciclos. Recuperação totalmente passiva.' }
-                ]
-            },
-            '2026-07-01': {
-                type: 'LEGS FULL',
-                completedAt: '2026-07-01T18:00:00Z',
-                exercises: [
-                    { name: 'Leg Press 45º', sets: [{ reps: '15', load: '50kg/lado' }, { reps: '15', load: '50kg/lado' }, { reps: '11', load: '50kg/lado' }, { reps: '10', load: '50kg/lado' }], tags: ['falha'], notes: 'Amplitude extrema. Falha percebida na 11ª repetição da penúltima série (fadiga metabólica).' },
-                    { name: 'Stiff', sets: [{ reps: '10', load: '10kg/lado' }, { reps: '4', load: '10kg/lado' }], tags: ['lombar'], notes: 'Abortado na 2ª série por falha precoce na musculatura lombar (core perdeu estabilidade).' },
-                    { name: 'Cadeira Flexora', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Substituição de Emergência. Isometria 1s, excêntrica 3s. Alta percepção de esforço (RPE 9).' },
-                    { name: 'Panturrilha em Pé na Máquina', sets: [{ reps: '12', load: '30kg' }, { reps: '9', load: '30kg' }, { reps: '12', load: '25kg' }], tags: ['falha'], notes: 'Isometria em cima, alongamento embaixo. Falha aguda na 2ª série, carga ajustada para 25kg.' },
-                    { name: 'Abdominal Máquina', sets: [{ reps: '15', load: '5kg' }, { reps: '12', load: '5kg' }, { reps: '10', load: '5kg' }], tags: ['falha'], notes: '3s voltando. Exaustão precoce devido ao cansaço acumulado.' }
-                ]
-            }
-        };
-        localStorage.setItem(DB._getKey('workout_history'), JSON.stringify(workouts));
-
-        // 2. Force Nutrition for today (2026-07-01)
-        const meals = {
-            '2026-07-01': [
-                { type: 'Café da Manhã', items: [{ name: 'Bolo de Laranja', qty: '3 pedaços médios' }, { name: 'Café Preto (Adoçante)', qty: '50ml' }], macros: { kcal: 600, p: 8, c: 85, f: 25, fib: 3 } },
-                { type: 'Almoço', items: [{ name: 'Arroz Branco (Cozido)', qty: '120g' }, { name: 'Peito de Frango em Cubos', qty: '70g' }, { name: 'Molho de Estrogonofe', qty: '20g' }, { name: 'Mexerica', qty: '1 unidade' }], macros: { kcal: 376, p: 27, c: 48, f: 7, fib: 3 } },
-                { type: 'Lanche da Tarde', items: [{ name: 'Paçoca', qty: '80g' }, { name: 'Café Preto (Adoçante)', qty: '50ml' }], macros: { kcal: 400, p: 10, c: 45, f: 22, fib: 4 } },
-                { type: 'Lanche da Tarde', items: [{ name: 'Bombom', qty: '2 unidades' }], macros: { kcal: 200, p: 2, c: 25, f: 10, fib: 1 } },
-                { type: 'Jantar', items: [{ name: 'Pizza de Marguerita', qty: '2 pedaços' }, { name: 'Pizza de Chocolate', qty: '2 pedaços' }, { name: 'Guaraná Taubaiana Cristalina', qty: '250ml' }], macros: { kcal: 1250, p: 37, c: 160, f: 48, fib: 7 } }
-            ]
-        };
-        localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(meals));
-
-        localStorage.setItem('v3_firebase_force_migration', 'true');
-        CloudSync.pushUp('vitor'); // Force to firebase immediately!
-    }
 
     const renderHistory = () => {
         const historyContainer = document.querySelector('#tab-historico .card-body');
