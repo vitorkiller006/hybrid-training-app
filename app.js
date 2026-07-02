@@ -205,18 +205,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let currentMealItems = [];
+    
+    const renderCurrentPlate = () => {
+        const container = document.getElementById('current-meal-list');
+        if (!container) return;
+        
+        let html = '';
+        currentMealItems.forEach((item, idx) => {
+            html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--secondary-color); padding-left: 0.5rem; margin-bottom: 0.5rem;">
+                <span><strong>${item.qty}</strong> de ${item.name}</span>
+                <button class="btn-remove-plate-item" data-idx="${idx}" style="background:transparent; border:none; color:var(--primary-color); cursor:pointer;">&times;</button>
+            </div>
+            `;
+        });
+        container.innerHTML = html;
+        
+        document.querySelectorAll('.btn-remove-plate-item').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-idx'));
+                currentMealItems.splice(idx, 1);
+                renderCurrentPlate();
+            });
+        });
+    };
+
     document.getElementById('btn-add-food')?.addEventListener('click', () => {
         const name = document.getElementById('food-input').value;
         const qty = document.getElementById('food-qty-input').value;
         if (!name || !qty) return alert('Preencha alimento e quantidade.');
         
         currentMealItems.push({ name, qty });
-        
-        document.getElementById('current-meal-list').innerHTML += `
-            <div style="border-left: 2px solid var(--secondary-color); padding-left: 0.5rem; margin-bottom: 0.5rem;">
-                <strong>${qty}</strong> de ${name}
-            </div>
-        `;
+        renderCurrentPlate();
         
         document.getElementById('food-input').value = '';
         document.getElementById('food-qty-input').value = '';
@@ -234,15 +254,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let html = '';
-        todayMeals.forEach(meal => {
+        todayMeals.forEach((meal, idx) => {
             html += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                <h4 style="color: var(--secondary-color); margin-bottom: 0.5rem;">${meal.type}</h4>`;
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h4 style="color: var(--secondary-color); margin: 0;">${meal.type}</h4>
+                    <button class="btn-edit-meal" data-meal-idx="${idx}" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); padding:0.2rem 0.5rem; border-radius:4px; font-size:0.8rem; cursor:pointer;">Editar</button>
+                </div>`;
             meal.items.forEach(item => {
                 html += `<div style="font-size: 0.9rem; margin-left: 0.5rem;">- ${item.qty} de ${item.name}</div>`;
             });
             html += `</div>`;
         });
         renderContainer.innerHTML = html;
+        
+        // Bind Edit Buttons
+        document.querySelectorAll('.btn-edit-meal').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mealIdx = parseInt(e.target.getAttribute('data-meal-idx'));
+                const nHist = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+                const m = nHist[localToday][mealIdx];
+                
+                // Load into editor
+                document.getElementById('meal-type-select').value = m.type;
+                currentMealItems = [...m.items];
+                renderCurrentPlate();
+                
+                // Remove from DB so they can re-save it
+                nHist[localToday].splice(mealIdx, 1);
+                localStorage.setItem('nutrition_history', JSON.stringify(nHist));
+                renderNutritionHistory();
+                
+                alert('Refeição carregada no editor! Você pode adicionar ou remover itens e Salvar novamente.');
+                document.getElementById('food-input').focus();
+            });
+        });
     };
 
     document.getElementById('btn-save-meal')?.addEventListener('click', () => {
@@ -261,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('nutrition_history', JSON.stringify(nutHistory));
         
         currentMealItems = [];
-        document.getElementById('current-meal-list').innerHTML = '';
+        renderCurrentPlate();
         renderNutritionHistory();
         alert('Refeição salva no diário!');
     });
