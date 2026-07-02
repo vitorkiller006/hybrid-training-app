@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span><strong>${item.qty}</strong> de ${item.name}</span>
                     <div style="font-size: 0.7rem; color: var(--text-secondary);">🔥 ${m.kcal} kcal | Pro: ${m.p}g | Car: ${m.c}g | Gor: ${m.f}g</div>
                 </div>
-                <button class="btn-remove-plate-item" data-idx="${idx}" style="background:transparent; border:none; color:var(--primary-color); cursor:pointer;">&times;</button>
+                <button class="btn-remove-plate-item" data-idx="${idx}" style="background:transparent; border:none; color:#ff3366; cursor:pointer; font-size: 1.2rem; padding: 0.5rem;" title="Remover Item">🗑️</button>
             </div>
             `;
         });
