@@ -58,6 +58,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // UI Updates
         updateTrainingUI(todayWorkoutType);
         updateNutritionUI(todayWorkoutType);
+        
+        // Cycle Tracker Init
+        if (activeProfile.trackMenstrualCycle) {
+            const widget = document.getElementById('cycle-tracker-widget');
+            if (widget) {
+                widget.style.display = 'block';
+                const select = document.getElementById('cycle-phase-select');
+                select.value = DB.getCyclePhase();
+                select.addEventListener('change', (e) => {
+                    DB.saveCyclePhase(e.target.value);
+                    updateNutritionUI(todayWorkoutType); // Recalculate macros instantly
+                    alert('Ciclo atualizado! Suas calorias e alertas foram ajustados pela IA.');
+                });
+            }
+        } else {
+            const widget = document.getElementById('cycle-tracker-widget');
+            if (widget) widget.style.display = 'none';
+        }
+
         renderHistory();
         renderNutritionHistory();
     };
@@ -420,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const library = workoutEngine.getExerciseLibrary(todayWorkoutType);
         let optionsHtml = '<option value="">Selecione o Exercício...</option>';
         library.forEach(ex => optionsHtml += `<option value="${ex}">${ex}</option>`);
+        optionsHtml += '<option value="custom">Outro (Digitar manualmente)...</option>';
         
         // Dynamic Tags Rendering
         const workoutTags = workoutEngine.getTagsForType(todayWorkoutType);
@@ -437,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <select class="inp-ex-name" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 12px; font-family: var(--font-heading); font-size: 1.2rem; outline: none;">
                         ${optionsHtml}
                     </select>
+                    <input type="text" class="inp-ex-custom" placeholder="Digite o nome do exercício..." style="display: none; width:100%; margin-top:0.5rem; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 12px;">
                 </div>
                 
                 <div class="sets-container">
@@ -460,6 +481,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         wmCarousel.innerHTML = slidesHtml;
         
+        // Bind Custom Exercise Inputs
+        document.querySelectorAll('.inp-ex-name').forEach(select => {
+            select.addEventListener('change', (e) => {
+                const customInput = e.target.parentElement.querySelector('.inp-ex-custom');
+                if (e.target.value === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                }
+            });
+        });
+
         // Bind Add Set Buttons
         document.querySelectorAll('.btn-add-set').forEach((btn, slideIdx) => {
             btn.addEventListener('click', (e) => {
@@ -520,7 +554,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let finalData = [];
         
         slides.forEach(s => {
-            const exName = s.querySelector('.inp-ex-name').value;
+            let exName = s.querySelector('.inp-ex-name').value;
+            if (exName === 'custom') {
+                exName = s.querySelector('.inp-ex-custom').value.trim();
+            }
             if (!exName) return; // Skip empty slides
 
             const setRows = s.querySelectorAll('.set-row');

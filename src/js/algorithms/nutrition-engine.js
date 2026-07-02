@@ -1,3 +1,5 @@
+import { DB } from '../store/db.js';
+
 export class NutritionEngine {
     constructor(profile) {
         this.profile = profile;
@@ -10,8 +12,14 @@ export class NutritionEngine {
     calculateDailyTDEE(workoutForDay) {
         let neatMultiplier = 1.2; 
         
-        // Ajuste de Ciclo Menstrual (Fase Lútea gasta ~100-200kcal a mais, mas simplificaremos)
+        // Ajuste de Ciclo Menstrual
         let cycleAdjustment = 0;
+        if (this.profile.trackMenstrualCycle) {
+            const phase = DB.getCyclePhase();
+            if (phase === 'lutea') {
+                cycleAdjustment = 150; // Metabolismo basal aumenta ~100-200kcal na fase lútea
+            }
+        }
         
         let tdee = Math.round(this.baseBMR * neatMultiplier) + cycleAdjustment;
         

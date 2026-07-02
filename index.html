@@ -55,6 +55,18 @@
                     <span class="badge badge-carb-low" id="nutri-badge-type">Calculando...</span>
                 </div>
                 <div class="card-body">
+                    
+                    <div id="cycle-tracker-widget" style="display: none; background: rgba(255, 105, 180, 0.1); border: 1px solid rgba(255, 105, 180, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                        <h3 style="color: #ff69b4; margin-bottom: 0.5rem; font-family: var(--font-heading); font-size: 1rem;">🌸 Fase do Ciclo Menstrual</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem;">A IA ajusta seu Gasto Calórico e Avisos de Treino com base na sua biologia atual.</p>
+                        <select id="cycle-phase-select" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <option value="folicular">Fase Folicular (Alta Energia)</option>
+                            <option value="ovulatoria">Fase Ovulatória (Força Máxima)</option>
+                            <option value="lutea">Fase Lútea (Fadiga / +Kcal)</option>
+                            <option value="menstruacao">Menstruação (Recuperação)</option>
+                        </select>
+                    </div>
+
                     <p class="rpe-status">
                         Gasto Calórico Estimado (TDEE): <strong id="tdee-display" style="color: var(--secondary-color); font-size: 1.3rem;">--</strong> kcal 
                         <br><span style="font-size: 0.8rem;">(Treino de Hoje queimou aprox: <span id="burned-display" style="color: var(--primary-color);">--</span> kcal)</span>

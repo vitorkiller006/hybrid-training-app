@@ -19,5 +19,13 @@ export const DB = {
         const history = JSON.parse(localStorage.getItem(key) || '{}');
         history[date] = data;
         localStorage.setItem(key, JSON.stringify(history));
+    },
+    saveCyclePhase: (phase) => {
+        const key = DB._getKey('cycle_phase');
+        localStorage.setItem(key, phase);
+    },
+    getCyclePhase: () => {
+        const key = DB._getKey('cycle_phase');
+        return localStorage.getItem(key) || 'folicular';
     }
 };
