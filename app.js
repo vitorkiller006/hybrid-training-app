@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeProfile = null;
     let todayWorkoutType = null;
     
-    const localToday = new Date().toISOString().split('T')[0];
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const localToday = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
 
     // --- AUTHENTICATION LOGIC ---
     const checkAuth = async () => {
