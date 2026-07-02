@@ -5,13 +5,12 @@ import { FoodDB } from './src/js/store/food-db.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Tab Navigation Logic
-    const navButtons = document.querySelectorAll('.nav-btn');
+    const navButtons = document.querySelectorAll('.nav-btn[data-tab]');
     const tabSections = document.querySelectorAll('.tab-section');
 
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            if (btn.id === 'wm-cancel') return;
-            navButtons.forEach(b => { if (b.hasAttribute('data-tab')) b.classList.remove('active') });
+            navButtons.forEach(b => b.classList.remove('active'));
             tabSections.forEach(s => s.style.display = 'none');
             document.getElementById('workout-mode').style.display = 'none'; // Hide active workout
             
