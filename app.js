@@ -1,9 +1,67 @@
 import { WorkoutEngine } from './src/js/algorithms/workout-engine.js';
 import { NutritionEngine } from './src/js/algorithms/nutrition-engine.js';
-import { DB } from './src/js/store/db.js';
 import { FoodDB } from './src/js/store/food-db.js';
+import { DB } from './src/js/store/db.js';
+import { Auth } from './src/js/store/auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    let workoutEngine = null;
+    let nutritionEngine = null;
+    let activeProfile = null;
+    let todayWorkoutType = null;
+    
+    const localToday = new Date().toISOString().split('T')[0];
+
+    // --- AUTHENTICATION LOGIC ---
+    const checkAuth = () => {
+        activeProfile = Auth.getActiveUser();
+        if (activeProfile) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            initApp();
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('app-container').style.display = 'none';
+        }
+    };
+
+    document.getElementById('btn-login')?.addEventListener('click', () => {
+        const u = document.getElementById('login-user').value;
+        const p = document.getElementById('login-pass').value;
+        const profile = Auth.login(u, p);
+        if (profile) {
+            document.getElementById('login-error').style.display = 'none';
+            checkAuth();
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+        }
+    });
+
+    document.getElementById('btn-logout')?.addEventListener('click', () => {
+        Auth.logout();
+        location.reload();
+    });
+
+    // --- APP INITIALIZATION ---
+    const initApp = () => {
+        // Initialize engines with dynamic user profile data
+        workoutEngine = new WorkoutEngine(activeProfile);
+        nutritionEngine = new NutritionEngine(activeProfile);
+        
+        // Load initial state
+        const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
+        const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+        const lastWorkoutType = sortedDates.length > 0 ? history[sortedDates[0]].type : null;
+        
+        todayWorkoutType = workoutEngine.getNextWorkoutType(lastWorkoutType);
+        
+        // UI Updates
+        updateTrainingUI(todayWorkoutType);
+        updateNutritionUI(todayWorkoutType);
+        renderHistory();
+        renderNutritionHistory();
+    };
+
     // Tab Navigation Logic
     const navButtons = document.querySelectorAll('.nav-btn[data-tab]');
     const tabSections = document.querySelectorAll('.tab-section');
@@ -19,49 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const workoutEngine = new WorkoutEngine();
-    
-    // MIGRATION: Limpar bagunça anterior e cravar os treinos exatos
-    if (!localStorage.getItem('v2_history_exact_migration')) {
-        localStorage.removeItem('workout_history');
-        
-        DB.saveWorkout('2026-06-30', {
-            type: 'PUSH',
-            exercises: [
-                { name: 'Supino Reto', sets: [{ reps: '10', load: 'Não informada' }, { reps: '10', load: 'Não informada' }], tags: ['cadencia'], notes: 'Foco: Sobrecarga progressiva e controle excêntrico (2 segundos na descida).' },
-                { name: 'Peck Deck', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Isolamento total da musculatura alvo, sem utilizar inércia.' },
-                { name: 'Abdominal Solo', sets: [{ reps: '15', load: 'BW' }, { reps: '10', load: 'BW' }], tags: ['falha'], notes: 'Giro do quadril. Falha muscular atingida por volta da 10ª repetição da segunda série.' },
-                { name: 'Esteira (Cardio Pós)', sets: [{ reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }, { reps: '40s tiro / 20s descanso', load: '9km/h' }], tags: [], notes: '6 ciclos. Recuperação totalmente passiva.' }
-            ]
-        });
-
-        DB.saveWorkout('2026-07-01', {
-            type: 'LEGS FULL',
-            exercises: [
-                { name: 'Leg Press 45º', sets: [{ reps: '15', load: '50kg/lado' }, { reps: '15', load: '50kg/lado' }, { reps: '11', load: '50kg/lado' }, { reps: '10', load: '50kg/lado' }], tags: ['falha'], notes: 'Amplitude extrema. Falha percebida na 11ª repetição da penúltima série (fadiga metabólica).' },
-                { name: 'Stiff', sets: [{ reps: '10', load: '10kg/lado' }, { reps: '4', load: '10kg/lado' }], tags: ['lombar'], notes: 'Abortado na 2ª série por falha precoce na musculatura lombar (core perdeu estabilidade).' },
-                { name: 'Cadeira Flexora', sets: [{ reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }, { reps: '12', load: 'Não informada' }], tags: ['cadencia'], notes: 'Substituição de Emergência. Isometria 1s, excêntrica 3s. Alta percepção de esforço (RPE 9).' },
-                { name: 'Panturrilha em Pé na Máquina', sets: [{ reps: '12', load: '30kg' }, { reps: '9', load: '30kg' }, { reps: '12', load: '25kg' }], tags: ['falha'], notes: 'Isometria em cima, alongamento embaixo. Falha aguda na 2ª série, carga ajustada para 25kg.' },
-                { name: 'Abdominal Máquina', sets: [{ reps: '15', load: '5kg' }, { reps: '12', load: '5kg' }, { reps: '10', load: '5kg' }], tags: ['falha'], notes: '3s voltando. Exaustão precoce devido ao cansaço acumulado.' }
-            ]
-        });
-
+    // MIGRATION: Clean up legacy data for Vitor (Runs only once)
+    if (activeProfile?.name === 'Vitor' && !localStorage.getItem('v2_history_exact_migration')) {
+        localStorage.removeItem(DB._getKey('workout_history'));
+        localStorage.setItem(DB._getKey('workout_history'), JSON.stringify({
+            '2026-06-30': { type: 'PUSH', completedAt: '2026-06-30T10:00:00Z', notes: 'Treino de Peito Tríceps Ombro.' },
+            '2026-07-01': { type: 'LEGS FULL', completedAt: '2026-07-01T18:00:00Z', notes: 'Falhei no Stiff.' }
+        }));
         localStorage.setItem('v2_history_exact_migration', 'true');
     }
 
-    const history = JSON.parse(localStorage.getItem('workout_history') || '{}');
-    const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
-    const lastWorkoutType = sortedDates.length > 0 ? history[sortedDates[0]].type : null;
-    const completedCount = sortedDates.length;
-    
-    const todayWorkoutType = workoutEngine.getNextWorkoutType(lastWorkoutType);
-    
-    document.querySelector('.training-today .badge-hybrid').textContent = todayWorkoutType;
-    document.querySelector('.training-today .card-header h2').textContent = `Sequência: ${completedCount + 1}º Treino`;
-
     const renderHistory = () => {
         const historyContainer = document.querySelector('#tab-historico .card-body');
-        const h = JSON.parse(localStorage.getItem('workout_history') || '{}');
+        const h = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
         
         if (Object.keys(h).length === 0) {
             historyContainer.innerHTML = '<p class="rpe-status">Nenhum treino armazenado.</p>';
@@ -113,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderProgressionPlan = (workoutType) => {
-        const h = JSON.parse(localStorage.getItem('workout_history') || '{}');
+        const h = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
         const sortedDates = Object.keys(h).sort((a, b) => new Date(b) - new Date(a));
         
         let lastWorkout = null;
@@ -153,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
             container.insertAdjacentHTML('afterbegin', planHtml);
         }
         
-        // Alerta Dinâmico do Motor
         const alertBox = document.getElementById('dynamic-engine-alert');
         if (alertBox) {
             if (workoutType === 'LISS_RUN' || workoutType === 'HIIT') {
@@ -166,37 +193,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    renderHistory();
-    renderProgressionPlan(todayWorkoutType);
-
-    // NUTRITION ENGINE - Fase 4 (Dinâmico)
-    const nutritionEngine = new NutritionEngine(80, 20); // 80kg, 20% BF
-    
-    // Puxar o treino de hoje para calcular o TDEE
-    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-    const localToday = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
-    const todayWorkoutData = history[localToday] || null; // Se não treinou, TDEE será baixo
-    
-    const todayNutrition = nutritionEngine.calculateDailyTDEE(todayWorkoutData);
-    
-    // Atualizar UI Nutrição (TDEE e Metas)
-    const badgeCarb = document.getElementById('nutri-badge-type');
-    if (badgeCarb) {
-        badgeCarb.textContent = todayNutrition.type;
-        if (todayNutrition.type.includes('LOW CARB')) {
-            badgeCarb.style.background = 'rgba(255, 51, 102, 0.15)'; badgeCarb.style.color = 'var(--primary-color)'; badgeCarb.style.borderColor = 'rgba(255, 51, 102, 0.3)';
-        } else {
-            badgeCarb.style.background = 'rgba(51, 255, 102, 0.15)'; badgeCarb.style.color = '#33ff66'; badgeCarb.style.borderColor = 'rgba(51, 255, 102, 0.3)';
-        }
+    const updateTrainingUI = (todayWorkoutType) => {
+        const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
+        const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+        const completedCount = sortedDates.length;
         
-        document.getElementById('tdee-display').textContent = todayNutrition.tdee;
-        document.getElementById('burned-display').textContent = todayNutrition.burned;
-        document.getElementById('macro-p-goal').textContent = todayNutrition.macros.protein;
-        document.getElementById('macro-c-goal').textContent = todayNutrition.macros.carbs;
-        document.getElementById('macro-f-goal').textContent = todayNutrition.macros.fat;
-    }
+        document.querySelector('.training-today .badge-hybrid').textContent = todayWorkoutType;
+        document.querySelector('.training-today .card-header h2').textContent = `Sequência: ${completedCount + 1}º Treino`;
+        renderProgressionPlan(todayWorkoutType);
+    };
 
-    // Lógica do Diário Alimentar
+    const updateNutritionUI = (todayWorkoutType) => {
+        const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
+        const todayWorkoutData = history[localToday] || null;
+        const todayNutrition = nutritionEngine.calculateDailyTDEE(todayWorkoutData);
+        
+        const badgeCarb = document.getElementById('nutri-badge-type');
+        if (badgeCarb) {
+            badgeCarb.textContent = todayNutrition.type;
+            if (todayNutrition.type.includes('LOW CARB')) {
+                badgeCarb.style.background = 'rgba(255, 51, 102, 0.15)'; badgeCarb.style.color = 'var(--primary-color)'; badgeCarb.style.borderColor = 'rgba(255, 51, 102, 0.3)';
+            } else {
+                badgeCarb.style.background = 'rgba(51, 255, 102, 0.15)'; badgeCarb.style.color = '#33ff66'; badgeCarb.style.borderColor = 'rgba(51, 255, 102, 0.3)';
+            }
+            
+            document.getElementById('tdee-display').textContent = todayNutrition.tdee;
+            document.getElementById('burned-display').textContent = todayNutrition.burned;
+            document.getElementById('macro-p-goal').textContent = todayNutrition.macros.protein;
+            document.getElementById('macro-c-goal').textContent = todayNutrition.macros.carbs;
+            document.getElementById('macro-f-goal').textContent = todayNutrition.macros.fat;
+        }
+    };
+
     const foodDatalist = document.getElementById('food-datalist');
     if (foodDatalist) {
         Object.keys(FoodDB).forEach(foodName => {
@@ -209,14 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const parseQtyAndCalculateMacros = (foodName, qtyString) => {
         const dbEntry = FoodDB[foodName];
         if (!dbEntry) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
-        
-        // Extract the first number from the string (e.g., "120g" -> 120, "3 pedaços" -> 3)
         const match = qtyString.match(/[\d\.]+/);
         if (!match) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
-        
         const numericQty = parseFloat(match[0]);
         const multiplier = numericQty / dbEntry.baseQty;
-        
         return {
             kcal: Math.round(dbEntry.kcal * multiplier),
             p: Math.round(dbEntry.p * multiplier),
@@ -229,14 +253,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCurrentPlate = () => {
         const container = document.getElementById('current-meal-list');
         if (!container) return;
-        
         let html = '';
         let totK = 0, totP = 0, totC = 0, totF = 0, totFib = 0;
-        
         currentMealItems.forEach((item, idx) => {
             const m = item.macros || { kcal:0, p:0, c:0, f:0, fib:0 };
             totK += m.kcal; totP += m.p; totC += m.c; totF += m.f; totFib += m.fib;
-            
             html += `
             <div style="display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--secondary-color); padding-left: 0.5rem; margin-bottom: 0.5rem;">
                 <div>
@@ -248,8 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
         container.innerHTML = html;
-        
-        // Auto-fill macro inputs if there are calculated totals
         if (currentMealItems.length > 0) {
             document.getElementById('meal-kcal').value = totK;
             document.getElementById('meal-p').value = totP;
@@ -257,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('meal-f').value = totF;
             document.getElementById('meal-fib').value = totFib;
         }
-        
         document.querySelectorAll('.btn-remove-plate-item').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const idx = parseInt(e.target.getAttribute('data-idx'));
@@ -274,30 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const macros = parseQtyAndCalculateMacros(name, qty);
         currentMealItems.push({ name, qty, macros });
-        
         renderCurrentPlate();
-        
         document.getElementById('food-input').value = '';
         document.getElementById('food-qty-input').value = '';
     });
 
     const renderNutritionHistory = () => {
-        let nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
-        
-        // --- AUTO MIGRATION SCRIPT TO FIX THE ZEROES IN THE USER'S HISTORY ---
-        // Se a migração automática ainda não rodou hoje, ela injeta as calorias reais
-        if (nutHistory[localToday] && !localStorage.getItem('v2_nutrition_migrated')) {
-            nutHistory[localToday].forEach(meal => {
-                if (meal.type === 'Café da Manhã') meal.macros = { kcal: 600, p: 8, c: 85, f: 25, fib: 3 };
-                if (meal.type === 'Almoço') meal.macros = { kcal: 376, p: 27, c: 48, f: 7, fib: 3 };
-                if (meal.type === 'Lanche da Tarde' && meal.items[0].name.includes('Paçoca')) meal.macros = { kcal: 400, p: 10, c: 45, f: 22, fib: 4 };
-                if (meal.type === 'Lanche da Tarde' && meal.items[0].name.includes('Bombom')) meal.macros = { kcal: 200, p: 2, c: 25, f: 10, fib: 1 };
-                if (meal.type === 'Jantar') meal.macros = { kcal: 1250, p: 37, c: 160, f: 48, fib: 7 };
-            });
-            localStorage.setItem('nutrition_history', JSON.stringify(nutHistory));
-            localStorage.setItem('v2_nutrition_migrated', 'true');
-        }
-        
+        let nutHistory = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
         const todayMeals = nutHistory[localToday] || [];
         const renderContainer = document.getElementById('today-meals-render');
         if (!renderContainer) return;
@@ -313,16 +314,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = '';
         let totalKcal = 0, totalP = 0, totalC = 0, totalF = 0;
-
         todayMeals.forEach((meal, idx) => {
             const mCals = meal.macros?.kcal || 0;
             const mP = meal.macros?.p || 0;
             const mC = meal.macros?.c || 0;
             const mF = meal.macros?.f || 0;
             const mFib = meal.macros?.fib || 0;
-
             totalKcal += mCals; totalP += mP; totalC += mC; totalF += mF;
-
             html += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <h4 style="color: var(--secondary-color); margin: 0;">${meal.type}</h4>
@@ -341,39 +339,27 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `</div>`;
         });
         renderContainer.innerHTML = html;
-        
-        // Update top header totals
         document.getElementById('kcal-consumed').textContent = totalKcal;
         document.getElementById('macro-p-consumed').textContent = totalP;
         document.getElementById('macro-c-consumed').textContent = totalC;
         document.getElementById('macro-f-consumed').textContent = totalF;
 
-        // Bind Edit Buttons
         document.querySelectorAll('.btn-edit-meal').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const mealIdx = parseInt(e.target.getAttribute('data-meal-idx'));
-                const nHist = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+                const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
                 const m = nHist[localToday][mealIdx];
-                
-                // Load into editor
                 document.getElementById('meal-type-select').value = m.type;
                 currentMealItems = [...m.items];
-                
                 document.getElementById('meal-kcal').value = m.macros?.kcal || '';
                 document.getElementById('meal-p').value = m.macros?.p || '';
                 document.getElementById('meal-c').value = m.macros?.c || '';
                 document.getElementById('meal-f').value = m.macros?.f || '';
                 document.getElementById('meal-fib').value = m.macros?.fib || '';
-
                 renderCurrentPlate();
-                
-                // Remove from DB so they can re-save it
                 nHist[localToday].splice(mealIdx, 1);
-                localStorage.setItem('nutrition_history', JSON.stringify(nHist));
+                localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
                 renderNutritionHistory();
-                
-                alert('Refeição carregada no editor! Você pode adicionar/remover itens e preencher os Macros da IA antes de Salvar novamente.');
-                document.getElementById('food-input').focus();
             });
         });
     };
@@ -381,7 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-save-meal')?.addEventListener('click', () => {
         if (currentMealItems.length === 0) return alert('Adicione alimentos ao prato primeiro.');
         const mealType = document.getElementById('meal-type-select').value;
-        
         const macros = {
             kcal: parseInt(document.getElementById('meal-kcal').value) || 0,
             p: parseInt(document.getElementById('meal-p').value) || 0,
@@ -389,33 +374,25 @@ document.addEventListener('DOMContentLoaded', () => {
             f: parseInt(document.getElementById('meal-f').value) || 0,
             fib: parseInt(document.getElementById('meal-fib').value) || 0
         };
-
-        const nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+        const nutHistory = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
         if (!nutHistory[localToday]) nutHistory[localToday] = [];
-        
         nutHistory[localToday].push({
             type: mealType,
             items: currentMealItems,
             macros: macros,
             timestamp: new Date().toISOString()
         });
-        
-        localStorage.setItem('nutrition_history', JSON.stringify(nutHistory));
-        
+        localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nutHistory));
         currentMealItems = [];
         document.getElementById('meal-kcal').value = '';
         document.getElementById('meal-p').value = '';
         document.getElementById('meal-c').value = '';
         document.getElementById('meal-f').value = '';
         document.getElementById('meal-fib').value = '';
-        
         renderCurrentPlate();
         renderNutritionHistory();
     });
 
-    renderNutritionHistory();
-
-    // Workout Mode Logic
     const wmContainer = document.getElementById('workout-mode');
     const wmCarousel = document.querySelector('.wm-carousel');
     const wmPrev = document.getElementById('wm-prev');

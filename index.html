@@ -6,18 +6,34 @@
     <title>Hybrid Training & Nutrition</title>
     <meta name="description" content="App híbrido focado em recomposição corporal, força e corrida.">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="manifest" href="./manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <header class="glass-header">
-            <h1 class="logo">O<span class="neon-text">N</span>E</h1>
-            <nav>
+    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: var(--bg-color); padding: 2rem;">
+        <h1 style="color: var(--primary-color); font-family: var(--font-heading); margin-bottom: 2rem; font-size: 2.5rem; letter-spacing: -1px;">
+            ONE<span style="color: var(--secondary-color);">HYBRID</span>
+        </h1>
+        <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 350px;">
+            <input type="text" id="login-user" placeholder="Usuário" style="width: 100%; padding: 1rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
+            <input type="password" id="login-pass" placeholder="Senha" style="width: 100%; padding: 1rem; margin-bottom: 1.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
+            <button id="btn-login" class="btn-primary" style="width: 100%;">Entrar</button>
+            <p id="login-error" style="color: #ff4444; font-size: 0.9rem; margin-top: 1rem; text-align: center; display: none;">Credenciais inválidas.</p>
+        </div>
+    </div>
+
+    <div id="app-container" style="display: none;">
+        <header class="header">
+            <h1 class="logo">ONE<span style="color: var(--secondary-color);">HYBRID</span></h1>
+            <button id="btn-logout" style="background:transparent; border:none; color:var(--text-secondary); cursor:pointer;">Sair</button>
+        </header>
+
+        <nav class="top-nav">
                 <button class="nav-btn active" data-tab="treino">Treino</button>
                 <button class="nav-btn" data-tab="nutricao">Nutrição</button>
                 <button class="nav-btn" data-tab="historico">Histórico</button>
-            </nav>
-        </header>
+        </nav>
 
         <main class="dashboard">
             <!-- ABA: TREINO -->
@@ -90,17 +106,6 @@
 
                         <div id="current-meal-list" style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
                             <!-- Itens do prato atual -->
-                        </div>
-                        
-                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                            <label style="color: var(--text-secondary); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">Macros Totais da Refeição (Insira os valores da IA):</label>
-                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                <input type="number" id="meal-kcal" placeholder="Kcal" style="flex: 1; padding: 0.5rem; min-width: 60px;">
-                                <input type="number" id="meal-p" placeholder="Pro(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
-                                <input type="number" id="meal-c" placeholder="Car(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
-                                <input type="number" id="meal-f" placeholder="Gor(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
-                                <input type="number" id="meal-fib" placeholder="Fib(g)" style="flex: 1; padding: 0.5rem; min-width: 60px;">
-                            </div>
                         </div>
 
                         <button class="btn-primary" id="btn-save-meal" style="margin-top: 1.5rem;">Salvar Refeição no Diário</button>

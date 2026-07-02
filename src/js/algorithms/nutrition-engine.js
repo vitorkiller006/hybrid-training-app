@@ -1,14 +1,24 @@
 export class NutritionEngine {
-    constructor(weightKg, bodyFatPercentage) {
-        this.weight = weightKg;
-        this.bf = bodyFatPercentage;
-        this.lbm = weightKg * (1 - (bodyFatPercentage / 100));
-        this.baseBMR = 370 + (21.6 * this.lbm);
+    constructor(profile) {
+        this.profile = profile;
+        this.weight = profile.weightKg;
+        this.bf = profile.bodyFatPercentage;
+        this.lbm = this.weight * (1 - (this.bf / 100));
+        this.baseBMR = 370 + (21.6 * this.lbm); // Katch-McArdle is gender neutral
     }
 
     calculateDailyTDEE(workoutForDay) {
         let neatMultiplier = 1.2; 
-        let tdee = Math.round(this.baseBMR * neatMultiplier);
+        
+        // Ajuste de Ciclo Menstrual (Fase Lútea gasta ~100-200kcal a mais, mas simplificaremos)
+        let cycleAdjustment = 0;
+        
+        let tdee = Math.round(this.baseBMR * neatMultiplier) + cycleAdjustment;
+        
+        // Objetivo
+        if (this.profile.goal === 'recomp') {
+            tdee -= 200; // Deficit leve para mulher (emagrecer e ganhar massa)
+        }
 
         let workoutCalories = 0;
         let proteinMacro = Math.round(this.weight * 2.2); 

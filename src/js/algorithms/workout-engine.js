@@ -1,7 +1,7 @@
 export class WorkoutEngine {
-    constructor() {
-        this.baseLegVolume = 10;
-        this.cycleSequence = ['HIIT', 'PUSH', 'LEGS FULL', 'PULL', 'LISS_RUN'];
+    constructor(profile) {
+        this.profile = profile || { cycleSequence: ['PUSH', 'LEGS FULL', 'PULL', 'LISS_RUN', 'HIIT'], gender: 'male' };
+        this.cycleSequence = this.profile.cycleSequence;
     }
 
     getNextWorkoutType(lastWorkoutType) {
@@ -13,12 +13,15 @@ export class WorkoutEngine {
     }
 
     getExerciseLibrary(type) {
-        const library = {
-            'HIIT': ['Tiro na Esteira', 'Bike Erg', 'Remo', 'Burpees', 'Corda Naval'],
-            'PUSH': ['Supino Reto', 'Supino Inclinado (Halteres)', 'Peck Deck', 'Crucifixo', 'Desenvolvimento (Halteres)', 'Elevação Lateral', 'Tríceps Polia', 'Tríceps Testa'],
-            'LEGS FULL': ['Agachamento Livre', 'Leg Press 45º', 'Cadeira Extensora', 'Stiff', 'Cadeira Flexora', 'Mesa Flexora', 'Elevação Pélvica', 'Panturrilha Máquina', 'Panturrilha Sentado'],
-            'PULL': ['Barra Fixa', 'Puxada Alta (Frente)', 'Remada Curvada', 'Remada Baixa (Triângulo)', 'Crucifixo Inverso', 'Rosca Direta', 'Rosca Martelo', 'Rosca Scott', 'Encolhimento (Halteres)'],
-            'LISS_RUN': ['Corrida Contínua', 'Trote', 'Caminhada Inclinada']
+        const libs = {
+            'PUSH': ['Supino Reto', 'Supino Inclinado', 'Peck Deck', 'Desenvolvimento', 'Elevação Lateral', 'Tríceps Polia', 'Tríceps Testa', 'Tríceps Corda'],
+            'PUSH FEMININO': ['Supino Inclinado', 'Elevação Lateral', 'Tríceps Polia', 'Desenvolvimento Máquina', 'Peck Deck (Leve)', 'Tríceps Banco'],
+            'PULL': ['Barra Fixa', 'Puxada Frontal', 'Remada Curvada', 'Remada Baixa', 'Crucifixo Inverso', 'Rosca Direta', 'Rosca Martelo', 'Rosca Scott'],
+            'LEGS FULL': ['Agachamento Livre', 'Leg Press 45º', 'Stiff', 'Cadeira Extensora', 'Cadeira Flexora', 'Elevação Pélvica', 'Panturrilha em Pé na Máquina'],
+            'LEGS POSTERIOR': ['Elevação Pélvica', 'Stiff', 'Cadeira Flexora', 'Mesa Flexora', 'Cadeira Abdutora', 'Glúteo Polia'],
+            'LEGS ANTERIOR': ['Agachamento Livre', 'Leg Press 45º', 'Cadeira Extensora', 'Passada/Avanço', 'Cadeira Adutora', 'Panturrilha em Pé na Máquina', 'Panturrilha Sentado'],
+            'LISS_RUN': ['Corrida LISS (Z2)', 'Bike Ergométrica', 'Caminhada Inclinada'],
+            'HIIT': ['Tiro na Esteira', 'Bike Tiro', 'Burpees']
         };
         
         const coreAndCardio = [
@@ -31,7 +34,7 @@ export class WorkoutEngine {
             'Escada (Cardio Pós)'
         ];
 
-        const specificExercises = library[type] || ['Exercício Livre'];
+        const specificExercises = libs[type] || ['Exercício Livre'];
         return specificExercises.concat(coreAndCardio);
     }
 
