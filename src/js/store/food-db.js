@@ -19,6 +19,8 @@ export const FoodDB = {
     // Refeições do Usuário (Hardcoded for AI Sync)
     'Bolo de Laranja': { kcal: 200, p: 2.6, c: 28.3, f: 8.3, fib: 1.0, baseQty: 1, unit: 'pedaço' },
     'Molho de Estrogonoffe': { kcal: 300, p: 5.0, c: 15.0, f: 25.0, fib: 0, baseQty: 100, unit: 'g' },
+    'Molho de Strogonoff': { kcal: 300, p: 5.0, c: 15.0, f: 25.0, fib: 0, baseQty: 100, unit: 'g' },
+    'Frango Cozido': { kcal: 165, p: 31.0, c: 0.0, f: 3.6, fib: 0, baseQty: 100, unit: 'g' },
     'Paçoca': { kcal: 100, p: 2.5, c: 11.2, f: 5.5, fib: 1.0, baseQty: 20, unit: 'g' },
     'Bombom': { kcal: 100, p: 1.0, c: 12.5, f: 5.0, fib: 0.5, baseQty: 1, unit: 'unidade' },
     'Pizza de Marguerita': { kcal: 250, p: 11.0, c: 25.0, f: 10.0, fib: 1.5, baseQty: 1, unit: 'pedaço' },

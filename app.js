@@ -53,6 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
                         console.log("Fixed Gabi's breakfast!");
                     }
+                    
+                    if (nHist['2026-07-01'] && nHist['2026-07-01'][1] && nHist['2026-07-01'][1].type === 'Almoço' && nHist['2026-07-01'][1].macros.kcal === 130) {
+                        nHist['2026-07-01'][1].macros = { kcal: 306, p: 26, c: 31, f: 8, fib: 0 };
+                        nHist['2026-07-01'][1].items[1].macros = { kcal: 116, p: 22, c: 0, f: 3, fib: 0 };
+                        nHist['2026-07-01'][1].items[2].macros = { kcal: 60, p: 1, c: 3, f: 5, fib: 0 };
+                        DB.saveNutrition('2026-07-01', nHist['2026-07-01']);
+                        console.log("Fixed Gabi's lunch!");
+                    }
                 }, 2000); // give time for CloudSync to load locally
             }
         } else {
@@ -344,7 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const parseQtyAndCalculateMacros = (foodName, qtyString) => {
         // Case-insensitive exact match
-        const exactKey = Object.keys(FoodDB).find(k => k.toLowerCase() === foodName.toLowerCase());
+        const cleanName = foodName.trim().toLowerCase();
+        const exactKey = Object.keys(FoodDB).find(k => k.trim().toLowerCase() === cleanName);
         const dbEntry = FoodDB[exactKey];
         if (!dbEntry) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
         
