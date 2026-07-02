@@ -3,6 +3,7 @@ import { NutritionEngine } from './src/js/algorithms/nutrition-engine.js';
 import { FoodDB } from './src/js/store/food-db.js';
 import { DB } from './src/js/store/db.js';
 import { Auth } from './src/js/store/auth.js';
+import { CloudSync } from './src/js/store/firebase-client.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     let workoutEngine = null;
@@ -13,9 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const localToday = new Date().toISOString().split('T')[0];
 
     // --- AUTHENTICATION LOGIC ---
-    const checkAuth = () => {
+    const checkAuth = async () => {
         activeProfile = Auth.getActiveUser();
         if (activeProfile) {
+            const btn = document.getElementById('btn-login');
+            if (btn) btn.textContent = 'Sincronizando nuvem... ☁️';
+            
+            await CloudSync.pullDown(activeProfile.name.toLowerCase());
+            
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             initApp();
