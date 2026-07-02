@@ -1,6 +1,7 @@
 import { WorkoutEngine } from './src/js/algorithms/workout-engine.js';
 import { NutritionEngine } from './src/js/algorithms/nutrition-engine.js';
 import { DB } from './src/js/store/db.js';
+import { FoodDB } from './src/js/store/food-db.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Tab Navigation Logic
@@ -169,21 +170,104 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
     renderProgressionPlan(todayWorkoutType);
 
-    // Nutrition
-    const nutritionEngine = new NutritionEngine(80, 20);
-    const todayNutrition = nutritionEngine.calculateMacros(todayWorkoutType);
-    const badgeCarb = document.querySelector('.badge-carb-low');
-    const macroValues = document.querySelectorAll('.macro-item .value');
+    // NUTRITION ENGINE - Fase 4 (Dinâmico)
+    const nutritionEngine = new NutritionEngine(80, 20); // 80kg, 20% BF
     
-    if (badgeCarb && macroValues.length === 3) {
+    // Puxar o treino de hoje para calcular o TDEE
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const localToday = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
+    const todayWorkoutData = history[localToday] || null; // Se não treinou, TDEE será baixo
+    
+    const todayNutrition = nutritionEngine.calculateDailyTDEE(todayWorkoutData);
+    
+    // Atualizar UI Nutrição (TDEE e Metas)
+    const badgeCarb = document.getElementById('nutri-badge-type');
+    if (badgeCarb) {
         badgeCarb.textContent = todayNutrition.type;
-        if (todayNutrition.type === 'HIGH CARB') {
+        if (todayNutrition.type.includes('LOW CARB')) {
+            badgeCarb.style.background = 'rgba(255, 51, 102, 0.15)'; badgeCarb.style.color = 'var(--primary-color)'; badgeCarb.style.borderColor = 'rgba(255, 51, 102, 0.3)';
+        } else {
             badgeCarb.style.background = 'rgba(51, 255, 102, 0.15)'; badgeCarb.style.color = '#33ff66'; badgeCarb.style.borderColor = 'rgba(51, 255, 102, 0.3)';
         }
-        macroValues[0].textContent = `${todayNutrition.macros.protein}g`;
-        macroValues[1].textContent = `${todayNutrition.macros.carbs}g`;
-        macroValues[2].textContent = `${todayNutrition.macros.fat}g`;
+        
+        document.getElementById('tdee-display').textContent = todayNutrition.tdee;
+        document.getElementById('burned-display').textContent = todayNutrition.burned;
+        document.getElementById('macro-p-goal').textContent = `${todayNutrition.macros.protein}g`;
+        document.getElementById('macro-c-goal').textContent = `${todayNutrition.macros.carbs}g`;
+        document.getElementById('macro-f-goal').textContent = `${todayNutrition.macros.fat}g`;
     }
+
+    // Lógica do Diário Alimentar
+    const foodDatalist = document.getElementById('food-datalist');
+    if (foodDatalist) {
+        Object.keys(FoodDB).forEach(foodName => {
+            foodDatalist.insertAdjacentHTML('beforeend', `<option value="${foodName}">`);
+        });
+    }
+
+    let currentMealItems = [];
+    document.getElementById('btn-add-food')?.addEventListener('click', () => {
+        const name = document.getElementById('food-input').value;
+        const qty = document.getElementById('food-qty-input').value;
+        if (!name || !qty) return alert('Preencha alimento e quantidade.');
+        
+        currentMealItems.push({ name, qty });
+        
+        document.getElementById('current-meal-list').innerHTML += `
+            <div style="border-left: 2px solid var(--secondary-color); padding-left: 0.5rem; margin-bottom: 0.5rem;">
+                <strong>${qty}</strong> de ${name}
+            </div>
+        `;
+        
+        document.getElementById('food-input').value = '';
+        document.getElementById('food-qty-input').value = '';
+    });
+
+    const renderNutritionHistory = () => {
+        const nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+        const todayMeals = nutHistory[localToday] || [];
+        const renderContainer = document.getElementById('today-meals-render');
+        if (!renderContainer) return;
+
+        if (todayMeals.length === 0) {
+            renderContainer.innerHTML = '<p style="color:var(--text-secondary); font-size:0.9rem;">Nenhuma refeição registrada hoje.</p>';
+            return;
+        }
+
+        let html = '';
+        todayMeals.forEach(meal => {
+            html += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <h4 style="color: var(--secondary-color); margin-bottom: 0.5rem;">${meal.type}</h4>`;
+            meal.items.forEach(item => {
+                html += `<div style="font-size: 0.9rem; margin-left: 0.5rem;">- ${item.qty} de ${item.name}</div>`;
+            });
+            html += `</div>`;
+        });
+        renderContainer.innerHTML = html;
+    };
+
+    document.getElementById('btn-save-meal')?.addEventListener('click', () => {
+        if (currentMealItems.length === 0) return alert('Adicione alimentos ao prato primeiro.');
+        const mealType = document.getElementById('meal-type-select').value;
+        
+        const nutHistory = JSON.parse(localStorage.getItem('nutrition_history') || '{}');
+        if (!nutHistory[localToday]) nutHistory[localToday] = [];
+        
+        nutHistory[localToday].push({
+            type: mealType,
+            items: currentMealItems,
+            timestamp: new Date().toISOString()
+        });
+        
+        localStorage.setItem('nutrition_history', JSON.stringify(nutHistory));
+        
+        currentMealItems = [];
+        document.getElementById('current-meal-list').innerHTML = '';
+        renderNutritionHistory();
+        alert('Refeição salva no diário!');
+    });
+
+    renderNutritionHistory();
 
     // Workout Mode Logic
     const wmContainer = document.getElementById('workout-mode');

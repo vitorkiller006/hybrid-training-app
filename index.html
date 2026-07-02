@@ -32,27 +32,68 @@
                 </div>
             </section>
 
-            <!-- ABA: NUTRIÇÃO -->
-            <section id="tab-nutricao" class="card nutrition-today glass-panel tab-section" style="display: none;">
+            <!-- TAB: NUTRIÇÃO -->
+            <section id="tab-nutricao" class="tab-section glass-panel" style="display: none;">
                 <div class="card-header">
-                    <h2>Nutrição (Ciclo)</h2>
-                    <span class="badge badge-carb-low">Carboidratos Baixos</span>
+                    <h2>Diário Alimentar e TDEE</h2>
+                    <span class="badge badge-carb-low" id="nutri-badge-type">Calculando...</span>
                 </div>
                 <div class="card-body">
-                    <p class="rpe-status">TDEE ajustado para preservação de glicogênio e priorização de queima lipídica.</p>
-                    <div class="macros">
+                    <p class="rpe-status">Gasto Calórico Estimado (TDEE): <strong id="tdee-display" style="color: var(--secondary-color); font-size: 1.3rem;">--</strong> kcal <br><span style="font-size: 0.8rem;">(Treino de Hoje queimou aprox: <span id="burned-display" style="color: var(--primary-color);">--</span> kcal)</span></p>
+                    
+                    <div class="macros" style="margin-bottom: 2rem;">
                         <div class="macro-item">
-                            <span class="label">PRO</span>
-                            <span class="value">180g</span>
+                            <span class="label">PROTEÍNA (META)</span>
+                            <span class="value" id="macro-p-goal">--g</span>
                         </div>
                         <div class="macro-item">
-                            <span class="label">CARB</span>
-                            <span class="value">120g</span>
+                            <span class="label">CARBOIDRATO (META)</span>
+                            <span class="value" id="macro-c-goal">--g</span>
                         </div>
                         <div class="macro-item">
-                            <span class="label">FAT</span>
-                            <span class="value">70g</span>
+                            <span class="label">GORDURA (META)</span>
+                            <span class="value" id="macro-f-goal">--g</span>
                         </div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-family: var(--font-heading); font-size: 1.2rem;">Registrar Refeição</h3>
+                        
+                        <div class="input-group" style="margin-bottom: 1rem;">
+                            <label>Qual Refeição?</label>
+                            <select id="meal-type-select" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                                <option value="Café da Manhã">Café da Manhã</option>
+                                <option value="Almoço">Almoço</option>
+                                <option value="Lanche da Tarde">Lanche da Tarde</option>
+                                <option value="Jantar">Jantar</option>
+                                <option value="Ceia / Pós-Treino">Ceia / Pós-Treino</option>
+                            </select>
+                        </div>
+
+                        <div class="input-row" style="margin-bottom: 1rem;">
+                            <div class="input-group" style="flex: 2;">
+                                <label>Alimento (BD ou Anotação Livre)</label>
+                                <input type="text" id="food-input" placeholder="Ex: Arroz Branco (Cozido)" list="food-datalist">
+                                <datalist id="food-datalist"></datalist>
+                            </div>
+                            <div class="input-group" style="flex: 1;">
+                                <label>Quantidade</label>
+                                <input type="text" id="food-qty-input" placeholder="Ex: 100g ou 2 Colheres">
+                            </div>
+                        </div>
+
+                        <button class="nav-btn" id="btn-add-food" style="width: 100%; border: 1px dashed var(--secondary-color); color: var(--secondary-color);">+ Adicionar ao Prato</button>
+
+                        <div id="current-meal-list" style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                            <!-- Itens do prato atual -->
+                        </div>
+                        
+                        <button class="btn-primary" id="btn-save-meal" style="margin-top: 1.5rem;">Salvar Refeição no Diário</button>
+                    </div>
+
+                    <div id="nutrition-history-container" style="margin-top: 2rem;">
+                        <h3 style="color: var(--secondary-color); margin-bottom: 1rem; font-family: var(--font-heading);">Consumo de Hoje</h3>
+                        <div id="today-meals-render"></div>
                     </div>
                 </div>
             </section>
