@@ -4,9 +4,12 @@ export class WorkoutEngine {
         this.cycleSequence = ['HIIT', 'PUSH', 'LEGS FULL', 'PULL', 'LISS_RUN'];
     }
 
-    getNextWorkoutType(completedCount) {
-        const index = completedCount % this.cycleSequence.length;
-        return this.cycleSequence[index];
+    getNextWorkoutType(lastWorkoutType) {
+        if (!lastWorkoutType) return this.cycleSequence[0];
+        const lastIndex = this.cycleSequence.indexOf(lastWorkoutType);
+        if (lastIndex === -1) return this.cycleSequence[0];
+        const nextIndex = (lastIndex + 1) % this.cycleSequence.length;
+        return this.cycleSequence[nextIndex];
     }
 
     getExerciseLibrary(type) {

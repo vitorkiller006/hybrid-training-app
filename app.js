@@ -50,8 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const history = JSON.parse(localStorage.getItem('workout_history') || '{}');
-    const completedCount = Object.keys(history).length;
-    const todayWorkoutType = workoutEngine.getNextWorkoutType(completedCount);
+    const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+    const lastWorkoutType = sortedDates.length > 0 ? history[sortedDates[0]].type : null;
+    const completedCount = sortedDates.length;
+    
+    const todayWorkoutType = workoutEngine.getNextWorkoutType(lastWorkoutType);
     
     document.querySelector('.training-today .badge-hybrid').textContent = todayWorkoutType;
     document.querySelector('.training-today .card-header h2').textContent = `Sequência: ${completedCount + 1}º Treino`;
