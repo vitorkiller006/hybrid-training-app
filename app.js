@@ -37,8 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderWater = () => {
         let wHist = JSON.parse(localStorage.getItem(DB._getKey('water_history')) || '{}');
         const waterToday = wHist[localToday] || 0;
+        
+        const user = Auth.getActiveUser();
+        const goal = user ? (user.weightKg * 35) : 3000;
+
         const disp = document.getElementById('water-consumed');
         if (disp) disp.textContent = waterToday;
+        
+        const dispGoal = document.getElementById('water-goal');
+        if (dispGoal) dispGoal.textContent = goal;
+
+        const pw = document.getElementById('progress-water');
+        if (pw) pw.value = Math.min((waterToday / goal) * 100, 100);
     };
     document.getElementById('btn-water-plus')?.addEventListener('click', () => {
         let wHist = JSON.parse(localStorage.getItem(DB._getKey('water_history')) || '{}');
