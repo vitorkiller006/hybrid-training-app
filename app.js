@@ -58,6 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (nHist['2026-07-02'][jantarIdx].items[0]) nHist['2026-07-02'][jantarIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
                             updated = true;
                         }
+
+                        // Fix CEIA
+                        const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino' && m.macros?.kcal === 125);
+                        if (ceiaIdx !== -1) {
+                            nHist['2026-07-02'][ceiaIdx].macros = { kcal: 549, p: 8, c: 79, f: 18, fib: 12 };
+                            if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 292, p: 7, c: 59, f: 3, fib: 10 };
+                            if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 132, p: 0, c: 0, f: 15, fib: 0 };
+                            updated = true;
+                        }
+                        
                         if (updated) {
                             DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
                         }
@@ -95,6 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 { name: 'Brigadeiro', qty: '2 colheres', macros: { kcal: 130, p: 2, c: 20, f: 4, fib: 0 } }
                             ];
                             nHist['2026-07-02'][jantarIdx].macros = { kcal: 418, p: 30, c: 54, f: 8, fib: 2 };
+                            updated = true;
+                        }
+
+                        // Fix CEIA
+                        const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino' && m.macros?.kcal === 125);
+                        if (ceiaIdx !== -1) {
+                            nHist['2026-07-02'][ceiaIdx].macros = { kcal: 395, p: 6, c: 68, f: 12, fib: 8 };
+                            if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 182, p: 5, c: 37, f: 2, fib: 6 };
+                            if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 88, p: 0, c: 0, f: 10, fib: 0 };
                             updated = true;
                         }
                     }

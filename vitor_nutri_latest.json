@@ -1,0 +1,630 @@
+{
+  "arrayValue": {
+    "values": [
+      {
+        "mapValue": {
+          "fields": {
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "f": {
+                    "integerValue": "17"
+                  },
+                  "p": {
+                    "integerValue": "5"
+                  },
+                  "c": {
+                    "integerValue": "57"
+                  },
+                  "fib": {
+                    "integerValue": "2"
+                  },
+                  "kcal": {
+                    "integerValue": "400"
+                  }
+                }
+              }
+            },
+            "type": {
+              "stringValue": "Caf\u00e9 da Manh\u00e3"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "2 peda\u00e7os "
+                        },
+                        "name": {
+                          "stringValue": "Bolo de Laranja"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "400"
+                              },
+                              "fib": {
+                                "integerValue": "2"
+                              },
+                              "c": {
+                                "integerValue": "57"
+                              },
+                              "f": {
+                                "integerValue": "17"
+                              },
+                              "p": {
+                                "integerValue": "5"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "50ml"
+                        },
+                        "name": {
+                          "stringValue": "Caf\u00e9 Preto com ado\u00e7ante"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "timestamp": {
+              "stringValue": "2026-07-02T13:14:01.226Z"
+            }
+          }
+        }
+      },
+      {
+        "mapValue": {
+          "fields": {
+            "timestamp": {
+              "stringValue": "2026-07-02T15:38:29.697Z"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "204"
+                              },
+                              "c": {
+                                "integerValue": "40"
+                              },
+                              "fib": {
+                                "integerValue": "2"
+                              },
+                              "f": {
+                                "integerValue": "1"
+                              },
+                              "p": {
+                                "integerValue": "8"
+                              }
+                            }
+                          }
+                        },
+                        "qty": {
+                          "stringValue": "130g"
+                        },
+                        "name": {
+                          "stringValue": "Macarr\u00e3o"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "70g"
+                        },
+                        "name": {
+                          "stringValue": "Peito de Frango em Cubos"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "f": {
+                                "integerValue": "3"
+                              },
+                              "p": {
+                                "integerValue": "22"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "kcal": {
+                                "integerValue": "115"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "f": {
+                    "integerValue": "4"
+                  },
+                  "p": {
+                    "integerValue": "30"
+                  },
+                  "kcal": {
+                    "integerValue": "319"
+                  },
+                  "fib": {
+                    "integerValue": "2"
+                  },
+                  "c": {
+                    "integerValue": "40"
+                  }
+                }
+              }
+            },
+            "type": {
+              "stringValue": "Almo\u00e7o"
+            }
+          }
+        }
+      },
+      {
+        "mapValue": {
+          "fields": {
+            "timestamp": {
+              "stringValue": "2026-07-02T22:48:53.906Z"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "p": {
+                                "integerValue": "5"
+                              },
+                              "f": {
+                                "integerValue": "17"
+                              },
+                              "kcal": {
+                                "integerValue": "400"
+                              },
+                              "fib": {
+                                "integerValue": "2"
+                              },
+                              "c": {
+                                "integerValue": "57"
+                              }
+                            }
+                          }
+                        },
+                        "qty": {
+                          "stringValue": "2 peda\u00e7os"
+                        },
+                        "name": {
+                          "stringValue": "Bolo de Laranja"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "qty": {
+                          "stringValue": "50ml"
+                        },
+                        "name": {
+                          "stringValue": "Caf\u00e9 Preto com ado\u00e7ante"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "f": {
+                    "integerValue": "17"
+                  },
+                  "p": {
+                    "integerValue": "5"
+                  },
+                  "c": {
+                    "integerValue": "57"
+                  },
+                  "fib": {
+                    "integerValue": "2"
+                  },
+                  "kcal": {
+                    "integerValue": "400"
+                  }
+                }
+              }
+            },
+            "type": {
+              "stringValue": "Lanche da Tarde"
+            }
+          }
+        }
+      },
+      {
+        "mapValue": {
+          "fields": {
+            "timestamp": {
+              "stringValue": "2026-07-02T22:49:26.042Z"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "p": {
+                                "integerValue": "8"
+                              },
+                              "f": {
+                                "integerValue": "1"
+                              },
+                              "kcal": {
+                                "integerValue": "204"
+                              },
+                              "fib": {
+                                "integerValue": "2"
+                              },
+                              "c": {
+                                "integerValue": "40"
+                              }
+                            }
+                          }
+                        },
+                        "name": {
+                          "stringValue": "Macarr\u00e3o"
+                        },
+                        "qty": {
+                          "stringValue": "130g"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "70g"
+                        },
+                        "name": {
+                          "stringValue": "Peito de Frango em Cubos"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "f": {
+                                "integerValue": "3"
+                              },
+                              "p": {
+                                "integerValue": "22"
+                              },
+                              "kcal": {
+                                "integerValue": "115"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "200ml"
+                        },
+                        "name": {
+                          "stringValue": "Guaran\u00e1 Taubaiana Cristalina"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "80"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "20"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "f": {
+                    "integerValue": "4"
+                  },
+                  "p": {
+                    "integerValue": "30"
+                  },
+                  "fib": {
+                    "integerValue": "2"
+                  },
+                  "c": {
+                    "integerValue": "60"
+                  },
+                  "kcal": {
+                    "integerValue": "399"
+                  }
+                }
+              }
+            },
+            "type": {
+              "stringValue": "Jantar"
+            }
+          }
+        }
+      },
+      {
+        "mapValue": {
+          "fields": {
+            "timestamp": {
+              "stringValue": "2026-07-03T01:35:10.327Z"
+            },
+            "items": {
+              "arrayValue": {
+                "values": [
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "fib": {
+                                "integerValue": "2"
+                              },
+                              "c": {
+                                "integerValue": "11"
+                              },
+                              "kcal": {
+                                "integerValue": "45"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "1"
+                              }
+                            }
+                          }
+                        },
+                        "name": {
+                          "stringValue": "Mexerica M\u00e9dia"
+                        },
+                        "qty": {
+                          "stringValue": "1un"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "kcal": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        },
+                        "qty": {
+                          "stringValue": "80g"
+                        },
+                        "name": {
+                          "stringValue": "Pipoca"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "name": {
+                          "stringValue": "Oleo de Soja"
+                        },
+                        "qty": {
+                          "stringValue": "15g"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "kcal": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "mapValue": {
+                      "fields": {
+                        "qty": {
+                          "stringValue": "200ml"
+                        },
+                        "name": {
+                          "stringValue": "Guaran\u00e1 Taubaiana Cristalina"
+                        },
+                        "macros": {
+                          "mapValue": {
+                            "fields": {
+                              "p": {
+                                "integerValue": "0"
+                              },
+                              "f": {
+                                "integerValue": "0"
+                              },
+                              "fib": {
+                                "integerValue": "0"
+                              },
+                              "c": {
+                                "integerValue": "20"
+                              },
+                              "kcal": {
+                                "integerValue": "80"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "macros": {
+              "mapValue": {
+                "fields": {
+                  "f": {
+                    "integerValue": "0"
+                  },
+                  "p": {
+                    "integerValue": "1"
+                  },
+                  "fib": {
+                    "integerValue": "2"
+                  },
+                  "c": {
+                    "integerValue": "31"
+                  },
+                  "kcal": {
+                    "integerValue": "125"
+                  }
+                }
+              }
+            },
+            "type": {
+              "stringValue": "Ceia / P\u00f3s-Treino"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
