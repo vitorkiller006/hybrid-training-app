@@ -28,6 +28,7 @@ export const FoodDB = {
     'Manteiga': { kcal: 71, p: 0.1, c: 0.0, f: 8.1, fib: 0, baseQty: 10, unit: 'g' },
     'Suco de Laranja': { kcal: 110, p: 1.7, c: 25.8, f: 0.5, fib: 0.5, baseQty: 250, unit: 'ml' },
     'Refrigerante Cola Zero': { kcal: 0, p: 0.0, c: 0.0, f: 0.0, fib: 0, baseQty: 350, unit: 'ml' },
+    'Whey Iso Pretorian': { kcal: 111, p: 25.0, c: 2.0, f: 0.0, fib: 0, baseQty: 30, unit: 'g' },
     'Molho de Estrogonoffe': { kcal: 300, p: 5.0, c: 15.0, f: 25.0, fib: 0, baseQty: 100, unit: 'g' },
     'Molho de Strogonoff': { kcal: 300, p: 5.0, c: 15.0, f: 25.0, fib: 0, baseQty: 100, unit: 'g' },
     'Frango Cozido': { kcal: 165, p: 31.0, c: 0.0, f: 3.6, fib: 0, baseQty: 100, unit: 'g' },

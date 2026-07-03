@@ -59,13 +59,31 @@ document.addEventListener('DOMContentLoaded', () => {
                             updated = true;
                         }
 
-                        // Fix CEIA
-                        const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino' && m.macros?.kcal === 125);
+                        // Fix CEIA + Add Whey
+                        const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino');
                         if (ceiaIdx !== -1) {
-                            nHist['2026-07-02'][ceiaIdx].macros = { kcal: 549, p: 8, c: 79, f: 18, fib: 12 };
-                            if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 292, p: 7, c: 59, f: 3, fib: 10 };
-                            if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 132, p: 0, c: 0, f: 15, fib: 0 };
-                            updated = true;
+                            if (nHist['2026-07-02'][ceiaIdx].macros?.kcal === 125) {
+                                nHist['2026-07-02'][ceiaIdx].macros = { kcal: 549, p: 8, c: 79, f: 18, fib: 12 };
+                                if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 292, p: 7, c: 59, f: 3, fib: 10 };
+                                if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 132, p: 0, c: 0, f: 15, fib: 0 };
+                                updated = true;
+                            }
+                            
+                            const hasWhey = nHist['2026-07-02'][ceiaIdx].items.some(i => i.name.includes('Whey'));
+                            if (!hasWhey) {
+                                nHist['2026-07-02'][ceiaIdx].items.push({
+                                    name: 'Whey Iso Pretorian',
+                                    qty: '30g',
+                                    macros: { kcal: 111, p: 25, c: 2, f: 0, fib: 0 }
+                                });
+                                let k = 0, p = 0, c = 0, f = 0, fib = 0;
+                                nHist['2026-07-02'][ceiaIdx].items.forEach(i => {
+                                    k += i.macros?.kcal || 0; p += i.macros?.p || 0;
+                                    c += i.macros?.c || 0; f += i.macros?.f || 0; fib += i.macros?.fib || 0;
+                                });
+                                nHist['2026-07-02'][ceiaIdx].macros = { kcal: k, p, c, f, fib };
+                                updated = true;
+                            }
                         }
                         
                         if (updated) {
