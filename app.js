@@ -26,11 +26,38 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             initApp();
+            renderWater(); // Added water render
         } else {
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
         }
     };
+
+    // --- WATER TRACKER LOGIC ---
+    const renderWater = () => {
+        let wHist = JSON.parse(localStorage.getItem(DB._getKey('water_history')) || '{}');
+        const waterToday = wHist[localToday] || 0;
+        const disp = document.getElementById('water-consumed');
+        if (disp) disp.textContent = waterToday;
+    };
+    document.getElementById('btn-water-plus')?.addEventListener('click', () => {
+        let wHist = JSON.parse(localStorage.getItem(DB._getKey('water_history')) || '{}');
+        let waterToday = wHist[localToday] || 0;
+        waterToday += 250;
+        wHist[localToday] = waterToday;
+        localStorage.setItem(DB._getKey('water_history'), JSON.stringify(wHist));
+        CloudSync.pushUp(Auth.getActiveUser()?.name.toLowerCase());
+        renderWater();
+    });
+    document.getElementById('btn-water-minus')?.addEventListener('click', () => {
+        let wHist = JSON.parse(localStorage.getItem(DB._getKey('water_history')) || '{}');
+        let waterToday = wHist[localToday] || 0;
+        waterToday = Math.max(0, waterToday - 250);
+        wHist[localToday] = waterToday;
+        localStorage.setItem(DB._getKey('water_history'), JSON.stringify(wHist));
+        CloudSync.pushUp(Auth.getActiveUser()?.name.toLowerCase());
+        renderWater();
+    });
 
     document.getElementById('btn-login')?.addEventListener('click', () => {
         const u = document.getElementById('login-user').value;
@@ -449,11 +476,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentMealItems = [];
     
-    const parseQtyAndCalculateMacros = (foodName, qtyString) => {
-        // Case-insensitive exact match
+    const parseQtyAndCalculateMacros = async (foodName, qtyString) => {
         const cleanName = foodName.trim().toLowerCase();
-        const exactKey = Object.keys(FoodDB).find(k => k.trim().toLowerCase() === cleanName);
-        const dbEntry = FoodDB[exactKey];
+        let exactKey = Object.keys(FoodDB).find(k => k.trim().toLowerCase() === cleanName);
+        let dbEntry = exactKey ? FoodDB[exactKey] : null;
+
+        // Tenta busca parcial local
+        if (!dbEntry) {
+            exactKey = Object.keys(FoodDB).find(k => k.trim().toLowerCase().includes(cleanName) || cleanName.includes(k.trim().toLowerCase()));
+            if (exactKey) dbEntry = FoodDB[exactKey];
+        }
+
+        // Se não achou local, tenta OpenFoodFacts
+        if (!dbEntry) {
+            try {
+                const res = await fetch(`https://br.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(cleanName)}&search_simple=1&action=process&json=1&page_size=1`);
+                const data = await res.json();
+                if (data.products && data.products.length > 0) {
+                    const nut = data.products[0].nutriments || {};
+                    dbEntry = {
+                        kcal: nut['energy-kcal_100g'] || 0,
+                        p: nut.proteins_100g || 0,
+                        c: nut.carbohydrates_100g || 0,
+                        f: nut.fat_100g || 0,
+                        fib: nut.fiber_100g || 0,
+                        baseQty: 100,
+                        unit: 'g'
+                    };
+                }
+            } catch (e) {
+                console.log("OpenFoodFacts search failed", e);
+            }
+        }
+
         if (!dbEntry) return { kcal: 0, p: 0, c: 0, f: 0, fib: 0 };
         
         const match = qtyString.match(/[\d\.,]+/);
@@ -497,16 +552,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    document.getElementById('btn-add-food')?.addEventListener('click', () => {
+    document.getElementById('btn-add-food')?.addEventListener('click', async () => {
         const name = document.getElementById('food-input').value;
         const qty = document.getElementById('food-qty-input').value;
         if (!name || !qty) return alert('Preencha alimento e quantidade.');
         
-        const macros = parseQtyAndCalculateMacros(name, qty);
+        const btn = document.getElementById('btn-add-food');
+        btn.textContent = 'Buscando... ⏳';
+        
+        const macros = await parseQtyAndCalculateMacros(name, qty);
         currentMealItems.push({ name, qty, macros });
         renderCurrentPlate();
         document.getElementById('food-input').value = '';
         document.getElementById('food-qty-input').value = '';
+        btn.textContent = '+ Adicionar ao Prato';
+    });
+
+    document.getElementById('btn-copy-meal')?.addEventListener('click', () => {
+        const type = document.getElementById('meal-type-select').value;
+        const nutHistory = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
+        const dates = Object.keys(nutHistory).sort().reverse();
+        let found = null;
+        for (const date of dates) {
+            const meals = nutHistory[date];
+            const m = meals.find(x => x.type === type);
+            if (m) {
+                found = m;
+                break;
+            }
+        }
+        if (found) {
+            // Deep copy items
+            currentMealItems = JSON.parse(JSON.stringify(found.items));
+            renderCurrentPlate();
+        } else {
+            alert('Nenhuma refeição deste tipo encontrada no histórico.');
+        }
     });
 
     const renderNutritionHistory = () => {
@@ -559,6 +640,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('macro-p-consumed').textContent = totalP;
         document.getElementById('macro-c-consumed').textContent = totalC;
         document.getElementById('macro-f-consumed').textContent = totalF;
+
+        // Progress bars update
+        const goalP = parseInt(document.getElementById('macro-p-goal').textContent) || 1;
+        const goalC = parseInt(document.getElementById('macro-c-goal').textContent) || 1;
+        const goalF = parseInt(document.getElementById('macro-f-goal').textContent) || 1;
+        const pp = document.getElementById('progress-p'); if(pp) pp.value = Math.min((totalP/goalP)*100, 100);
+        const pc = document.getElementById('progress-c'); if(pc) pc.value = Math.min((totalC/goalC)*100, 100);
+        const pf = document.getElementById('progress-f'); if(pf) pf.value = Math.min((totalF/goalF)*100, 100);
 
         document.querySelectorAll('.btn-edit-meal').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -633,7 +722,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    let restInterval = null;
+    
     document.querySelector('.start-workout')?.addEventListener('click', () => {
+        document.getElementById('tab-treino').style.display = 'none';
+        document.getElementById('workout-mode').style.display = 'block';
+
+        if (todayWorkoutType === 'LISS / Recovery' || todayWorkoutType.includes('Cardio')) {
+            document.querySelector('.wm-carousel').style.display = 'none';
+            document.querySelector('.wm-cardio').style.display = 'block';
+            document.querySelector('.wm-cardio').innerHTML = `
+                <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Sessão de Cardio Livre</h3>
+                <div class="input-group" style="margin-bottom: 1rem; text-align: left;">
+                    <label>Tipo de Cardio</label>
+                    <select id="cardio-type" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <option value="Esteira (Caminhada)">Esteira (Caminhada)</option>
+                        <option value="Esteira (Corrida)">Esteira (Corrida)</option>
+                        <option value="Bicicleta">Bicicleta</option>
+                        <option value="Elíptico">Elíptico</option>
+                        <option value="HIIT">HIIT</option>
+                    </select>
+                </div>
+                <div class="input-group" style="margin-bottom: 1rem; text-align: left;">
+                    <label>Tempo (Minutos)</label>
+                    <input type="number" id="cardio-time" placeholder="Ex: 40" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                </div>
+                <div class="input-group" style="text-align: left;">
+                    <label>Anotações / Calorias Marcadas</label>
+                    <input type="text" id="cardio-notes" placeholder="Ex: Queimei 300kcal no painel" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                </div>
+            `;
+            document.getElementById('wm-prev').style.display = 'none';
+            document.getElementById('wm-next').style.display = 'none';
+            document.getElementById('rest-timer-widget').style.display = 'none';
+            return;
+        }
+
+        document.querySelector('.wm-carousel').style.display = 'flex';
+        document.querySelector('.wm-cardio').style.display = 'none';
+        document.getElementById('rest-timer-widget').style.display = 'block';
+
+        // Timer logic
+        document.querySelectorAll('.btn-rest').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                clearInterval(restInterval);
+                let secs = parseInt(e.target.getAttribute('data-sec'));
+                const disp = document.getElementById('rest-timer-display');
+                disp.style.color = '#fff';
+                restInterval = setInterval(() => {
+                    secs--;
+                    const m = Math.floor(secs / 60);
+                    const s = secs % 60;
+                    disp.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    if (secs <= 0) {
+                        clearInterval(restInterval);
+                        disp.style.color = '#ff3366';
+                        disp.textContent = "TEMPO!";
+                        // beep sound placeholder
+                    }
+                }, 1000);
+            });
+        });
+        
         // Criar 5 Slides Vazios para o usuário preencher os exercícios do dia
         const library = workoutEngine.getExerciseLibrary(todayWorkoutType);
         let optionsHtml = '<option value="">Selecione o Exercício...</option>';
@@ -657,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${optionsHtml}
                     </select>
                     <input type="text" class="inp-ex-custom" placeholder="Digite o nome do exercício..." style="display: none; width:100%; margin-top:0.5rem; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 12px;">
+                    <div class="prev-load" style="font-size: 0.8rem; color: var(--secondary-color); margin-top: 0.5rem; display:none;"></div>
                 </div>
                 
                 <div class="sets-container">
@@ -680,16 +831,38 @@ document.addEventListener('DOMContentLoaded', () => {
         
         wmCarousel.innerHTML = slidesHtml;
         
-        // Bind Custom Exercise Inputs
+        // Bind Custom Exercise Inputs and Progressive Overload
+        const wHistory = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '[]');
         document.querySelectorAll('.inp-ex-name').forEach(select => {
             select.addEventListener('change', (e) => {
                 const customInput = e.target.parentElement.querySelector('.inp-ex-custom');
-                if (e.target.value === 'custom') {
+                const prevLoad = e.target.parentElement.querySelector('.prev-load');
+                const val = e.target.value;
+                if (val === 'custom') {
                     customInput.style.display = 'block';
                     customInput.focus();
+                    prevLoad.style.display = 'none';
                 } else {
                     customInput.style.display = 'none';
                     customInput.value = '';
+                    
+                    // Look back for Progressive Overload
+                    let found = null;
+                    for (let x = wHistory.length - 1; x >= 0; x--) {
+                        const sess = wHistory[x];
+                        const ex = sess.exercises?.find(ex => ex.name === val);
+                        if (ex && ex.sets?.length > 0) {
+                            found = ex;
+                            break;
+                        }
+                    }
+                    if (found) {
+                        const lastSet = found.sets[found.sets.length - 1];
+                        prevLoad.textContent = `🎯 Última vez: ${lastSet.kg}kg x ${lastSet.reps} reps`;
+                        prevLoad.style.display = 'block';
+                    } else {
+                        prevLoad.style.display = 'none';
+                    }
                 }
             });
         });
@@ -750,34 +923,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     wmFinish?.addEventListener('click', () => {
-        const slides = document.querySelectorAll('.wm-slide');
-        let finalData = [];
+        const finalData = [];
         
-        slides.forEach(s => {
-            let exName = s.querySelector('.inp-ex-name').value;
-            if (exName === 'custom') {
-                exName = s.querySelector('.inp-ex-custom').value.trim();
-            }
-            if (!exName) return; // Skip empty slides
-
-            const setRows = s.querySelectorAll('.set-row');
-            let sets = [];
-            setRows.forEach(row => {
-                const reps = row.querySelector('.inp-reps').value;
-                const load = row.querySelector('.inp-load').value;
-                if (reps || load) sets.push({ reps: reps || '0', load: load || 'BW' });
+        if (todayWorkoutType === 'LISS / Recovery' || todayWorkoutType.includes('Cardio')) {
+            const cType = document.getElementById('cardio-type')?.value || 'Cardio';
+            const cTime = document.getElementById('cardio-time')?.value || '0';
+            const cNotes = document.getElementById('cardio-notes')?.value || '';
+            finalData.push({
+                name: cType,
+                sets: [{ reps: cTime + ' min', load: 'N/A' }],
+                notes: cNotes,
+                tags: []
             });
-
-            const notes = s.querySelector('.inp-notes').value;
-            const selectedTags = Array.from(s.querySelectorAll('.tag-chip.selected')).map(t => t.getAttribute('data-tag'));
-            
-            finalData.push({ name: exName, sets: sets, notes, tags: selectedTags });
-        });
+        } else {
+            const slides = document.querySelectorAll('.wm-slide');
+            slides.forEach(s => {
+                let exName = s.querySelector('.inp-ex-name').value;
+                if (exName === 'custom') {
+                    exName = s.querySelector('.inp-ex-custom').value.trim();
+                }
+                if (!exName) return;
+    
+                const setRows = s.querySelectorAll('.set-row');
+                let sets = [];
+                setRows.forEach(row => {
+                    const reps = row.querySelector('.inp-reps').value;
+                    const load = row.querySelector('.inp-load').value;
+                    if (reps || load) sets.push({ reps: reps || '0', load: load || 'BW' });
+                });
+    
+                const notes = s.querySelector('.inp-notes').value;
+                const selectedTags = Array.from(s.querySelectorAll('.tag-chip.selected')).map(t => t.getAttribute('data-tag'));
+                
+                finalData.push({ name: exName, sets: sets, notes, tags: selectedTags });
+            });
+        }
 
         if (finalData.length === 0) {
             alert('Nenhum exercício preenchido!');
             return;
         }
+
+        if (typeof restInterval !== 'undefined' && restInterval !== null) clearInterval(restInterval);
 
         DB.saveWorkout(localToday, {
             type: todayWorkoutType,
