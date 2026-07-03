@@ -546,7 +546,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>🥦 ${mFib}g Fibra</span>
                 </div>`;
             meal.items.forEach(item => {
-                html += `<div style="font-size: 0.9rem; margin-left: 0.5rem;">- ${item.qty} de ${item.name}</div>`;
+                const im = item.macros || { kcal: 0, p: 0, c: 0, f: 0 };
+                html += `<div style="font-size: 0.9rem; margin-left: 0.5rem; margin-bottom: 0.3rem;">
+                    - ${item.qty} de ${item.name} 
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); opacity: 0.8; margin-left: 0.3rem;">(${im.kcal}kcal | ${im.p}p | ${im.c}c | ${im.f}g)</span>
+                </div>`;
             });
             html += `</div>`;
         });
