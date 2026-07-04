@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         waterToday += 250;
         wHist[localToday] = waterToday;
         localStorage.setItem(DB._getKey('water_history'), JSON.stringify(wHist));
-        CloudSync.pushUp(Auth.getActiveUser()?.name.toLowerCase());
+        const username = Auth.getActiveUser()?.name;
+        if (username) CloudSync.pushUp(username.toLowerCase());
         renderWater();
     });
     document.getElementById('btn-water-minus')?.addEventListener('click', () => {
@@ -65,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
         waterToday = Math.max(0, waterToday - 250);
         wHist[localToday] = waterToday;
         localStorage.setItem(DB._getKey('water_history'), JSON.stringify(wHist));
-        CloudSync.pushUp(Auth.getActiveUser()?.name.toLowerCase());
+        const username = Auth.getActiveUser()?.name;
+        if (username) CloudSync.pushUp(username.toLowerCase());
         renderWater();
     });
 
@@ -105,27 +107,33 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 132, p: 0, c: 0, f: 15, fib: 0 };
                                 updated = true;
                             }
-                            
-                            const hasWhey = nHist['2026-07-02'][ceiaIdx].items.some(i => i.name.includes('Whey'));
-                            if (!hasWhey) {
-                                nHist['2026-07-02'][ceiaIdx].items.push({
-                                    name: 'Whey Iso Pretorian',
-                                    qty: '30g',
-                                    macros: { kcal: 111, p: 25, c: 2, f: 0, fib: 0 }
-                                });
-                                let k = 0, p = 0, c = 0, f = 0, fib = 0;
-                                nHist['2026-07-02'][ceiaIdx].items.forEach(i => {
-                                    k += i.macros?.kcal || 0; p += i.macros?.p || 0;
-                                    c += i.macros?.c || 0; f += i.macros?.f || 0; fib += i.macros?.fib || 0;
-                                });
-                                nHist['2026-07-02'][ceiaIdx].macros = { kcal: k, p, c, f, fib };
-                                updated = true;
-                            }
                         }
+                    }
+
+                    // --- JANTAR PIZZA 2026-07-03 ---
+                    if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
+                    const jantarPizzaVitorIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar');
+                    if (jantarPizzaVitorIdx === -1) {
+                        nHist['2026-07-03'].push({
+                            type: 'Jantar',
+                            timestamp: new Date().toISOString(),
+                            macros: { kcal: 736, p: 40, c: 84, f: 26, fib: 4 },
+                            items: [
+                                { name: 'Mini Pizza Pratty (Massa)', qty: '6 un', macros: { kcal: 204, p: 6, c: 42, f: 0, fib: 1.2 } },
+                                { name: 'Frango Cozido', qty: '30g', macros: { kcal: 50, p: 9, c: 0, f: 1, fib: 0 } },
+                                { name: 'Queijo Mussarela', qty: '30g', macros: { kcal: 90, p: 7.5, c: 1, f: 6.6, fib: 0 } },
+                                { name: 'Tomate', qty: '30g', macros: { kcal: 6, p: 0.3, c: 1.2, f: 0.1, fib: 0.4 } },
+                                { name: 'Ganache de Chocolate', qty: '3 colheres', macros: { kcal: 300, p: 3, c: 30, f: 18, fib: 3 } },
+                                { name: 'Suco Tang (Preparado)', qty: '300ml', macros: { kcal: 27, p: 0, c: 6, f: 0, fib: 0 } }
+                            ]
+                        });
+                        updated = true;
+                    }
                         
-                        if (updated) {
-                            DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
-                        }
+                    if (updated) {
+                        DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
+                        DB.saveNutrition('2026-07-03', nHist['2026-07-03']);
+                    }
                     }
                 }, 2000);
             }
@@ -192,8 +200,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
+                    // --- JANTAR PIZZA 2026-07-03 ---
+                    if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
+                    const jantarPizzaGabiIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar');
+                    if (jantarPizzaGabiIdx === -1) {
+                        nHist['2026-07-03'].push({
+                            type: 'Jantar',
+                            timestamp: new Date().toISOString(),
+                            macros: { kcal: 736, p: 40, c: 84, f: 26, fib: 4 },
+                            items: [
+                                { name: 'Mini Pizza Pratty (Massa)', qty: '6 un', macros: { kcal: 204, p: 6, c: 42, f: 0, fib: 1.2 } },
+                                { name: 'Frango Cozido', qty: '30g', macros: { kcal: 50, p: 9, c: 0, f: 1, fib: 0 } },
+                                { name: 'Queijo Mussarela', qty: '30g', macros: { kcal: 90, p: 7.5, c: 1, f: 6.6, fib: 0 } },
+                                { name: 'Tomate', qty: '30g', macros: { kcal: 6, p: 0.3, c: 1.2, f: 0.1, fib: 0.4 } },
+                                { name: 'Ganache de Chocolate', qty: '3 colheres', macros: { kcal: 300, p: 3, c: 30, f: 18, fib: 3 } },
+                                { name: 'Suco Tang (Preparado)', qty: '300ml', macros: { kcal: 27, p: 0, c: 6, f: 0, fib: 0 } }
+                            ]
+                        });
+                        updated = true;
+                    }
+
                     if (updated) {
-                        DB.saveNutrition('2026-07-02', nHist['2026-07-02']); // we save both if they got updated, actually let's just save the whole thing locally and push!
+                        if (nHist['2026-07-02']) DB.saveNutrition('2026-07-02', nHist['2026-07-02']); 
+                        if (nHist['2026-07-03']) DB.saveNutrition('2026-07-03', nHist['2026-07-03']);
                         localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
                         CloudSync.pushUp(u.toLowerCase());
                     }

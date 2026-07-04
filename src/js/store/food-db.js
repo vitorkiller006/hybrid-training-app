@@ -1,7 +1,12 @@
 // Base de dados de alimentos (Valores por porção base)
 export const FoodDB = {
     // Básicos (por 100g)
-    'Arroz Branco (Cozido)': { kcal: 130, p: 2.7, c: 28.1, f: 0.2, fib: 0.4, baseQty: 100, unit: 'g' },
+    'Mini Pizza Pratty (Massa)': { kcal: 34, p: 1.0, c: 7.0, f: 0.0, fib: 0.2, baseQty: 1, unit: 'unidade' },
+    'Queijo Mussarela': { kcal: 300, p: 25.0, c: 3.0, f: 22.0, fib: 0, baseQty: 100, unit: 'g' },
+    'Tomate': { kcal: 20, p: 1.0, c: 4.0, f: 0.2, fib: 1.2, baseQty: 100, unit: 'g' },
+    'Ganache de Chocolate': { kcal: 100, p: 1.0, c: 10.0, f: 6.0, fib: 1.0, baseQty: 1, unit: 'colher' },
+    'Suco Tang (Preparado)': { kcal: 18, p: 0.0, c: 4.0, f: 0.0, fib: 0, baseQty: 200, unit: 'ml' },
+    'Arroz Branco (Cozido)': { kcal: 130, p: 2.7, c: 28.1, f: 0.3, fib: 0.4, baseQty: 100, unit: 'g' },
     'Arroz Integral (Cozido)': { kcal: 111, p: 2.6, c: 23.0, f: 0.9, fib: 2.8, baseQty: 100, unit: 'g' },
     'Feijão Carioca (Cozido)': { kcal: 76, p: 4.8, c: 13.6, f: 0.5, fib: 8.5, baseQty: 100, unit: 'g' },
     'Peito de Frango em Cubos': { kcal: 165, p: 31.0, c: 0.0, f: 3.6, fib: 0, baseQty: 100, unit: 'g' },

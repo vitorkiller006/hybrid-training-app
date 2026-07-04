@@ -30,6 +30,9 @@ export const CloudSync = {
                 if (data.nutrition_history) {
                     localStorage.setItem(`${username}_nutrition_history`, JSON.stringify(data.nutrition_history));
                 }
+                if (data.water_history) {
+                    localStorage.setItem(`${username}_water_history`, JSON.stringify(data.water_history));
+                }
                 if (data.cycle_phase) {
                     localStorage.setItem(`${username}_cycle_phase`, data.cycle_phase);
                 }
@@ -47,12 +50,14 @@ export const CloudSync = {
         try {
             const workout_history = JSON.parse(localStorage.getItem(`${username}_workout_history`) || '{}');
             const nutrition_history = JSON.parse(localStorage.getItem(`${username}_nutrition_history`) || '{}');
+            const water_history = JSON.parse(localStorage.getItem(`${username}_water_history`) || '{}');
             const cycle_phase = localStorage.getItem(`${username}_cycle_phase`) || 'folicular';
 
             const userDoc = doc(db, "users", username);
             await setDoc(userDoc, {
                 workout_history,
                 nutrition_history,
+                water_history,
                 cycle_phase,
                 last_sync: new Date().toISOString()
             });
