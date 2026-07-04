@@ -14,6 +14,8 @@ export const FoodDB = {
     
     // Ovos e Laticínios
     'Ovo Inteiro (Cozido/Mexido)': { kcal: 155, p: 13.0, c: 1.1, f: 11.0, fib: 0, baseQty: 100, unit: 'g' }, // ~2 ovos
+    'Ovo (unidade)': { kcal: 75, p: 6.5, c: 0.5, f: 5.5, fib: 0, baseQty: 1, unit: 'unidade' },
+    'Ovo Inteiro (unidade)': { kcal: 75, p: 6.5, c: 0.5, f: 5.5, fib: 0, baseQty: 1, unit: 'unidade' },
     'Whey Protein Concentrado': { kcal: 400, p: 80.0, c: 8.0, f: 6.0, fib: 0, baseQty: 100, unit: 'g' },
     'Leite Integral (Líquido)': { kcal: 62, p: 3.2, c: 4.8, f: 3.2, fib: 0, baseQty: 100, unit: 'ml' },
     

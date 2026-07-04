@@ -131,9 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                         
                     if (updated) {
-                        DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
-                        DB.saveNutrition('2026-07-03', nHist['2026-07-03']);
-                    }
+                        if (nHist['2026-07-02']) DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
+                        if (nHist['2026-07-03']) DB.saveNutrition('2026-07-03', nHist['2026-07-03']);
+                        localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
+                        CloudSync.pushUp(u.toLowerCase());
                     }
                 }, 2000);
             }
