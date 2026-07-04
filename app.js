@@ -14,6 +14,136 @@ document.addEventListener('DOMContentLoaded', () => {
     const tzoffset = (new Date()).getTimezoneOffset() * 60000;
     let localToday = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
 
+    const runMigrations = (u) => {
+        const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
+        let updated = false;
+
+        if (u === 'vitor') {
+            if (nHist['2026-07-02']) {
+                const almocoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
+                if (almocoIdx !== -1) {
+                    nHist['2026-07-02'][almocoIdx].macros = { kcal: 319, p: 30, c: 40, f: 4, fib: 2 };
+                    if (nHist['2026-07-02'][almocoIdx].items[0]) nHist['2026-07-02'][almocoIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
+                    updated = true;
+                }
+                const jantarIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Jantar' && m.macros?.kcal === 195);
+                if (jantarIdx !== -1) {
+                    nHist['2026-07-02'][jantarIdx].macros = { kcal: 399, p: 30, c: 60, f: 4, fib: 2 };
+                    if (nHist['2026-07-02'][jantarIdx].items[0]) nHist['2026-07-02'][jantarIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
+                    updated = true;
+                }
+                const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino');
+                if (ceiaIdx !== -1 && nHist['2026-07-02'][ceiaIdx].macros?.kcal === 125) {
+                    nHist['2026-07-02'][ceiaIdx].macros = { kcal: 549, p: 8, c: 79, f: 18, fib: 12 };
+                    if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 292, p: 7, c: 59, f: 3, fib: 10 };
+                    if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 132, p: 0, c: 0, f: 15, fib: 0 };
+                    updated = true;
+                }
+            }
+        } else if (u === 'gabi') {
+            if (nHist['2026-07-02']) {
+                const almoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
+                if (almoIdx !== -1) {
+                    nHist['2026-07-02'][almoIdx].macros = { kcal: 288, p: 28, c: 34, f: 4, fib: 2 };
+                    if (nHist['2026-07-02'][almoIdx].items[0]) nHist['2026-07-02'][almoIdx].items[0].macros = { kcal: 173, p: 6, c: 34, f: 1, fib: 2 };
+                    updated = true;
+                }
+                const lancheIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Lanche da Tarde' && m.macros?.kcal === 0);
+                if (lancheIdx !== -1) {
+                    nHist['2026-07-02'][lancheIdx].macros = { kcal: 130, p: 2, c: 20, f: 4, fib: 0 };
+                    if (nHist['2026-07-02'][lancheIdx].items[0]) nHist['2026-07-02'][lancheIdx].items[0].macros = { kcal: 130, p: 2, c: 20, f: 4, fib: 0 };
+                    updated = true;
+                }
+                const jantarIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Jantar' && m.macros?.kcal === 230);
+                if (jantarIdx !== -1) {
+                    nHist['2026-07-02'][jantarIdx].items = [
+                        { name: 'Macarrão cozido', qty: '110g', macros: { kcal: 173, p: 6, c: 34, f: 1, fib: 2 } },
+                        { name: 'Frango Cozido', qty: '70g', macros: { kcal: 115, p: 22, c: 0, f: 3, fib: 0 } },
+                        { name: 'Brigadeiro', qty: '2 colheres', macros: { kcal: 130, p: 2, c: 20, f: 4, fib: 0 } }
+                    ];
+                    nHist['2026-07-02'][jantarIdx].macros = { kcal: 418, p: 30, c: 54, f: 8, fib: 2 };
+                    updated = true;
+                }
+                const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino' && m.macros?.kcal === 125);
+                if (ceiaIdx !== -1) {
+                    nHist['2026-07-02'][ceiaIdx].macros = { kcal: 395, p: 6, c: 68, f: 12, fib: 8 };
+                    if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 182, p: 5, c: 37, f: 2, fib: 6 };
+                    if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 88, p: 0, c: 0, f: 10, fib: 0 };
+                    updated = true;
+                }
+            }
+            if (nHist['2026-07-01']) {
+                const cafeIdx = nHist['2026-07-01'].findIndex(m => m.type === 'Café da Manhã' && m.macros?.kcal === 124);
+                if (cafeIdx !== -1) {
+                    nHist['2026-07-01'][cafeIdx].macros = { kcal: 580, p: 12, c: 80, f: 23, fib: 3 };
+                    if (nHist['2026-07-01'][cafeIdx].items[0]) nHist['2026-07-01'][cafeIdx].items[0].macros = { kcal: 400, p: 5, c: 57, f: 17, fib: 2 };
+                    if (nHist['2026-07-01'][cafeIdx].items[2]) nHist['2026-07-01'][cafeIdx].items[2].macros = { kcal: 56, p: 1, c: 13, f: 0, fib: 1 };
+                    updated = true;
+                }
+                const almocoIdx = nHist['2026-07-01'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 130);
+                if (almocoIdx !== -1) {
+                    nHist['2026-07-01'][almocoIdx].macros = { kcal: 306, p: 26, c: 31, f: 8, fib: 0 };
+                    if (nHist['2026-07-01'][almocoIdx].items[1]) nHist['2026-07-01'][almocoIdx].items[1].macros = { kcal: 116, p: 22, c: 0, f: 3, fib: 0 };
+                    if (nHist['2026-07-01'][almocoIdx].items[2]) nHist['2026-07-01'][almocoIdx].items[2].macros = { kcal: 60, p: 1, c: 3, f: 5, fib: 0 };
+                    updated = true;
+                }
+            }
+        }
+
+        if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
+        
+        // GENERIC FIXER FOR OVO AND BANANA
+        nHist['2026-07-03'].forEach(meal => {
+            let mealUpdated = false;
+            meal.items.forEach(item => {
+                if (item.name.includes('Ovo') && item.macros?.kcal < 20) {
+                    item.macros = { kcal: 225, p: 19.5, c: 1.5, f: 16.5, fib: 0 };
+                    mealUpdated = true;
+                }
+                if (item.name.includes('Banana Naninca') && item.macros?.kcal === 0) {
+                    item.macros = { kcal: 135, p: 1.5, c: 35, f: 0.5, fib: 3 };
+                    mealUpdated = true;
+                }
+            });
+            if (mealUpdated) {
+                let k=0, p=0, c=0, f=0, fib=0;
+                meal.items.forEach(i => {
+                    k += i.macros?.kcal || 0;
+                    p += i.macros?.p || 0;
+                    c += i.macros?.c || 0;
+                    f += i.macros?.f || 0;
+                    fib += i.macros?.fib || 0;
+                });
+                meal.macros = { kcal: Math.round(k), p: Math.round(p), c: Math.round(c), f: Math.round(f), fib: Math.round(fib) };
+                updated = true;
+            }
+        });
+
+        // JANTAR PIZZA 2026-07-03
+        const jantarPizzaIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar' && m.items.length === 6);
+        if (jantarPizzaIdx === -1) {
+            nHist['2026-07-03'].push({
+                type: 'Jantar',
+                timestamp: new Date().toISOString(),
+                macros: { kcal: 736, p: 40, c: 84, f: 26, fib: 4 },
+                items: [
+                    { name: 'Mini Pizza Pratty (Massa)', qty: '6 un', macros: { kcal: 204, p: 6, c: 42, f: 0, fib: 1.2 } },
+                    { name: 'Frango Cozido', qty: '30g', macros: { kcal: 50, p: 9, c: 0, f: 1, fib: 0 } },
+                    { name: 'Queijo Mussarela', qty: '30g', macros: { kcal: 90, p: 7.5, c: 1, f: 6.6, fib: 0 } },
+                    { name: 'Tomate', qty: '30g', macros: { kcal: 6, p: 0.3, c: 1.2, f: 0.1, fib: 0.4 } },
+                    { name: 'Ganache de Chocolate', qty: '3 colheres', macros: { kcal: 300, p: 3, c: 30, f: 18, fib: 3 } },
+                    { name: 'Suco Tang (Preparado)', qty: '300ml', macros: { kcal: 27, p: 0, c: 6, f: 0, fib: 0 } }
+                ]
+            });
+            updated = true;
+        }
+
+        if (updated) {
+            localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
+            CloudSync.pushUp(u);
+        }
+    };
+
     // --- AUTHENTICATION LOGIC ---
     const checkAuth = async () => {
         activeProfile = Auth.getActiveUser();
@@ -22,6 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btn) btn.textContent = 'Sincronizando nuvem... ☁️';
             
             await CloudSync.pullDown(activeProfile.name.toLowerCase());
+            
+            runMigrations(activeProfile.name.toLowerCase());
             
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
@@ -78,214 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (profile) {
             document.getElementById('login-error').style.display = 'none';
             checkAuth();
-            
-            // --- VITOR MACARRÃO DATA FIX ---
-            if (u.toLowerCase() === 'vitor') {
-                setTimeout(() => {
-                    const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
-                    if (nHist['2026-07-02']) {
-                        let updated = false;
-                        const almocoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
-                        if (almocoIdx !== -1) {
-                            nHist['2026-07-02'][almocoIdx].macros = { kcal: 319, p: 30, c: 40, f: 4, fib: 2 };
-                            if (nHist['2026-07-02'][almocoIdx].items[0]) nHist['2026-07-02'][almocoIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
-                            updated = true;
-                        }
-                        const jantarIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Jantar' && m.macros?.kcal === 195);
-                        if (jantarIdx !== -1) {
-                            nHist['2026-07-02'][jantarIdx].macros = { kcal: 399, p: 30, c: 60, f: 4, fib: 2 };
-                            if (nHist['2026-07-02'][jantarIdx].items[0]) nHist['2026-07-02'][jantarIdx].items[0].macros = { kcal: 204, p: 8, c: 40, f: 1, fib: 2 };
-                            updated = true;
-                        }
-
-                        // Fix CEIA + Add Whey
-                        const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino');
-                        if (ceiaIdx !== -1) {
-                            if (nHist['2026-07-02'][ceiaIdx].macros?.kcal === 125) {
-                                nHist['2026-07-02'][ceiaIdx].macros = { kcal: 549, p: 8, c: 79, f: 18, fib: 12 };
-                                if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 292, p: 7, c: 59, f: 3, fib: 10 };
-                                if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 132, p: 0, c: 0, f: 15, fib: 0 };
-                                updated = true;
-                            }
-                        }
-                    }
-
-                    if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
-                    
-                    // --- GENERIC FIXER FOR OVO AND BANANA (2026-07-03) ---
-                    nHist['2026-07-03'].forEach(meal => {
-                        let mealUpdated = false;
-                        meal.items.forEach(item => {
-                            if (item.name.includes('Ovo') && item.macros?.kcal < 20) {
-                                // Assume 3 ovos = 225 kcal
-                                item.macros = { kcal: 225, p: 19.5, c: 1.5, f: 16.5, fib: 0 };
-                                mealUpdated = true;
-                            }
-                            if (item.name.includes('Banana Naninca') && item.macros?.kcal === 0) {
-                                // Assume 1.5 bananas = 135 kcal
-                                item.macros = { kcal: 135, p: 1.5, c: 35, f: 0.5, fib: 3 };
-                                mealUpdated = true;
-                            }
-                        });
-                        if (mealUpdated) {
-                            let k=0, p=0, c=0, f=0, fib=0;
-                            meal.items.forEach(i => {
-                                k += i.macros?.kcal || 0;
-                                p += i.macros?.p || 0;
-                                c += i.macros?.c || 0;
-                                f += i.macros?.f || 0;
-                                fib += i.macros?.fib || 0;
-                            });
-                            meal.macros = { kcal: Math.round(k), p: Math.round(p), c: Math.round(c), f: Math.round(f), fib: Math.round(fib) };
-                            updated = true;
-                        }
-                    });
-
-                    const jantarPizzaVitorIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar' && m.items.length === 6);
-                    if (jantarPizzaVitorIdx === -1) {
-                        nHist['2026-07-03'].push({
-                            type: 'Jantar',
-                            timestamp: new Date().toISOString(),
-                            macros: { kcal: 736, p: 40, c: 84, f: 26, fib: 4 },
-                            items: [
-                                { name: 'Mini Pizza Pratty (Massa)', qty: '6 un', macros: { kcal: 204, p: 6, c: 42, f: 0, fib: 1.2 } },
-                                { name: 'Frango Cozido', qty: '30g', macros: { kcal: 50, p: 9, c: 0, f: 1, fib: 0 } },
-                                { name: 'Queijo Mussarela', qty: '30g', macros: { kcal: 90, p: 7.5, c: 1, f: 6.6, fib: 0 } },
-                                { name: 'Tomate', qty: '30g', macros: { kcal: 6, p: 0.3, c: 1.2, f: 0.1, fib: 0.4 } },
-                                { name: 'Ganache de Chocolate', qty: '3 colheres', macros: { kcal: 300, p: 3, c: 30, f: 18, fib: 3 } },
-                                { name: 'Suco Tang (Preparado)', qty: '300ml', macros: { kcal: 27, p: 0, c: 6, f: 0, fib: 0 } }
-                            ]
-                        });
-                        updated = true;
-                    }
-                        
-                    if (updated) {
-                        if (nHist['2026-07-02']) DB.saveNutrition('2026-07-02', nHist['2026-07-02']);
-                        if (nHist['2026-07-03']) DB.saveNutrition('2026-07-03', nHist['2026-07-03']);
-                        localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
-                        CloudSync.pushUp(u.toLowerCase());
-                    }
-                }, 2000);
-            }
-
-            // --- GABI MIGRATIONS ---
-            if (u.toLowerCase() === 'gabi') {
-                setTimeout(() => {
-                    const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
-                    let updated = false;
-
-                    // Fix 2026-07-02
-                    if (nHist['2026-07-02']) {
-                        const almoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
-                        if (almoIdx !== -1) {
-                            nHist['2026-07-02'][almoIdx].macros = { kcal: 288, p: 28, c: 34, f: 4, fib: 2 };
-                            if (nHist['2026-07-02'][almoIdx].items[0]) nHist['2026-07-02'][almoIdx].items[0].macros = { kcal: 173, p: 6, c: 34, f: 1, fib: 2 };
-                            updated = true;
-                        }
-
-                        const lancheIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Lanche da Tarde' && m.macros?.kcal === 0);
-                        if (lancheIdx !== -1) {
-                            nHist['2026-07-02'][lancheIdx].macros = { kcal: 130, p: 2, c: 20, f: 4, fib: 0 };
-                            if (nHist['2026-07-02'][lancheIdx].items[0]) nHist['2026-07-02'][lancheIdx].items[0].macros = { kcal: 130, p: 2, c: 20, f: 4, fib: 0 };
-                            updated = true;
-                        }
-
-                        const jantarIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Jantar' && m.macros?.kcal === 230);
-                        if (jantarIdx !== -1) {
-                            nHist['2026-07-02'][jantarIdx].items = [
-                                { name: 'Macarrão cozido', qty: '110g', macros: { kcal: 173, p: 6, c: 34, f: 1, fib: 2 } },
-                                { name: 'Frango Cozido', qty: '70g', macros: { kcal: 115, p: 22, c: 0, f: 3, fib: 0 } },
-                                { name: 'Brigadeiro', qty: '2 colheres', macros: { kcal: 130, p: 2, c: 20, f: 4, fib: 0 } }
-                            ];
-                            nHist['2026-07-02'][jantarIdx].macros = { kcal: 418, p: 30, c: 54, f: 8, fib: 2 };
-                            updated = true;
-                        }
-
-                        // Fix CEIA
-                        const ceiaIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Ceia / Pós-Treino' && m.macros?.kcal === 125);
-                        if (ceiaIdx !== -1) {
-                            nHist['2026-07-02'][ceiaIdx].macros = { kcal: 395, p: 6, c: 68, f: 12, fib: 8 };
-                            if (nHist['2026-07-02'][ceiaIdx].items[1]) nHist['2026-07-02'][ceiaIdx].items[1].macros = { kcal: 182, p: 5, c: 37, f: 2, fib: 6 };
-                            if (nHist['2026-07-02'][ceiaIdx].items[2]) nHist['2026-07-02'][ceiaIdx].items[2].macros = { kcal: 88, p: 0, c: 0, f: 10, fib: 0 };
-                            updated = true;
-                        }
-                    }
-
-                    // Fix 2026-07-01
-                    if (nHist['2026-07-01']) {
-                        const cafeIdx = nHist['2026-07-01'].findIndex(m => m.type === 'Café da Manhã' && m.macros?.kcal === 124);
-                        if (cafeIdx !== -1) {
-                            nHist['2026-07-01'][cafeIdx].macros = { kcal: 580, p: 12, c: 80, f: 23, fib: 3 };
-                            if (nHist['2026-07-01'][cafeIdx].items[0]) nHist['2026-07-01'][cafeIdx].items[0].macros = { kcal: 400, p: 5, c: 57, f: 17, fib: 2 };
-                            if (nHist['2026-07-01'][cafeIdx].items[2]) nHist['2026-07-01'][cafeIdx].items[2].macros = { kcal: 56, p: 1, c: 13, f: 0, fib: 1 };
-                            updated = true;
-                        }
-                        
-                        const almocoIdx = nHist['2026-07-01'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 130);
-                        if (almocoIdx !== -1) {
-                            nHist['2026-07-01'][almocoIdx].macros = { kcal: 306, p: 26, c: 31, f: 8, fib: 0 };
-                            if (nHist['2026-07-01'][almocoIdx].items[1]) nHist['2026-07-01'][almocoIdx].items[1].macros = { kcal: 116, p: 22, c: 0, f: 3, fib: 0 };
-                            if (nHist['2026-07-01'][almocoIdx].items[2]) nHist['2026-07-01'][almocoIdx].items[2].macros = { kcal: 60, p: 1, c: 3, f: 5, fib: 0 };
-                            updated = true;
-                        }
-                    }
-
-                    // --- JANTAR PIZZA 2026-07-03 ---
-                    if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
-                    
-                    // --- GENERIC FIXER FOR OVO AND BANANA (2026-07-03) ---
-                    nHist['2026-07-03'].forEach(meal => {
-                        let mealUpdated = false;
-                        meal.items.forEach(item => {
-                            if (item.name.includes('Ovo') && item.macros?.kcal < 20) {
-                                item.macros = { kcal: 225, p: 19.5, c: 1.5, f: 16.5, fib: 0 };
-                                mealUpdated = true;
-                            }
-                            if (item.name.includes('Banana Naninca') && item.macros?.kcal === 0) {
-                                item.macros = { kcal: 135, p: 1.5, c: 35, f: 0.5, fib: 3 };
-                                mealUpdated = true;
-                            }
-                        });
-                        if (mealUpdated) {
-                            let k=0, p=0, c=0, f=0, fib=0;
-                            meal.items.forEach(i => {
-                                k += i.macros?.kcal || 0;
-                                p += i.macros?.p || 0;
-                                c += i.macros?.c || 0;
-                                f += i.macros?.f || 0;
-                                fib += i.macros?.fib || 0;
-                            });
-                            meal.macros = { kcal: Math.round(k), p: Math.round(p), c: Math.round(c), f: Math.round(f), fib: Math.round(fib) };
-                            updated = true;
-                        }
-                    });
-
-                    const jantarPizzaGabiIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar' && m.items.length === 6);
-                    if (jantarPizzaGabiIdx === -1) {
-                        nHist['2026-07-03'].push({
-                            type: 'Jantar',
-                            timestamp: new Date().toISOString(),
-                            macros: { kcal: 736, p: 40, c: 84, f: 26, fib: 4 },
-                            items: [
-                                { name: 'Mini Pizza Pratty (Massa)', qty: '6 un', macros: { kcal: 204, p: 6, c: 42, f: 0, fib: 1.2 } },
-                                { name: 'Frango Cozido', qty: '30g', macros: { kcal: 50, p: 9, c: 0, f: 1, fib: 0 } },
-                                { name: 'Queijo Mussarela', qty: '30g', macros: { kcal: 90, p: 7.5, c: 1, f: 6.6, fib: 0 } },
-                                { name: 'Tomate', qty: '30g', macros: { kcal: 6, p: 0.3, c: 1.2, f: 0.1, fib: 0.4 } },
-                                { name: 'Ganache de Chocolate', qty: '3 colheres', macros: { kcal: 300, p: 3, c: 30, f: 18, fib: 3 } },
-                                { name: 'Suco Tang (Preparado)', qty: '300ml', macros: { kcal: 27, p: 0, c: 6, f: 0, fib: 0 } }
-                            ]
-                        });
-                        updated = true;
-                    }
-
-                    if (updated) {
-                        if (nHist['2026-07-02']) DB.saveNutrition('2026-07-02', nHist['2026-07-02']); 
-                        if (nHist['2026-07-03']) DB.saveNutrition('2026-07-03', nHist['2026-07-03']);
-                        localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
-                        CloudSync.pushUp(u.toLowerCase());
-                    }
-                }, 2000);
-            }
         } else {
             document.getElementById('login-error').style.display = 'block';
         }
