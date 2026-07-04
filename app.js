@@ -110,9 +110,38 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    // --- JANTAR PIZZA 2026-07-03 ---
                     if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
-                    const jantarPizzaVitorIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar');
+                    
+                    // --- GENERIC FIXER FOR OVO AND BANANA (2026-07-03) ---
+                    nHist['2026-07-03'].forEach(meal => {
+                        let mealUpdated = false;
+                        meal.items.forEach(item => {
+                            if (item.name.includes('Ovo') && item.macros?.kcal < 20) {
+                                // Assume 3 ovos = 225 kcal
+                                item.macros = { kcal: 225, p: 19.5, c: 1.5, f: 16.5, fib: 0 };
+                                mealUpdated = true;
+                            }
+                            if (item.name.includes('Banana Naninca') && item.macros?.kcal === 0) {
+                                // Assume 1.5 bananas = 135 kcal
+                                item.macros = { kcal: 135, p: 1.5, c: 35, f: 0.5, fib: 3 };
+                                mealUpdated = true;
+                            }
+                        });
+                        if (mealUpdated) {
+                            let k=0, p=0, c=0, f=0, fib=0;
+                            meal.items.forEach(i => {
+                                k += i.macros?.kcal || 0;
+                                p += i.macros?.p || 0;
+                                c += i.macros?.c || 0;
+                                f += i.macros?.f || 0;
+                                fib += i.macros?.fib || 0;
+                            });
+                            meal.macros = { kcal: Math.round(k), p: Math.round(p), c: Math.round(c), f: Math.round(f), fib: Math.round(fib) };
+                            updated = true;
+                        }
+                    });
+
+                    const jantarPizzaVitorIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar' && m.items.length === 6);
                     if (jantarPizzaVitorIdx === -1) {
                         nHist['2026-07-03'].push({
                             type: 'Jantar',
@@ -203,7 +232,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // --- JANTAR PIZZA 2026-07-03 ---
                     if (!nHist['2026-07-03']) nHist['2026-07-03'] = [];
-                    const jantarPizzaGabiIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar');
+                    
+                    // --- GENERIC FIXER FOR OVO AND BANANA (2026-07-03) ---
+                    nHist['2026-07-03'].forEach(meal => {
+                        let mealUpdated = false;
+                        meal.items.forEach(item => {
+                            if (item.name.includes('Ovo') && item.macros?.kcal < 20) {
+                                item.macros = { kcal: 225, p: 19.5, c: 1.5, f: 16.5, fib: 0 };
+                                mealUpdated = true;
+                            }
+                            if (item.name.includes('Banana Naninca') && item.macros?.kcal === 0) {
+                                item.macros = { kcal: 135, p: 1.5, c: 35, f: 0.5, fib: 3 };
+                                mealUpdated = true;
+                            }
+                        });
+                        if (mealUpdated) {
+                            let k=0, p=0, c=0, f=0, fib=0;
+                            meal.items.forEach(i => {
+                                k += i.macros?.kcal || 0;
+                                p += i.macros?.p || 0;
+                                c += i.macros?.c || 0;
+                                f += i.macros?.f || 0;
+                                fib += i.macros?.fib || 0;
+                            });
+                            meal.macros = { kcal: Math.round(k), p: Math.round(p), c: Math.round(c), f: Math.round(f), fib: Math.round(fib) };
+                            updated = true;
+                        }
+                    });
+
+                    const jantarPizzaGabiIdx = nHist['2026-07-03'].findIndex(m => m.type === 'Jantar' && m.items.length === 6);
                     if (jantarPizzaGabiIdx === -1) {
                         nHist['2026-07-03'].push({
                             type: 'Jantar',
