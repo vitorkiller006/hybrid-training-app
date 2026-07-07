@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortedDates = Object.keys(history).sort((a, b) => {
             const da = a.split('_')[0];
             const db = b.split('_')[0];
-            if (da === db) return b.localeCompare(a);
+            if (da === db) return a.localeCompare(b);
             return new Date(db) - new Date(da);
         });
         const lastWorkoutType = sortedDates.length > 0 ? history[sortedDates[0]].type : null;
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const allDates = [...new Set([...Object.keys(wHist), ...Object.keys(nHist)])].sort((a, b) => {
             const da = a.split('_')[0];
             const db = b.split('_')[0];
-            if (da === db) return b.localeCompare(a);
+            if (da === db) return a.localeCompare(b);
             return new Date(db) - new Date(da);
         });
 
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortedDates = Object.keys(h).sort((a, b) => {
             const da = a.split('_')[0];
             const db = b.split('_')[0];
-            if (da === db) return b.localeCompare(a);
+            if (da === db) return a.localeCompare(b);
             return new Date(db) - new Date(da);
         });
         
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortedDates = Object.keys(history).sort((a, b) => {
             const da = a.split('_')[0];
             const db = b.split('_')[0];
-            if (da === db) return b.localeCompare(a);
+            if (da === db) return a.localeCompare(b);
             return new Date(db) - new Date(da);
         });
         const completedCount = sortedDates.length;
