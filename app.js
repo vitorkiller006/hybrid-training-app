@@ -143,6 +143,53 @@ document.addEventListener('DOMContentLoaded', () => {
             CloudSync.pushUp(u);
         }
 
+        // NUTRITION RECALCULATION MIGRATION
+        let nUpdated = false;
+        if (u === 'vitor' && nHist['2026-07-06']) {
+            nHist['2026-07-06'].forEach(meal => {
+                let mealKcal = 0, mealP = 0, mealC = 0, mealF = 0, mealFib = 0;
+                meal.items.forEach(item => {
+                    // Try exact match or lowercase match
+                    let foodDbItem = FoodDB[item.name];
+                    if (!foodDbItem) {
+                        const key = Object.keys(FoodDB).find(k => k.toLowerCase() === item.name.toLowerCase());
+                        if (key) foodDbItem = FoodDB[key];
+                    }
+
+                    if (foodDbItem) {
+                        const qtyMatch = item.qty.match(/(\d+[\.,]?\d*)/);
+                        if (qtyMatch) {
+                            let qtyNum = parseFloat(qtyMatch[1].replace(',', '.'));
+                            const ratio = qtyNum / foodDbItem.baseQty;
+                            item.macros.kcal = Math.round(foodDbItem.kcal * ratio);
+                            item.macros.p = parseFloat((foodDbItem.p * ratio).toFixed(1));
+                            item.macros.c = parseFloat((foodDbItem.c * ratio).toFixed(1));
+                            item.macros.f = parseFloat((foodDbItem.f * ratio).toFixed(1));
+                            item.macros.fib = parseFloat((foodDbItem.fib * ratio).toFixed(1));
+                        }
+                    }
+                    mealKcal += item.macros.kcal;
+                    mealP += item.macros.p;
+                    mealC += item.macros.c;
+                    mealF += item.macros.f;
+                    mealFib += item.macros.fib;
+                });
+                meal.macros = { 
+                    kcal: mealKcal, 
+                    p: parseFloat(mealP.toFixed(1)), 
+                    c: parseFloat(mealC.toFixed(1)), 
+                    f: parseFloat(mealF.toFixed(1)), 
+                    fib: parseFloat(mealFib.toFixed(1)) 
+                };
+            });
+            nUpdated = true;
+        }
+
+        if (nUpdated) {
+            localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
+            CloudSync.pushUp(u);
+        }
+
         // WORKOUT MIGRATIONS
         const wHist = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
         let wUpdated = false;

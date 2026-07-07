@@ -59,5 +59,10 @@ export const FoodDB = {
     'Pasta de Amendoim Integral': { kcal: 90, p: 4.0, c: 1.5, f: 7.5, fib: 1.0, baseQty: 15, unit: 'g' },
     'Creatina': { kcal: 0, p: 0, c: 0, f: 0, fib: 0, baseQty: 5, unit: 'g' },
     'Doce de Leite': { kcal: 65, p: 1.5, c: 11.5, f: 1.5, fib: 0, baseQty: 20, unit: 'g' },
-    'Leite Desnatado': { kcal: 70, p: 6.5, c: 10.0, f: 0, fib: 0, baseQty: 200, unit: 'ml' }
+    'Leite Desnatado': { kcal: 70, p: 6.5, c: 10.0, f: 0, fib: 0, baseQty: 200, unit: 'ml' },
+    'Queijo Quente': { kcal: 250, p: 12.0, c: 26.0, f: 11.0, fib: 1.0, baseQty: 1, unit: 'unidade' },
+    'abobrinha': { kcal: 17, p: 1.2, c: 3.1, f: 0.3, fib: 1.0, baseQty: 100, unit: 'g' },
+    'carne moída musculo': { kcal: 130, p: 26.0, c: 0, f: 3.0, fib: 0, baseQty: 100, unit: 'g' },
+    'coca cola normal': { kcal: 42, p: 0, c: 10.6, f: 0, fib: 0, baseQty: 100, unit: 'ml' },
+    'Bis Branco': { kcal: 31, p: 0.4, c: 4.1, f: 1.5, fib: 0, baseQty: 1, unit: 'unidade' }
 };
