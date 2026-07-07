@@ -151,14 +151,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.getElementById('btn-login');
             if (btn) btn.textContent = 'Sincronizando nuvem... ☁️';
             
-            await CloudSync.pullDown(activeProfile.name.toLowerCase());
-            
-            runMigrations(activeProfile.name.toLowerCase());
-            
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            initApp();
-            renderWater(); // Added water render
+            try {
+                await CloudSync.pullDown(activeProfile.name.toLowerCase());
+                try { runMigrations(activeProfile.name.toLowerCase()); } catch(e) { console.error('Migration failed:', e); }
+                
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                initApp();
+                renderWater(); // Added water render
+            } catch (err) {
+                console.error("Auth init error:", err);
+                alert("Erro ao iniciar sessão. Limpando dados para evitar loop.");
+                Auth.logout();
+                window.location.reload();
+            }
         } else {
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
@@ -749,9 +755,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let restInterval = null;
     
-    document.querySelector('.skip-workout')?.addEventListener('click', () => {
+    document.querySelector('.skip-workout')?.addEventListener('click', async () => {
         if(confirm("Tem certeza que deseja pular o treino de hoje? (O ciclo avançará automaticamente)")) {
-            DB.saveWorkout(localToday, {
+            const btn = document.querySelector('.skip-workout');
+            const originalText = btn.textContent;
+            btn.textContent = "Sincronizando...";
+            await DB.saveWorkout(localToday, {
                 type: todayWorkoutType,
                 exercises: [],
                 notes: "Treino pulado (Descanso forçado)"
