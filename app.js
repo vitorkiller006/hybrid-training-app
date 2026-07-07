@@ -142,6 +142,21 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
             CloudSync.pushUp(u);
         }
+
+        // WORKOUT MIGRATIONS
+        const wHist = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
+        let wUpdated = false;
+        if (u === 'vitor') {
+            if (wHist['2026-07-06'] && wHist['2026-07-06'].type === 'LISS_RUN' && (!wHist['2026-07-06'].exercises || wHist['2026-07-06'].exercises.length === 0)) {
+                wHist['2026-07-06_skip_1'] = wHist['2026-07-06'];
+                delete wHist['2026-07-06'];
+                wUpdated = true;
+            }
+        }
+        if (wUpdated) {
+            localStorage.setItem(DB._getKey('workout_history'), JSON.stringify(wHist));
+            CloudSync.pushUp(u);
+        }
     };
 
     // --- AUTHENTICATION LOGIC ---
@@ -290,7 +305,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Load initial state
         const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
-        const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+        const sortedDates = Object.keys(history).sort((a, b) => {
+            const da = a.split('_')[0];
+            const db = b.split('_')[0];
+            if (da === db) return b.localeCompare(a);
+            return new Date(db) - new Date(da);
+        });
         const lastWorkoutType = sortedDates.length > 0 ? history[sortedDates[0]].type : null;
         
         todayWorkoutType = workoutEngine.getNextWorkoutType(lastWorkoutType);
@@ -342,7 +362,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
         historyContainer.innerHTML = '';
 
-        const allDates = [...new Set([...Object.keys(wHist), ...Object.keys(nHist)])].sort().reverse();
+        const allDates = [...new Set([...Object.keys(wHist), ...Object.keys(nHist)])].sort((a, b) => {
+            const da = a.split('_')[0];
+            const db = b.split('_')[0];
+            if (da === db) return b.localeCompare(a);
+            return new Date(db) - new Date(da);
+        });
 
         if (allDates.length === 0) {
             historyContainer.innerHTML = '<p class="rpe-status">Nenhum dado registrado ainda.</p>';
@@ -352,7 +377,8 @@ document.addEventListener('DOMContentLoaded', () => {
         allDates.forEach(date => {
             const w = wHist[date];
             const n = nHist[date];
-            const dateStr = date.split('-').reverse().join('/');
+            const baseDate = date.split('_')[0];
+            const dateStr = baseDate.split('-').reverse().join('/');
 
             let html = `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
                 <h3 style="color: #fff; margin-bottom: 0.8rem; font-family: var(--font-heading); font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">🗓️ ${dateStr}</h3>`;
@@ -415,7 +441,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderProgressionPlan = (workoutType) => {
         const h = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
-        const sortedDates = Object.keys(h).sort((a, b) => new Date(b) - new Date(a));
+        const sortedDates = Object.keys(h).sort((a, b) => {
+            const da = a.split('_')[0];
+            const db = b.split('_')[0];
+            if (da === db) return b.localeCompare(a);
+            return new Date(db) - new Date(da);
+        });
         
         let lastWorkout = null;
         for (let date of sortedDates) {
@@ -468,7 +499,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateTrainingUI = (todayWorkoutType) => {
         const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
-        const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+        const sortedDates = Object.keys(history).sort((a, b) => {
+            const da = a.split('_')[0];
+            const db = b.split('_')[0];
+            if (da === db) return b.localeCompare(a);
+            return new Date(db) - new Date(da);
+        });
         const completedCount = sortedDates.length;
         
         document.querySelector('.training-today .badge-hybrid').textContent = todayWorkoutType;
@@ -760,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.querySelector('.skip-workout');
             const originalText = btn.textContent;
             btn.textContent = "Sincronizando...";
-            await DB.saveWorkout(localToday, {
+            await DB.saveWorkout(localToday + '_skip_' + Date.now(), {
                 type: todayWorkoutType,
                 exercises: [],
                 notes: "Treino pulado (Descanso forçado)"
