@@ -1,9 +1,9 @@
-import { WorkoutEngine } from './src/js/algorithms/workout-engine.js';
-import { NutritionEngine } from './src/js/algorithms/nutrition-engine.js';
-import { FoodDB } from './src/js/store/food-db.js';
-import { DB } from './src/js/store/db.js';
-import { Auth } from './src/js/store/auth.js';
-import { CloudSync } from './src/js/store/firebase-client.js';
+import { WorkoutEngine } from './src/js/algorithms/workout-engine.js?v=3';
+import { NutritionEngine } from './src/js/algorithms/nutrition-engine.js?v=3';
+import { FoodDB } from './src/js/store/food-db.js?v=3';
+import { DB } from './src/js/store/db.js?v=3';
+import { Auth } from './src/js/store/auth.js?v=3';
+import { CloudSync } from './src/js/store/firebase-client.js?v=3';
 
 document.addEventListener('DOMContentLoaded', () => {
     let workoutEngine = null;
