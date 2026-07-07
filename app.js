@@ -379,6 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="background: rgba(255, 69, 0, 0.1); padding: 0.8rem; border-radius: 8px; border-left: 3px solid var(--primary-color);">
                     <h4 style="color:var(--primary-color); font-size: 0.95rem; margin-bottom: 0.4rem; font-family: var(--font-heading);">Treino: ${w.type}</h4>`;
                 
+                if (w.notes) {
+                    html += `<div style="font-size: 0.85rem; color: var(--secondary-color); font-style: italic; margin-bottom: 0.5rem;">${w.notes}</div>`;
+                }
+                
                 w.exercises?.forEach(ex => {
                     html += `<div style="margin-bottom: 0.5rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,69,0,0.3);">
                         <strong style="color:#ccc; font-size: 0.85rem;">${ex.name}</strong><br>
@@ -745,6 +749,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let restInterval = null;
     
+    document.querySelector('.skip-workout')?.addEventListener('click', () => {
+        if(confirm("Tem certeza que deseja pular o treino de hoje? (O ciclo avançará automaticamente)")) {
+            DB.saveWorkout(localToday, {
+                type: todayWorkoutType,
+                exercises: [],
+                notes: "Treino pulado (Descanso forçado)"
+            });
+            alert('Treino pulado com sucesso! O próximo treino já está engatilhado.');
+            window.location.reload();
+        }
+    });
+
     document.querySelector('.start-workout')?.addEventListener('click', () => {
         document.getElementById('tab-treino').style.display = 'none';
         document.getElementById('workout-mode').style.display = 'block';
