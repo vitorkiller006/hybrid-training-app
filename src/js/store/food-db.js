@@ -49,10 +49,15 @@ export const FoodDB = {
     // Novos Adicionados
     'Nescau': { kcal: 74, p: 0.7, c: 17, f: 0.4, fib: 1.0, baseQty: 20, unit: 'g' }, // ~2 colheres
     'Pão Francês': { kcal: 135, p: 4.0, c: 25.0, f: 1.5, fib: 1.0, baseQty: 1, unit: 'unidade' },
-    'Queijo Mussarela': { kcal: 90, p: 7.0, c: 0.5, f: 6.5, fib: 0, baseQty: 30, unit: 'g' },
+    'Pão Integral': { kcal: 120, p: 6.0, c: 20.0, f: 1.5, fib: 3.5, baseQty: 50, unit: 'g' }, // ~2 fatias
+    'Queijo Prato': { kcal: 105, p: 7.0, c: 0.5, f: 8.5, fib: 0, baseQty: 30, unit: 'g' },
     'Presunto': { kcal: 45, p: 5.0, c: 0.5, f: 2.5, fib: 0, baseQty: 30, unit: 'g' },
+    'Requeijão Light': { kcal: 50, p: 3.5, c: 1.0, f: 3.5, fib: 0, baseQty: 30, unit: 'g' },
     'Tapioca (Goma)': { kcal: 168, p: 0, c: 42.0, f: 0, fib: 0, baseQty: 50, unit: 'g' },
     'Iogurte Natural': { kcal: 125, p: 7.0, c: 9.0, f: 7.0, fib: 0, baseQty: 170, unit: 'g' },
     'Aveia em Flocos': { kcal: 118, p: 4.3, c: 17.0, f: 2.2, fib: 2.9, baseQty: 30, unit: 'g' },
-    'Azeite de Oliva': { kcal: 119, p: 0, c: 0, f: 13.5, fib: 0, baseQty: 13, unit: 'ml' }
+    'Pasta de Amendoim Integral': { kcal: 90, p: 4.0, c: 1.5, f: 7.5, fib: 1.0, baseQty: 15, unit: 'g' },
+    'Creatina': { kcal: 0, p: 0, c: 0, f: 0, fib: 0, baseQty: 5, unit: 'g' },
+    'Doce de Leite': { kcal: 65, p: 1.5, c: 11.5, f: 1.5, fib: 0, baseQty: 20, unit: 'g' },
+    'Leite Desnatado': { kcal: 70, p: 6.5, c: 10.0, f: 0, fib: 0, baseQty: 200, unit: 'ml' }
 };
