@@ -152,6 +152,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 delete wHist['2026-07-06'];
                 wUpdated = true;
             }
+
+            if (!wHist['2026-07-06'] || wHist['2026-07-06'].type !== 'HIIT') {
+                wHist['2026-07-06'] = {
+                    type: 'HIIT',
+                    exercises: [
+                        { name: 'Tiro na Esteira (HIIT)', sets: [{reps: '12 tiros', load: '9.2km/h'}], tags: [], notes: '40s sprint / 20s descanso' },
+                        { name: 'Abdominal Paralelas', sets: [{reps: '15', load: 'BW'}, {reps: '12', load: 'BW'}, {reps: '12', load: 'BW'}], tags: [], notes: '' },
+                        { name: 'Abdominal Máquina', sets: [{reps: '15', load: '5kg'}, {reps: '15', load: '5kg'}, {reps: '15', load: '5kg'}], tags: ['falha'], notes: 'Falhei muito nessa' },
+                        { name: 'Extensão Lombar', sets: [{reps: '12', load: 'BW'}, {reps: '10', load: 'BW'}, {reps: '12', load: 'BW'}], tags: [], notes: '' },
+                        { name: 'Tiro na Esteira (HIIT) 2º Round', sets: [{reps: '12 tiros', load: '9.2km/h'}], tags: [], notes: '40s sprint / 20s descanso' }
+                    ]
+                };
+                wUpdated = true;
+            }
         }
         if (wUpdated) {
             localStorage.setItem(DB._getKey('workout_history'), JSON.stringify(wHist));
