@@ -62,7 +62,11 @@ export const FoodDB = {
     'Leite Desnatado': { kcal: 70, p: 6.5, c: 10.0, f: 0, fib: 0, baseQty: 200, unit: 'ml' },
     'Queijo Quente': { kcal: 250, p: 12.0, c: 26.0, f: 11.0, fib: 1.0, baseQty: 1, unit: 'unidade' },
     'abobrinha': { kcal: 17, p: 1.2, c: 3.1, f: 0.3, fib: 1.0, baseQty: 100, unit: 'g' },
-    'carne moída musculo': { kcal: 130, p: 26.0, c: 0, f: 3.0, fib: 0, baseQty: 100, unit: 'g' },
+    'carne mo\u00EDda musculo': { kcal: 130, p: 26.0, c: 0, f: 3.0, fib: 0, baseQty: 100, unit: 'g' },
     'coca cola normal': { kcal: 42, p: 0, c: 10.6, f: 0, fib: 0, baseQty: 100, unit: 'ml' },
-    'Bis Branco': { kcal: 31, p: 0.4, c: 4.1, f: 1.5, fib: 0, baseQty: 1, unit: 'unidade' }
+    'Bis Branco': { kcal: 31, p: 0.4, c: 4.1, f: 1.5, fib: 0, baseQty: 1, unit: 'unidade' },
+    'P\u00E3o de Forma Pullman': { kcal: 62, p: 2.1, c: 12.0, f: 0.8, fib: 1.0, baseQty: 1, unit: 'fatia' },
+    'Frango Desfiado': { kcal: 165, p: 31.0, c: 0, f: 3.6, fib: 0, baseQty: 100, unit: 'g' },
+    'Carne Mo\u00EDda': { kcal: 219, p: 35.9, c: 0, f: 7.3, fib: 0, baseQty: 100, unit: 'g' },
+    'Ovo Cozido': { kcal: 75, p: 6.5, c: 0.5, f: 5.5, fib: 0, baseQty: 1, unit: 'unidade' }
 };
