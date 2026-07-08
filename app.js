@@ -193,6 +193,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // WORKOUT MIGRATIONS
         const wHist = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
         let wUpdated = false;
+
+        // INJECT LOST WORKOUT
+        if (u === 'vitor' && localToday === '2026-07-07') {
+            if (!wHist['2026-07-07'] || wHist['2026-07-07'].exercises.length === 0) {
+                wHist['2026-07-07'] = {
+                    type: 'PUSH',
+                    exercises: [
+                        { name: 'Supino reto sentado', sets: [{reps: '15', load: '10'}, {reps: '12', load: '20'}, {reps: '12', load: '23'}, {reps: '12', load: '25'}, {reps: '12', load: '27'}], notes: '', tags: [] },
+                        { name: 'Elevação lateral', sets: [{reps: '12', load: '7'}, {reps: '12', load: '7'}, {reps: '12', load: '8'}, {reps: '10', load: '8'}], notes: '', tags: [] },
+                        { name: 'Tríceps polia', sets: [{reps: '15', load: '40'}, {reps: '12', load: '45'}, {reps: '10', load: '50'}, {reps: '8', load: '55'}], notes: '', tags: [] },
+                        { name: 'Tiro na Esteira (HIIT)', sets: [{reps: '12', load: '9.1km/h'}], notes: '40s duração / 20s descanso', tags: [] }
+                    ]
+                };
+                wUpdated = true;
+            }
+        }
         if (u === 'vitor') {
             if (wHist['2026-07-06'] && wHist['2026-07-06'].type === 'LISS_RUN' && (!wHist['2026-07-06'].exercises || wHist['2026-07-06'].exercises.length === 0)) {
                 wHist['2026-07-06_skip_1'] = wHist['2026-07-06'];
@@ -1065,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tab-treino').style.display = 'block';
     });
 
-    wmFinish?.addEventListener('click', () => {
+    wmFinish?.addEventListener('click', async () => {
         const finalData = [];
         
         if (todayWorkoutType === 'LISS / Recovery' || todayWorkoutType.includes('Cardio')) {
@@ -1109,7 +1125,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (typeof restInterval !== 'undefined' && restInterval !== null) clearInterval(restInterval);
 
-        DB.saveWorkout(localToday, {
+        wmFinish.textContent = "Salvando...";
+        await DB.saveWorkout(localToday, {
             type: todayWorkoutType,
             exercises: finalData
         });
