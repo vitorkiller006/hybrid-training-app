@@ -148,8 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Inject 2026-07-07 meals if not present or if forced
         if (u === 'vitor' && localToday === '2026-07-07') {
-            if (!localStorage.getItem('force_inject_0707')) {
-                localStorage.setItem('force_inject_0707', 'true');
+            if (!localStorage.getItem('force_inject_0707_v2')) {
+                localStorage.setItem('force_inject_0707_v2', 'true');
                 nHist['2026-07-07'] = [
                     {
                         type: 'Caf\u00E9 da Manh\u00E3',
@@ -217,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const ratio = qtyNum / foodDbItem.baseQty;
                             
                             const newKcal = Math.round(foodDbItem.kcal * ratio);
+                            if (!item.macros) item.macros = {};
                             if (item.macros.kcal !== newKcal) {
                                 item.macros.kcal = newKcal;
                                 item.macros.p = parseFloat((foodDbItem.p * ratio).toFixed(1));
@@ -227,13 +228,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     }
-                    mealKcal += item.macros.kcal;
-                    mealP += item.macros.p;
-                    mealC += item.macros.c;
-                    mealF += item.macros.f;
-                    mealFib += item.macros.fib;
+                    mealKcal += item.macros?.kcal || 0;
+                    mealP += item.macros?.p || 0;
+                    mealC += item.macros?.c || 0;
+                    mealF += item.macros?.f || 0;
+                    mealFib += item.macros?.fib || 0;
                 });
                 const mKcal = Math.round(mealKcal);
+                if (!meal.macros) meal.macros = {};
                 if (meal.macros.kcal !== mKcal) {
                     meal.macros = { 
                         kcal: mKcal, 
