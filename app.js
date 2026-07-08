@@ -146,9 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // NUTRITION INJECTION AND RECALCULATION
         let nUpdated = false;
         
-        // Inject 2026-07-07 meals if not present
+        // Inject 2026-07-07 meals if not present or if forced
         if (u === 'vitor' && localToday === '2026-07-07') {
-            if (!nHist['2026-07-07'] || nHist['2026-07-07'].length === 0) {
+            if (!localStorage.getItem('force_inject_0707')) {
+                localStorage.setItem('force_inject_0707', 'true');
                 nHist['2026-07-07'] = [
                     {
                         type: 'Caf\u00E9 da Manh\u00E3',
