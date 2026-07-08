@@ -143,63 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
             CloudSync.pushUp(u);
         }
 
-        // NUTRITION INJECTION AND RECALCULATION
+        // NUTRITION RECALCULATION MIGRATION
         let nUpdated = false;
-        
-        // Inject 2026-07-07 meals if not present
-        if (u === 'vitor' && localToday === '2026-07-07') {
-            if (!nHist['2026-07-07'] || nHist['2026-07-07'].length === 0) {
-                nHist['2026-07-07'] = [
-                    {
-                        type: 'Café da Manhã',
-                        items: [
-                            { name: 'Pão de Forma Pullman', qty: '2 un', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Frango Desfiado', qty: '20g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Café Preto com adoçante', qty: '50ml', macros: {kcal:0,p:0,c:0,f:0,fib:0} }
-                        ],
-                        macros: {kcal:0,p:0,c:0,f:0,fib:0},
-                        timestamp: new Date().toISOString()
-                    },
-                    {
-                        type: 'Almoço',
-                        items: [
-                            { name: 'Arroz Branco (Cozido)', qty: '100g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Feijão Carioca (Cozido)', qty: '40g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'abobrinha', qty: '20g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Carne Moída', qty: '50g', macros: {kcal:0,p:0,c:0,f:0,fib:0} }
-                        ],
-                        macros: {kcal:0,p:0,c:0,f:0,fib:0},
-                        timestamp: new Date().toISOString()
-                    },
-                    {
-                        type: 'Lanche da Tarde',
-                        items: [
-                            { name: 'Pão de Forma Pullman', qty: '2 un', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Frango Desfiado', qty: '20g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Café Preto com adoçante', qty: '50ml', macros: {kcal:0,p:0,c:0,f:0,fib:0} }
-                        ],
-                        macros: {kcal:0,p:0,c:0,f:0,fib:0},
-                        timestamp: new Date().toISOString()
-                    },
-                    {
-                        type: 'Jantar',
-                        items: [
-                            { name: 'Ovo Cozido', qty: '4 un', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Arroz Branco (Cozido)', qty: '100g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'Feijão Carioca (Cozido)', qty: '40g', macros: {kcal:0,p:0,c:0,f:0,fib:0} },
-                            { name: 'abobrinha', qty: '20g', macros: {kcal:0,p:0,c:0,f:0,fib:0} }
-                        ],
-                        macros: {kcal:0,p:0,c:0,f:0,fib:0},
-                        timestamp: new Date().toISOString()
-                    }
-                ];
-                nUpdated = true;
-            }
-        }
-
-        if (u === 'vitor') {
-            Object.keys(nHist).forEach(date => {
-                nHist[date].forEach(meal => {
+        if (u === 'vitor' && nHist['2026-07-06']) {
+            nHist['2026-07-06'].forEach(meal => {
                 let mealKcal = 0, mealP = 0, mealC = 0, mealF = 0, mealFib = 0;
                 meal.items.forEach(item => {
                     // Try exact match or lowercase match
@@ -214,16 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (qtyMatch) {
                             let qtyNum = parseFloat(qtyMatch[1].replace(',', '.'));
                             const ratio = qtyNum / foodDbItem.baseQty;
-                            
-                            const newKcal = Math.round(foodDbItem.kcal * ratio);
-                            if (item.macros.kcal !== newKcal) {
-                                item.macros.kcal = newKcal;
-                                item.macros.p = parseFloat((foodDbItem.p * ratio).toFixed(1));
-                                item.macros.c = parseFloat((foodDbItem.c * ratio).toFixed(1));
-                                item.macros.f = parseFloat((foodDbItem.f * ratio).toFixed(1));
-                                item.macros.fib = parseFloat((foodDbItem.fib * ratio).toFixed(1));
-                                nUpdated = true;
-                            }
+                            item.macros.kcal = Math.round(foodDbItem.kcal * ratio);
+                            item.macros.p = parseFloat((foodDbItem.p * ratio).toFixed(1));
+                            item.macros.c = parseFloat((foodDbItem.c * ratio).toFixed(1));
+                            item.macros.f = parseFloat((foodDbItem.f * ratio).toFixed(1));
+                            item.macros.fib = parseFloat((foodDbItem.fib * ratio).toFixed(1));
                         }
                     }
                     mealKcal += item.macros.kcal;
@@ -232,21 +174,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     mealF += item.macros.f;
                     mealFib += item.macros.fib;
                 });
-                
-                const mKcal = Math.round(mealKcal);
-                if (meal.macros.kcal !== mKcal) {
-                    meal.macros = { 
-                        kcal: mKcal, 
-                        p: parseFloat(mealP.toFixed(1)), 
-                        c: parseFloat(mealC.toFixed(1)), 
-                        f: parseFloat(mealF.toFixed(1)), 
-                        fib: parseFloat(mealFib.toFixed(1)) 
-                    };
-                    nUpdated = true;
-                }
+                meal.macros = { 
+                    kcal: mealKcal, 
+                    p: parseFloat(mealP.toFixed(1)), 
+                    c: parseFloat(mealC.toFixed(1)), 
+                    f: parseFloat(mealF.toFixed(1)), 
+                    fib: parseFloat(mealFib.toFixed(1)) 
+                };
             });
-        });
-    }
+            nUpdated = true;
+        }
 
         if (nUpdated) {
             localStorage.setItem(DB._getKey('nutrition_history'), JSON.stringify(nHist));
