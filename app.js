@@ -309,26 +309,118 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btn) btn.textContent = 'Sincronizando nuvem... ☁️';
             
             try {
-                await CloudSync.pullDown(activeProfile.name.toLowerCase());
-                try { runMigrations(activeProfile.name.toLowerCase()); } catch(e) { console.error('Migration failed:', e); }
+                if (activeProfile.role !== 'admin') {
+                    await CloudSync.pullDown(activeProfile.name.toLowerCase());
+                    try { runMigrations(activeProfile.name.toLowerCase()); } catch(e) { console.error('Migration failed:', e); }
+                }
                 
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                initApp();
-                renderWater(); // Added water render
+                
+                if (activeProfile.role === 'admin') {
+                    document.getElementById('admin-container').style.display = 'block';
+                    document.getElementById('app-container').style.display = 'none';
+                    initAdminDashboard();
+                } else {
+                    document.getElementById('admin-container').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    initApp();
+                    renderWater(); 
+                }
             } catch (err) {
                 console.error("Auth init error:", err);
-                alert("Erro ao iniciar sessão. Limpando dados para evitar loop.");
+                alert("Erro ao iniciar sessão.");
                 Auth.logout();
                 window.location.reload();
             }
         } else {
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-container').style.display = 'none';
+            document.getElementById('admin-container').style.display = 'none';
         }
     };
 
-    // --- WATER TRACKER LOGIC ---
+    let adminCurrentProgram = { name: '', exercises: [] };
+    const initAdminDashboard = () => {
+        const selUser = document.getElementById('admin-user-select');
+        
+        const renderAdminPrograms = async () => {
+            const u = selUser.value;
+            await CloudSync.pullDown(u);
+            const progs = JSON.parse(localStorage.getItem(u + '_workout_programs') || '[]');
+            const list = document.getElementById('admin-existing-programs');
+            list.innerHTML = '<h3>Programas de ' + u + '</h3>';
+            progs.forEach((p, idx) => {
+                list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <h4 style="color:var(--secondary-color); margin:0;">${p.name}</h4>
+                        <button class="btn-del-prog" data-u="${u}" data-idx="${idx}" style="background:transparent; border:none; color:#ff3366; cursor:pointer;">🗑️ Excluir</button>
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.5rem;">${p.exercises.length} Exercícios</p>
+                </div>`;
+            });
+            document.querySelectorAll('.btn-del-prog').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const idx = e.target.getAttribute('data-idx');
+                    progs.splice(idx, 1);
+                    localStorage.setItem(u + '_workout_programs', JSON.stringify(progs));
+                    await CloudSync.pushUp(u);
+                    renderAdminPrograms();
+                });
+            });
+        };
+        
+        selUser.addEventListener('change', renderAdminPrograms);
+        renderAdminPrograms();
+
+        const renderDraftList = () => {
+            const list = document.getElementById('admin-exercise-list');
+            list.innerHTML = '';
+            adminCurrentProgram.exercises.forEach((ex, idx) => {
+                list.innerHTML += `<div style="background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--secondary-color);">
+                    <strong>${ex.name}</strong> - ${ex.sets}x ${ex.reps}
+                </div>`;
+            });
+        };
+
+        document.getElementById('btn-admin-add-ex').addEventListener('click', () => {
+            const name = document.getElementById('admin-ex-name').value;
+            const sets = document.getElementById('admin-ex-sets').value;
+            const reps = document.getElementById('admin-ex-reps').value;
+            if(!name || !sets || !reps) return alert('Preencha os dados do exercício');
+            adminCurrentProgram.exercises.push({ name, sets: parseInt(sets), reps });
+            document.getElementById('admin-ex-name').value = '';
+            document.getElementById('admin-ex-sets').value = '';
+            document.getElementById('admin-ex-reps').value = '';
+            renderDraftList();
+        });
+
+        document.getElementById('btn-admin-save-program').addEventListener('click', async () => {
+            const pName = document.getElementById('admin-program-name').value;
+            if(!pName || adminCurrentProgram.exercises.length === 0) return alert('Dê um nome e adicione exercícios');
+            
+            const u = selUser.value;
+            adminCurrentProgram.name = pName;
+            const progs = JSON.parse(localStorage.getItem(u + '_workout_programs') || '[]');
+            progs.push(adminCurrentProgram);
+            localStorage.setItem(u + '_workout_programs', JSON.stringify(progs));
+            
+            document.getElementById('btn-admin-save-program').textContent = 'Salvando na Nuvem...';
+            await CloudSync.pushUp(u);
+            document.getElementById('btn-admin-save-program').textContent = 'Salvar Programa no Aluno';
+            
+            adminCurrentProgram = { name: '', exercises: [] };
+            document.getElementById('admin-program-name').value = '';
+            renderDraftList();
+            renderAdminPrograms();
+            alert('Programa salvo com sucesso!');
+        });
+
+        document.getElementById('btn-admin-logout').addEventListener('click', () => {
+            Auth.logout();
+            location.reload();
+        });
+    };
+
     const renderWater = () => {
         let wHist = JSON.parse(localStorage.getItem(DB._getKey('water_history')) || '{}');
         const waterToday = wHist[localToday] || 0;
@@ -391,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dp.addEventListener('change', (e) => {
                 localToday = e.target.value;
                 if (todayWorkoutType) {
-                    updateTrainingUI(todayWorkoutType);
+                    renderWeeklyPrograms();
                     updateNutritionUI(todayWorkoutType);
                 }
                 renderNutritionHistory();
@@ -639,21 +731,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const updateTrainingUI = (todayWorkoutType) => {
-        const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
-        const sortedDates = Object.keys(history).sort((a, b) => {
-            const da = a.split('_')[0];
-            const db = b.split('_')[0];
-            if (da === db) return a.localeCompare(b);
-            return new Date(db) - new Date(da);
+    
+    const renderWeeklyPrograms = () => {
+        const u = activeProfile.name.toLowerCase();
+        const progs = JSON.parse(localStorage.getItem(u + '_workout_programs') || '[]');
+        const list = document.getElementById('weekly-programs-list');
+        if (!list) return;
+        list.innerHTML = '';
+        if (progs.length === 0) {
+            list.innerHTML = '<p class="rpe-status">Nenhum programa atribuído a você ainda pelo Professor.</p>';
+            return;
+        }
+        progs.forEach((p, idx) => {
+            list.innerHTML += `<button class="program-btn" data-prog-idx="${idx}">
+                <span>${p.name}</span>
+                <span style="font-size: 0.8rem; color: var(--secondary-color);">▶ Iniciar</span>
+            </button>`;
         });
-        const completedCount = sortedDates.length;
-        
-        document.querySelector('.training-today .badge-hybrid').textContent = todayWorkoutType;
-        document.querySelector('.training-today .card-header h2').textContent = `Sequência: ${completedCount + 1}º Treino`;
-        renderProgressionPlan(todayWorkoutType);
-    };
 
+        document.querySelectorAll('.program-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = e.currentTarget.getAttribute('data-prog-idx');
+                startPreProgrammedWorkout(progs[idx]);
+            });
+        });
+    };
     const updateNutritionUI = (todayWorkoutType) => {
         const history = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
         const todayWorkoutData = history[localToday] || null;
@@ -948,217 +1050,120 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.querySelector('.start-workout')?.addEventListener('click', () => {
+    
+    let activeProgram = null;
+
+    const startPreProgrammedWorkout = (program) => {
+        activeProgram = program;
         document.getElementById('tab-treino').style.display = 'none';
         document.getElementById('workout-mode').style.display = 'block';
+        document.getElementById('wm-title').textContent = program.name;
 
-        if (todayWorkoutType === 'LISS / Recovery' || todayWorkoutType.includes('Cardio')) {
-            document.querySelector('.wm-carousel').style.display = 'none';
-            document.querySelector('.wm-cardio').style.display = 'block';
-            document.querySelector('.wm-cardio').innerHTML = `
-                <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Sessão de Cardio Livre</h3>
-                <div class="input-group" style="margin-bottom: 1rem; text-align: left;">
-                    <label>Tipo de Cardio</label>
-                    <select id="cardio-type" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
-                        <option value="Esteira (Caminhada)">Esteira (Caminhada)</option>
-                        <option value="Esteira (Corrida)">Esteira (Corrida)</option>
-                        <option value="Bicicleta">Bicicleta</option>
-                        <option value="Elíptico">Elíptico</option>
-                        <option value="HIIT">HIIT</option>
-                    </select>
-                </div>
-                <div class="input-group" style="margin-bottom: 1rem; text-align: left;">
-                    <label>Tempo (Minutos)</label>
-                    <input type="number" id="cardio-time" placeholder="Ex: 40" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
-                </div>
-                <div class="input-group" style="text-align: left;">
-                    <label>Anotações / Calorias Marcadas</label>
-                    <input type="text" id="cardio-notes" placeholder="Ex: Queimei 300kcal no painel" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
-                </div>
-            `;
-            document.getElementById('wm-prev').style.display = 'none';
-            document.getElementById('wm-next').style.display = 'none';
-            document.getElementById('rest-timer-widget').style.display = 'none';
-            return;
-        }
+        const list = document.getElementById('wm-exercise-list');
+        list.innerHTML = '';
 
-        document.querySelector('.wm-carousel').style.display = 'flex';
-        document.querySelector('.wm-cardio').style.display = 'none';
-        document.getElementById('rest-timer-widget').style.display = 'block';
-
-        // Timer logic
-        document.querySelectorAll('.btn-rest').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                clearInterval(restInterval);
-                let secs = parseInt(e.target.getAttribute('data-sec'));
-                const disp = document.getElementById('rest-timer-display');
-                disp.style.color = '#fff';
-                restInterval = setInterval(() => {
-                    secs--;
-                    const m = Math.floor(secs / 60);
-                    const s = secs % 60;
-                    disp.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                    if (secs <= 0) {
-                        clearInterval(restInterval);
-                        disp.style.color = '#ff3366';
-                        disp.textContent = "TEMPO!";
-                        // beep sound placeholder
-                    }
-                }, 1000);
-            });
-        });
-        
-        // Criar 5 Slides Vazios para o usuário preencher os exercícios do dia
-        const library = workoutEngine.getExerciseLibrary(todayWorkoutType);
-        let optionsHtml = '<option value="">Selecione o Exercício...</option>';
-        library.forEach(ex => optionsHtml += `<option value="${ex}">${ex}</option>`);
-        optionsHtml += '<option value="custom">Outro (Digitar manualmente)...</option>';
-        
-        // Dynamic Tags Rendering
-        const workoutTags = workoutEngine.getTagsForType(todayWorkoutType);
-        let tagsHtml = '';
-        workoutTags.forEach(t => {
-            const dangerClass = t.type === 'danger' ? 'danger' : '';
-            tagsHtml += `<div class="tag-chip ${dangerClass}" data-tag="${t.id}">${t.label}</div>`;
-        });
-
-        let slidesHtml = '';
-        for (let i = 0; i < 5; i++) {
-            slidesHtml += `
-            <div class="wm-slide" data-idx="${i}">
-                <div style="margin-bottom: 1.5rem;">
-                    <select class="inp-ex-name" style="width:100%; padding: 1rem; background: rgba(0,0,0,0.5); color: var(--primary-color); border: 1px solid var(--border-color); border-radius: 12px; font-family: var(--font-heading); font-size: 1.2rem; outline: none;">
-                        ${optionsHtml}
-                    </select>
-                    <input type="text" class="inp-ex-custom" placeholder="Digite o nome do exercício..." style="display: none; width:100%; margin-top:0.5rem; padding: 1rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 12px;">
-                    <div class="prev-load" style="font-size: 0.8rem; color: var(--secondary-color); margin-top: 0.5rem; display:none;"></div>
-                </div>
-                
+        program.exercises.forEach((ex, exIdx) => {
+            let setsHtml = '';
+            for(let i=0; i<ex.sets; i++) {
+                setsHtml += `
+                <div class="set-row">
+                    <span class="set-info">Série ${i+1} <span style="margin-left: 0.5rem; opacity: 0.7; font-weight: normal;">(Meta: ${ex.reps})</span></span>
+                    <input type="number" class="set-load-input" placeholder="Kg">
+                    <input type="checkbox" class="set-checkbox">
+                </div>`;
+            }
+            
+            list.innerHTML += `
+            <div class="exercise-block" data-ex-name="${ex.name}">
+                <h3 style="margin-bottom: 1rem; color: #fff;">${ex.name}</h3>
                 <div class="sets-container">
-                    <!-- Lines injected here -->
-                </div>
-                <button class="nav-btn btn-add-set" style="width: 100%; text-align: center; border: 1px dashed var(--secondary-color); color: var(--secondary-color); margin-top: 1rem;">+ Adicionar Série</button>
-
-                <div class="input-group" style="margin-top: 2rem;">
-                    <label>Tags de Execução</label>
-                    <div class="tag-group">
-                        ${tagsHtml}
-                    </div>
-                </div>
-
-                <div class="input-group" style="margin-top: 1rem;">
-                    <label>Anotações Livres</label>
-                    <input type="text" class="inp-notes" placeholder="Anotações extras...">
+                    ${setsHtml}
                 </div>
             </div>`;
-        }
+        });
         
-        wmCarousel.innerHTML = slidesHtml;
-        
-        // Bind Custom Exercise Inputs and Progressive Overload
-        const wHistory = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '[]');
-        document.querySelectorAll('.inp-ex-name').forEach(select => {
-            select.addEventListener('change', (e) => {
-                const customInput = e.target.parentElement.querySelector('.inp-ex-custom');
-                const prevLoad = e.target.parentElement.querySelector('.prev-load');
-                const val = e.target.value;
-                if (val === 'custom') {
-                    customInput.style.display = 'block';
-                    customInput.focus();
-                    prevLoad.style.display = 'none';
-                } else {
-                    customInput.style.display = 'none';
-                    customInput.value = '';
-                    
-                    // Look back for Progressive Overload
-                    let found = null;
-                    for (let x = wHistory.length - 1; x >= 0; x--) {
-                        const sess = wHistory[x];
-                        const ex = sess.exercises?.find(ex => ex.name === val);
-                        if (ex && ex.sets?.length > 0) {
-                            found = ex;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        const lastSet = found.sets[found.sets.length - 1];
-                        prevLoad.textContent = `🎯 Última vez: ${lastSet.kg}kg x ${lastSet.reps} reps`;
-                        prevLoad.style.display = 'block';
-                    } else {
-                        prevLoad.style.display = 'none';
-                    }
+        // Setup rest timer buttons
+        document.getElementById('rest-timer-widget').style.display = 'block';
+        document.querySelectorAll('.set-checkbox').forEach(chk => {
+            chk.addEventListener('change', (e) => {
+                if(e.target.checked) {
+                    // Start 1 min timer automatically
+                    startRestTimer(60);
                 }
             });
         });
+    };
 
-        // Bind Add Set Buttons
-        document.querySelectorAll('.btn-add-set').forEach((btn, slideIdx) => {
-            btn.addEventListener('click', (e) => {
-                const container = e.target.parentElement.querySelector('.sets-container');
-                const setNumber = container.children.length + 1;
-                const setRow = document.createElement('div');
-                setRow.className = 'input-row set-row';
-                setRow.style.alignItems = 'center';
-                
-                setRow.innerHTML = `
-                    <span style="color: var(--text-secondary); font-size: 0.8rem; width: 40px;">S${setNumber}</span>
-                    <div class="input-group" style="margin-top:0;">
-                        <input type="number" class="inp-reps" placeholder="Reps" style="padding: 0.5rem;">
-                    </div>
-                    <div class="input-group" style="margin-top:0;">
-                        <input type="text" class="inp-load" placeholder="Peso (ex: 20kg)" style="padding: 0.5rem;">
-                    </div>
-                    <button class="btn-remove-set" style="background: transparent; border: none; color: var(--primary-color); font-size: 1.2rem; cursor: pointer; padding: 0.5rem;">&times;</button>
-                `;
-                
-                setRow.querySelector('.btn-remove-set').addEventListener('click', () => {
-                    setRow.remove();
-                    // Re-index remaining sets visually
-                    Array.from(container.children).forEach((row, idx) => {
-                        row.querySelector('span').textContent = `S${idx + 1}`;
-                    });
-                });
+    let restInterval = null;
+    const startRestTimer = (secs) => {
+        clearInterval(restInterval);
+        const disp = document.getElementById('rest-timer-display');
+        disp.style.color = '#fff';
+        restInterval = setInterval(() => {
+            secs--;
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            disp.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            if (secs <= 0) {
+                clearInterval(restInterval);
+                disp.style.color = '#ff3366';
+                disp.textContent = "TEMPO!";
+            }
+        }, 1000);
+    };
 
-                container.appendChild(setRow);
-            });
-            // Click to add the first set by default
-            btn.click();
+    document.querySelectorAll('.btn-rest').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            startRestTimer(parseInt(e.target.getAttribute('data-sec')));
         });
-
-        // Bind Tag Clicks
-        document.querySelectorAll('.tag-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                chip.classList.toggle('selected');
-            });
-        });
-
-        tabSections.forEach(s => s.style.display = 'none');
-        wmContainer.style.display = 'block';
-        currentSlide = 0;
-        updateWorkoutUI();
     });
-
-    wmNext?.addEventListener('click', () => { currentSlide++; updateWorkoutUI(); });
-    wmPrev?.addEventListener('click', () => { currentSlide--; updateWorkoutUI(); });
 
     document.getElementById('wm-cancel')?.addEventListener('click', () => {
-        wmContainer.style.display = 'none';
+        document.getElementById('workout-mode').style.display = 'none';
         document.getElementById('tab-treino').style.display = 'block';
+        clearInterval(restInterval);
     });
 
+    const wmFinish = document.getElementById('wm-finish');
     wmFinish?.addEventListener('click', async () => {
         const finalData = [];
         
-        if (todayWorkoutType === 'LISS / Recovery' || todayWorkoutType.includes('Cardio')) {
-            const cType = document.getElementById('cardio-type')?.value || 'Cardio';
-            const cTime = document.getElementById('cardio-time')?.value || '0';
-            const cNotes = document.getElementById('cardio-notes')?.value || '';
-            finalData.push({
-                name: cType,
-                sets: [{ reps: cTime + ' min', load: 'N/A' }],
-                notes: cNotes,
-                tags: []
+        const blocks = document.querySelectorAll('.exercise-block');
+        blocks.forEach(b => {
+            const exName = b.getAttribute('data-ex-name');
+            const rows = b.querySelectorAll('.set-row');
+            let sets = [];
+            rows.forEach(row => {
+                const chk = row.querySelector('.set-checkbox');
+                if (chk.checked) {
+                    const load = row.querySelector('.set-load-input').value || 'BW';
+                    // We don't have the exact reps done natively yet, just load, we assume target reps hit if checked
+                    // Or we just save the load for the history.
+                    sets.push({ load: load, reps: 'Concluído' });
+                }
             });
+            if(sets.length > 0) {
+                finalData.push({ name: exName, sets: sets, notes: '', tags: [] });
+            }
+        });
+
+        if (finalData.length === 0) {
+            alert('Nenhuma série marcada como concluída!');
+            return;
+        }
+
+        if (typeof restInterval !== 'undefined' && restInterval !== null) clearInterval(restInterval);
+
+        wmFinish.textContent = "Salvando...";
+        await DB.saveWorkout(localToday + '_' + activeProgram.name.replace(/s+/g, ''), {
+            type: activeProgram.name,
+            exercises: finalData
+        });
+        
+        alert('Treino Salvo com Sucesso!');
+        window.location.reload();
+    });
+
         } else {
             const slides = document.querySelectorAll('.wm-slide');
             slides.forEach(s => {

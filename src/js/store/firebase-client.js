@@ -33,6 +33,9 @@ export const CloudSync = {
                 if (data.water_history) {
                     localStorage.setItem(`${username}_water_history`, JSON.stringify(data.water_history));
                 }
+                if (data.workout_programs) {
+                    localStorage.setItem(`${username}_workout_programs`, JSON.stringify(data.workout_programs));
+                }
                 if (data.cycle_phase) {
                     localStorage.setItem(`${username}_cycle_phase`, data.cycle_phase);
                 }
@@ -51,6 +54,7 @@ export const CloudSync = {
             const workout_history = JSON.parse(localStorage.getItem(`${username}_workout_history`) || '{}');
             const nutrition_history = JSON.parse(localStorage.getItem(`${username}_nutrition_history`) || '{}');
             const water_history = JSON.parse(localStorage.getItem(`${username}_water_history`) || '{}');
+            const workout_programs = JSON.parse(localStorage.getItem(`${username}_workout_programs`) || '[]');
             const cycle_phase = localStorage.getItem(`${username}_cycle_phase`) || 'folicular';
 
             const userDoc = doc(db, "users", username);
@@ -58,6 +62,7 @@ export const CloudSync = {
                 workout_history,
                 nutrition_history,
                 water_history,
+                workout_programs,
                 cycle_phase,
                 last_sync: new Date().toISOString()
             });

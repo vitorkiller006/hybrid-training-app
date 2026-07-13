@@ -1,5 +1,13 @@
 export const Auth = {
     users: {
+        'admin': {
+            password: 'admin',
+            profile: {
+                name: 'Admin',
+                gender: 'none',
+                role: 'admin'
+            }
+        },
         'vitor': {
             password: '@19216801Gg',
             profile: {
