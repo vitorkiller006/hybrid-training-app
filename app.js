@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    let restInterval = null;
+
     const startRestTimer = (secs) => {
         clearInterval(restInterval);
         const disp = document.getElementById('rest-timer-display');
