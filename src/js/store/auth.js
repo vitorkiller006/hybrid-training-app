@@ -38,8 +38,9 @@ export const Auth = {
     },
     
     login: function(username, password) {
-        const u = username.toLowerCase();
-        if (this.users[u] && this.users[u].password === password) {
+        const u = username.toLowerCase().trim();
+        const p = password.trim();
+        if (this.users[u] && this.users[u].password === p) {
             localStorage.setItem('active_user', u);
             return this.users[u].profile;
         }
