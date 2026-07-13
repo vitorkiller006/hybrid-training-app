@@ -66,13 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
             CloudSync.pushUp('gabi');
         }
 
-        if (u === 'vitor' && !localStorage.getItem('vitor_abcd_injected')) {
+        if (u === 'vitor' && !localStorage.getItem('vitor_abcd_injected_v2')) {
             const vitorProgs = [
                 {
                     name: 'Treino A - Push (Peito, Ombro, Tríceps)',
                     exercises: [
                         { name: 'Supino Reto (Barra ou Halteres)', sets: 4, reps: '8 a 10' },
                         { name: 'Supino Inclinado com Halteres', sets: 3, reps: '10 a 12' },
+                        { name: 'Peck Deck (Voador)', sets: 3, reps: '12 a 15 (Isolamento)' },
                         { name: 'Elevação Lateral', sets: 4, reps: '12 a 15' },
                         { name: 'Tríceps Polia Alta', sets: 3, reps: '10 a 12' },
                         { name: 'Tríceps Testa', sets: 3, reps: '12' }
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             ];
             localStorage.setItem('vitor_workout_programs', JSON.stringify(vitorProgs));
-            localStorage.setItem('vitor_abcd_injected', 'true');
+            localStorage.setItem('vitor_abcd_injected_v2', 'true');
             CloudSync.pushUp('vitor');
         }
 
