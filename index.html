@@ -15,9 +15,9 @@
         <h1 style="color: var(--primary-color); font-family: var(--font-heading); margin-bottom: 2rem; font-size: 2.5rem; letter-spacing: -1px;">
             ONE<span style="color: var(--secondary-color);">HYBRID</span>
         </h1>
-        <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 350px;">
-            <input type="text" id="login-user" placeholder="Usuário" style="width: 100%; padding: 1rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
-            <input type="password" id="login-pass" placeholder="Senha" style="width: 100%; padding: 1rem; margin-bottom: 1.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
+        <div style="background: var(--surface-color); padding: 2rem; border-radius: 16px; border: 1px solid var(--border-color); width: 100%; max-width: 350px;">
+            <input type="text" id="login-user" placeholder="Usuário" style="width: 100%; padding: 1rem; margin-bottom: 1rem; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px;">
+            <input type="password" id="login-pass" placeholder="Senha" style="width: 100%; padding: 1rem; margin-bottom: 1.5rem; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px;">
             <button id="btn-login" class="btn-primary" style="width: 100%;">Entrar</button>
             <p id="login-error" style="color: #ff4444; font-size: 0.9rem; margin-top: 1rem; text-align: center; display: none;">Credenciais inválidas.</p>
         </div>
@@ -33,7 +33,7 @@
             <h2 style="margin-bottom: 1rem;">Gerenciar Programas de Treino</h2>
             <div style="margin-bottom: 2rem;">
                 <label>Selecionar Aluno:</label>
-                <select id="admin-user-select" style="padding: 0.5rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-left: 1rem;">
+                <select id="admin-user-select" style="padding: 0.5rem; background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; margin-left: 1rem;">
                     <option value="vitor">Vitor</option>
                     <option value="gabi">Gabi</option>
                 </select>
@@ -41,17 +41,17 @@
             
             <div class="glass-panel" style="margin-bottom: 2rem;">
                 <h3>Criar Novo Programa (Ex: Treino A - Peito)</h3>
-                <input type="text" id="admin-program-name" placeholder="Nome do Treino" style="width: 100%; padding: 0.8rem; margin: 1rem 0; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
+                <input type="text" id="admin-program-name" placeholder="Nome do Treino" style="width: 100%; padding: 0.8rem; margin: 1rem 0; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px;">
                 
                 <div id="admin-exercise-list" style="margin-bottom: 1rem;">
                     <!-- Exercícios adicionados aparecem aqui -->
                 </div>
                 
-                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border: 1px dashed var(--secondary-color);">
-                    <input type="text" id="admin-ex-name" placeholder="Nome do Exercício" style="width: 100%; padding: 0.8rem; margin-bottom: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
+                <div style="background: var(--surface-color); padding: 1rem; border-radius: 8px; border: 1px dashed var(--secondary-color);">
+                    <input type="text" id="admin-ex-name" placeholder="Nome do Exercício" style="width: 100%; padding: 0.8rem; margin-bottom: 0.5rem; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px;">
                     <div style="display: flex; gap: 1rem;">
-                        <input type="number" id="admin-ex-sets" placeholder="Séries" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
-                        <input type="text" id="admin-ex-reps" placeholder="Reps (Ex: 12 ou Falha)" style="flex: 2; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: #fff; border-radius: 8px;">
+                        <input type="number" id="admin-ex-sets" placeholder="Séries" style="flex: 1; padding: 0.8rem; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px;">
+                        <input type="text" id="admin-ex-reps" placeholder="Reps (Ex: 12 ou Falha)" style="flex: 2; padding: 0.8rem; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px;">
                     </div>
                     <button id="btn-admin-add-ex" class="nav-btn" style="width: 100%; border: 1px solid var(--secondary-color); color: var(--secondary-color); margin-top: 1rem;">+ Adicionar Exercício</button>
                 </div>
@@ -79,9 +79,9 @@
         </nav>
 
         <main class="dashboard">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: rgba(0,0,0,0.5); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: var(--surface-color); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color);">
                 <span style="color: var(--text-secondary); font-size: 0.95rem; font-family: var(--font-heading);">🗓️ Data de Registro/Consulta:</span>
-                <input type="date" id="global-date-picker" style="background: transparent; color: var(--primary-color); border: none; font-family: var(--font-heading); font-size: 1rem; font-weight: 700; outline: none; cursor: pointer;">
+                <input type="date" id="global-date-picker" style="background: transparent; color: var(--text-primary); border: none; font-family: var(--font-heading); font-size: 1rem; font-weight: 700; outline: none; cursor: pointer;">
             </div>
 
             <!-- ABA: TREINO -->
@@ -108,7 +108,7 @@
                     <div id="cycle-tracker-widget" style="display: none; background: rgba(255, 105, 180, 0.1); border: 1px solid rgba(255, 105, 180, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem;">
                         <h3 style="color: #ff69b4; margin-bottom: 0.5rem; font-family: var(--font-heading); font-size: 1rem;">🌸 Fase do Ciclo Menstrual</h3>
                         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem;">A IA ajusta seu Gasto Calórico e Avisos de Treino com base na sua biologia atual.</p>
-                        <select id="cycle-phase-select" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <select id="cycle-phase-select" style="width: 100%; padding: 0.8rem; background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px;">
                             <option value="folicular">Fase Folicular (Alta Energia)</option>
                             <option value="ovulatoria">Fase Ovulatória (Força Máxima)</option>
                             <option value="lutea">Fase Lútea (Fadiga / +Kcal)</option>
@@ -119,14 +119,14 @@
                     <p class="rpe-status">
                         Gasto Calórico Estimado (TDEE): <strong id="tdee-display" style="color: var(--secondary-color); font-size: 1.3rem;">--</strong> kcal 
                         <br><span style="font-size: 0.8rem;">(Treino de Hoje queimou aprox: <span id="burned-display" style="color: var(--primary-color);">--</span> kcal)</span>
-                        <br><span style="font-size: 1.1rem; color: #fff; margin-top:0.8rem; display:block; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem;">Consumido: <strong id="kcal-consumed" style="color: var(--primary-color);">0</strong> kcal</span>
+                        <br><span style="font-size: 1.1rem; color: var(--text-primary); margin-top:0.8rem; display:block; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem;">Consumido: <strong id="kcal-consumed" style="color: var(--primary-color);">0</strong> kcal</span>
                     </p>
                     
                     <div id="water-tracker" style="background: rgba(0, 191, 255, 0.1); border: 1px solid rgba(0, 191, 255, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
                         <h3 style="color: #00bfff; font-family: var(--font-heading); font-size: 1rem; margin-bottom: 0.5rem;">💧 Hidratação Diária</h3>
                         <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
                             <button id="btn-water-minus" style="background: transparent; border: 1px solid #00bfff; color: #00bfff; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-weight: bold;">-</button>
-                            <span style="font-size: 1.2rem; font-weight: bold; color: #fff;"><span id="water-consumed">0</span> / <span id="water-goal">0</span> ml</span>
+                            <span style="font-size: 1.2rem; font-weight: bold; color: var(--text-primary);"><span id="water-consumed">0</span> / <span id="water-goal">0</span> ml</span>
                             <button id="btn-water-plus" style="background: #00bfff; border: none; color: #000; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-weight: bold;">+</button>
                         </div>
                         <progress id="progress-water" value="0" max="100" style="width: 100%; height: 6px; margin-top: 10px;"></progress>
@@ -150,20 +150,20 @@
                         </div>
                     </div>
 
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem;">
+                    <div style="background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem;">
                         <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-family: var(--font-heading); font-size: 1.2rem;">Registrar Refeição</h3>
                         
                         <div class="input-group" style="margin-bottom: 1rem; position: relative;">
                             <label>Qual Refeição?</label>
                             <div style="display: flex; gap: 0.5rem;">
-                                <select id="meal-type-select" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--border-color); border-radius: 8px;">
+                                <select id="meal-type-select" style="flex: 1; padding: 0.8rem; background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px;">
                                     <option value="Café da Manhã">Café da Manhã</option>
                                     <option value="Almoço">Almoço</option>
                                     <option value="Lanche da Tarde">Lanche da Tarde</option>
                                     <option value="Jantar">Jantar</option>
                                     <option value="Ceia / Pós-Treino">Ceia / Pós-Treino</option>
                                 </select>
-                                <button id="btn-copy-meal" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-secondary); border-radius: 8px; padding: 0 1rem; cursor: pointer; white-space: nowrap;" title="Copiar itens do último registro desta refeição">📋 Copiar Última</button>
+                                <button id="btn-copy-meal" style="background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-secondary); border-radius: 8px; padding: 0 1rem; cursor: pointer; white-space: nowrap;" title="Copiar itens do último registro desta refeição">📋 Copiar Última</button>
                             </div>
                         </div>
 
@@ -218,13 +218,13 @@
                     <!-- Cartões de exercícios injetados via JS -->
                 </div>
                 
-                <div id="rest-timer-widget" style="display: none; background: rgba(0,0,0,0.8); padding: 1rem; border-radius: 16px; margin-top: 2rem; border: 1px solid var(--secondary-color); text-align: center; position: sticky; bottom: 10px; z-index: 10;">
+                <div id="rest-timer-widget" style="display: none; background: var(--surface-color); padding: 1rem; border-radius: 16px; margin-top: 2rem; border: 1px solid var(--secondary-color); text-align: center; position: sticky; bottom: 10px; z-index: 10;">
                     <h4 style="margin: 0 0 0.5rem 0; color: var(--secondary-color);">⏱️ Descanso</h4>
                     <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; font-family: monospace;" id="rest-timer-display">00:00</div>
                     <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                        <button class="btn-rest" data-sec="60" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: #fff; cursor: pointer;">1m</button>
-                        <button class="btn-rest" data-sec="90" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: #fff; cursor: pointer;">1.5m</button>
-                        <button class="btn-rest" data-sec="120" style="padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: #fff; cursor: pointer;">2m</button>
+                        <button class="btn-rest" data-sec="60" style="padding: 0.5rem 1rem; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">1m</button>
+                        <button class="btn-rest" data-sec="90" style="padding: 0.5rem 1rem; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">1.5m</button>
+                        <button class="btn-rest" data-sec="120" style="padding: 0.5rem 1rem; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">2m</button>
                     </div>
                 </div>
                 

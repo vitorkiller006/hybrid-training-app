@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetList = document.getElementById('admin-existing-programs');
             targetList.innerHTML = '<h3>Programas de ' + u + '</h3>';
             progs.forEach((p, idx) => {
-                targetList.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                targetList.innerHTML += `<div style="background: var(--surface-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                     <div style="display:flex; justify-content:space-between;">
                         <h4 style="color:var(--secondary-color); margin:0;">${p.name}</h4>
                         <div>
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const list = document.getElementById('admin-exercise-list');
             list.innerHTML = '';
             adminCurrentProgram.exercises.forEach((ex, idx) => {
-                list.innerHTML += `<div style="background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--secondary-color); display:flex; justify-content:space-between; align-items:center;">
+                list.innerHTML += `<div style="background: #f0f2f5; padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--secondary-color); display:flex; justify-content:space-between; align-items:center;">
                     <span><strong>${ex.name}</strong> - ${ex.sets}x ${ex.reps}</span>
                     <button class="btn-del-draft-ex" data-idx="${idx}" style="background:transparent; border:none; color:#ff3366; cursor:pointer; padding:0 0.5rem;">✖</button>
                 </div>`;
@@ -672,8 +672,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const baseDate = date.split('_')[0];
             const dateStr = baseDate.split('-').reverse().join('/');
 
-            let html = `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
-                <h3 style="color: #fff; margin-bottom: 0.8rem; font-family: var(--font-heading); font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">🗓️ ${dateStr}</h3>`;
+            let html = `<div style="background: var(--surface-color); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                <h3 style="color: var(--text-primary); margin-bottom: 0.8rem; font-family: var(--font-heading); font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🗓️ ${dateStr}</h3>`;
             
             // 🍎 NUTRITION BLOCK
             if (n) {
@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 html += `
                 <div style="background: rgba(46, 204, 113, 0.1); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.8rem; border-left: 3px solid #2ecc71;">
                     <h4 style="color:#2ecc71; font-size: 0.95rem; margin-bottom: 0.4rem; font-family: var(--font-heading);">Nutrição Resumida</h4>
-                    <p style="font-size: 0.85rem; color:#fff; margin:0;">
+                    <p style="font-size: 0.85rem; color: var(--text-primary); margin:0;">
                         <strong>🔥 ${Math.round(totalKcal)} kcal</strong><br>
                         🥩 ${Math.round(totalPro)}g Pro | 🍚 ${Math.round(totalCar)}g Car | 🥑 ${Math.round(totalGor)}g Gor | 🥦 ${Math.round(totalFib)}g Fibra
                     </p>
@@ -983,12 +983,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const mF = meal.macros?.f || 0;
             const mFib = meal.macros?.fib || 0;
             totalKcal += mCals; totalP += mP; totalC += mC; totalF += mF;
-            html += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            html += `<div style="background: var(--surface-color); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <h4 style="color: var(--secondary-color); margin: 0;">${meal.type}</h4>
                     <button class="btn-edit-meal" data-meal-idx="${idx}" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); padding:0.2rem 0.5rem; border-radius:4px; font-size:0.8rem; cursor:pointer;">Editar</button>
                 </div>
-                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <span style="color: var(--primary-color);">🔥 ${mCals} kcal</span>
                     <span>🥩 ${mP}g Pro</span>
                     <span>🍚 ${mC}g Car</span>
@@ -1104,7 +1104,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 notes: "Treino pulado (Descanso forçado)"
             });
             alert('Treino pulado com sucesso! O próximo treino já está engatilhado.');
-            window.location.reload();
+            renderWeeklyPrograms();
+            renderHistory();
         }
     });
 
@@ -1133,7 +1134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             list.innerHTML += `
             <div class="exercise-block" data-ex-name="${ex.name}">
-                <h3 style="margin-bottom: 1rem; color: #fff;">${ex.name}</h3>
+                <h3 style="margin-bottom: 1rem; color: var(--text-primary);">${ex.name}</h3>
                 <div class="sets-container">
                     ${setsHtml}
                 </div>
@@ -1218,8 +1219,12 @@ document.addEventListener('DOMContentLoaded', () => {
             exercises: finalData
         });
         
-        alert('Treino Salvo com Sucesso!');
-        window.location.reload();
+        alert('Treino Salvo com Sucesso!'); 
+        document.getElementById('workout-mode').style.display = 'none'; 
+        document.getElementById('tab-treino').style.display = 'block'; 
+        renderHistory();
+        renderWeeklyPrograms();
+        wmFinish.textContent = "✅ FINALIZAR TREINO";
     });
 
 });
