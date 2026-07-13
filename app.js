@@ -1118,16 +1118,42 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('workout-mode').style.display = 'block';
         document.getElementById('wm-title').textContent = program.name;
 
+        // Fetch History
+        const wHist = JSON.parse(localStorage.getItem(DB._getKey('workout_history')) || '{}');
+        const sortedDates = Object.keys(wHist).sort((a,b) => new Date(b.split('_')[0]) - new Date(a.split('_')[0]));
+        let lastWorkout = null;
+        for (let date of sortedDates) {
+            if (wHist[date].type === program.name && wHist[date].exercises) {
+                lastWorkout = wHist[date];
+                break;
+            }
+        }
+
         const list = document.getElementById('wm-exercise-list');
         list.innerHTML = '';
 
         program.exercises.forEach((ex, exIdx) => {
+            let lastEx = null;
+            if (lastWorkout) {
+                lastEx = lastWorkout.exercises.find(e => e.name === ex.name);
+            }
+
             let setsHtml = '';
             for(let i=0; i<ex.sets; i++) {
+                let lastLoad = '';
+                if (lastEx && lastEx.sets && lastEx.sets[i]) {
+                    lastLoad = lastEx.sets[i].load;
+                    if (lastLoad === 'BW') lastLoad = '0';
+                    else lastLoad = lastLoad.replace(/[^0-9.]/g, ''); // Extract just numbers if possible
+                }
+                
                 setsHtml += `
                 <div class="set-row">
                     <span class="set-info">Série ${i+1} <span style="margin-left: 0.5rem; opacity: 0.7; font-weight: normal;">(Meta: ${ex.reps})</span></span>
-                    <input type="number" class="set-load-input" placeholder="Kg">
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        ${lastLoad ? `<span style="font-size: 0.7rem; color: var(--secondary-color); margin-bottom: 2px;">Última: ${lastLoad}kg</span>` : ''}
+                        <input type="number" class="set-load-input" placeholder="Kg" value="${lastLoad}">
+                    </div>
                     <input type="checkbox" class="set-checkbox">
                 </div>`;
             }
