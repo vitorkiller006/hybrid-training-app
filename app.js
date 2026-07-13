@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let wUpdated = false;
 
         // INJECT LOST WORKOUT
-        if (u === 'vitor' && localToday === '2026-07-07') {
+        if (u === 'vitor') {
             if (!wHist['2026-07-07'] || wHist['2026-07-07'].exercises.length === 0) {
                 wHist['2026-07-07'] = {
                     type: 'PUSH',
