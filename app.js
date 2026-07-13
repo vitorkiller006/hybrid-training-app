@@ -1164,44 +1164,4 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.reload();
     });
 
-        } else {
-            const slides = document.querySelectorAll('.wm-slide');
-            slides.forEach(s => {
-                let exName = s.querySelector('.inp-ex-name').value;
-                if (exName === 'custom') {
-                    exName = s.querySelector('.inp-ex-custom').value.trim();
-                }
-                if (!exName) return;
-    
-                const setRows = s.querySelectorAll('.set-row');
-                let sets = [];
-                setRows.forEach(row => {
-                    const reps = row.querySelector('.inp-reps').value;
-                    const load = row.querySelector('.inp-load').value;
-                    if (reps || load) sets.push({ reps: reps || '0', load: load || 'BW' });
-                });
-    
-                const notes = s.querySelector('.inp-notes').value;
-                const selectedTags = Array.from(s.querySelectorAll('.tag-chip.selected')).map(t => t.getAttribute('data-tag'));
-                
-                finalData.push({ name: exName, sets: sets, notes, tags: selectedTags });
-            });
-        }
-
-        if (finalData.length === 0) {
-            alert('Nenhum exercício preenchido!');
-            return;
-        }
-
-        if (typeof restInterval !== 'undefined' && restInterval !== null) clearInterval(restInterval);
-
-        wmFinish.textContent = "Salvando...";
-        await DB.saveWorkout(localToday, {
-            type: todayWorkoutType,
-            exercises: finalData
-        });
-        
-        alert('Treino Salvo com Sucesso! Seu histórico foi atualizado.');
-        window.location.reload();
-    });
 });
