@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
         todayWorkoutType = workoutEngine.getNextWorkoutType(lastWorkoutType);
         
         // UI Updates
-        updateTrainingUI(todayWorkoutType);
+        renderWeeklyPrograms();
         updateNutritionUI(todayWorkoutType);
         
         // Cycle Tracker Init
