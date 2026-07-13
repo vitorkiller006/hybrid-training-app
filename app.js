@@ -340,6 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let adminCurrentProgram = { name: '', exercises: [] };
+    let adminEditingIndex = null;
+    
     const initAdminDashboard = () => {
         const selUser = document.getElementById('admin-user-select');
         
@@ -348,18 +350,37 @@ document.addEventListener('DOMContentLoaded', () => {
             await CloudSync.pullDown(u);
             const progs = JSON.parse(localStorage.getItem(u + '_workout_programs') || '[]');
             const list = document.getElementById('admin-existing-programs');
-            list.innerHTML = '<h3>Programas de ' + u + '</h3>';
+            
+            // Se o elemento não existir, a gente cria ele no painel principal! 
+            // Ops, vi que não existe no index.html original. Precisamos injetar!
+            let container = document.getElementById('admin-existing-programs-container');
+            if (!container) {
+                const adminMain = document.querySelector('#admin-container main');
+                container = document.createElement('div');
+                container.id = 'admin-existing-programs-container';
+                container.style.marginTop = '2rem';
+                container.innerHTML = '<div id="admin-existing-programs"></div>';
+                adminMain.appendChild(container);
+            }
+            
+            const targetList = document.getElementById('admin-existing-programs');
+            targetList.innerHTML = '<h3>Programas de ' + u + '</h3>';
             progs.forEach((p, idx) => {
-                list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                targetList.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                     <div style="display:flex; justify-content:space-between;">
                         <h4 style="color:var(--secondary-color); margin:0;">${p.name}</h4>
-                        <button class="btn-del-prog" data-u="${u}" data-idx="${idx}" style="background:transparent; border:none; color:#ff3366; cursor:pointer;">🗑️ Excluir</button>
+                        <div>
+                            <button class="btn-edit-prog" data-u="${u}" data-idx="${idx}" style="background:transparent; border:none; color:#00e676; cursor:pointer; margin-right:1rem;">✏️ Editar</button>
+                            <button class="btn-del-prog" data-u="${u}" data-idx="${idx}" style="background:transparent; border:none; color:#ff3366; cursor:pointer;">🗑️ Excluir</button>
+                        </div>
                     </div>
                     <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.5rem;">${p.exercises.length} Exercícios</p>
                 </div>`;
             });
+            
             document.querySelectorAll('.btn-del-prog').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
+                    if(!confirm('Tem certeza que deseja excluir esse treino?')) return;
                     const idx = e.target.getAttribute('data-idx');
                     progs.splice(idx, 1);
                     localStorage.setItem(u + '_workout_programs', JSON.stringify(progs));
@@ -367,18 +388,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderAdminPrograms();
                 });
             });
+
+            document.querySelectorAll('.btn-edit-prog').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = e.target.getAttribute('data-idx');
+                    adminCurrentProgram = JSON.parse(JSON.stringify(progs[idx])); // clone
+                    adminEditingIndex = idx;
+                    document.getElementById('admin-program-name').value = adminCurrentProgram.name;
+                    document.getElementById('btn-admin-save-program').textContent = 'Atualizar Programa';
+                    renderDraftList();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
         };
         
-        selUser.addEventListener('change', renderAdminPrograms);
+        selUser.addEventListener('change', () => {
+            adminCurrentProgram = { name: '', exercises: [] };
+            adminEditingIndex = null;
+            document.getElementById('admin-program-name').value = '';
+            document.getElementById('btn-admin-save-program').textContent = 'Salvar Programa no Aluno';
+            renderDraftList();
+            renderAdminPrograms();
+        });
         renderAdminPrograms();
 
         const renderDraftList = () => {
             const list = document.getElementById('admin-exercise-list');
             list.innerHTML = '';
             adminCurrentProgram.exercises.forEach((ex, idx) => {
-                list.innerHTML += `<div style="background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--secondary-color);">
-                    <strong>${ex.name}</strong> - ${ex.sets}x ${ex.reps}
+                list.innerHTML += `<div style="background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--secondary-color); display:flex; justify-content:space-between; align-items:center;">
+                    <span><strong>${ex.name}</strong> - ${ex.sets}x ${ex.reps}</span>
+                    <button class="btn-del-draft-ex" data-idx="${idx}" style="background:transparent; border:none; color:#ff3366; cursor:pointer; padding:0 0.5rem;">✖</button>
                 </div>`;
+            });
+
+            document.querySelectorAll('.btn-del-draft-ex').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = e.target.getAttribute('data-idx');
+                    adminCurrentProgram.exercises.splice(idx, 1);
+                    renderDraftList();
+                });
             });
         };
 
@@ -401,14 +450,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const u = selUser.value;
             adminCurrentProgram.name = pName;
             const progs = JSON.parse(localStorage.getItem(u + '_workout_programs') || '[]');
-            progs.push(adminCurrentProgram);
+            
+            if (adminEditingIndex !== null) {
+                progs[adminEditingIndex] = adminCurrentProgram;
+            } else {
+                progs.push(adminCurrentProgram);
+            }
+            
             localStorage.setItem(u + '_workout_programs', JSON.stringify(progs));
             
-            document.getElementById('btn-admin-save-program').textContent = 'Salvando na Nuvem...';
+            const btnSave = document.getElementById('btn-admin-save-program');
+            const originalText = btnSave.textContent;
+            btnSave.textContent = 'Salvando na Nuvem...';
             await CloudSync.pushUp(u);
-            document.getElementById('btn-admin-save-program').textContent = 'Salvar Programa no Aluno';
+            btnSave.textContent = 'Salvar Programa no Aluno';
             
             adminCurrentProgram = { name: '', exercises: [] };
+            adminEditingIndex = null;
             document.getElementById('admin-program-name').value = '';
             renderDraftList();
             renderAdminPrograms();
