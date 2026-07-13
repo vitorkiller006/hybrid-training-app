@@ -1124,7 +1124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(restInterval);
     });
 
-    const wmFinish = document.getElementById('wm-finish');
+
     wmFinish?.addEventListener('click', async () => {
         const finalData = [];
         
