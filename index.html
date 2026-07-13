@@ -235,5 +235,13 @@
         </main>
     </div>
     <script type="module" src="app.js?v=7"></script>
+    <script>
+        window.addEventListener('error', function(event) {
+            alert('ERRO JS: ' + event.message + ' em ' + event.filename + ':' + event.lineno);
+        });
+        window.addEventListener('unhandledrejection', function(event) {
+            alert('PROMISE ERRO: ' + event.reason);
+        });
+    </script>
 </body>
 </html>
