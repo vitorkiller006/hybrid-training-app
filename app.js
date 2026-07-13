@@ -396,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const renderAdminPrograms = async () => {
             const u = selUser.value;
             await CloudSync.pullDown(u);
+            try { runMigrations(u); } catch(e) { console.error('Migration failed in admin:', e); }
             const progs = JSON.parse(localStorage.getItem(u + '_workout_programs') || '[]');
             const list = document.getElementById('admin-existing-programs');
             
