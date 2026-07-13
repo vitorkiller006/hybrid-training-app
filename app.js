@@ -66,6 +66,54 @@ document.addEventListener('DOMContentLoaded', () => {
             CloudSync.pushUp('gabi');
         }
 
+        if (u === 'vitor' && !localStorage.getItem('vitor_abcd_injected')) {
+            const vitorProgs = [
+                {
+                    name: 'Treino A - Push (Peito, Ombro, Tríceps)',
+                    exercises: [
+                        { name: 'Supino Reto (Barra ou Halteres)', sets: 4, reps: '8 a 10' },
+                        { name: 'Supino Inclinado com Halteres', sets: 3, reps: '10 a 12' },
+                        { name: 'Elevação Lateral', sets: 4, reps: '12 a 15' },
+                        { name: 'Tríceps Polia Alta', sets: 3, reps: '10 a 12' },
+                        { name: 'Tríceps Testa', sets: 3, reps: '12' }
+                    ]
+                },
+                {
+                    name: 'Treino B - Pull (Costas e Bíceps)',
+                    exercises: [
+                        { name: 'Puxada Frontal Aberta', sets: 4, reps: '10 a 12' },
+                        { name: 'Remada Curvada com Barra', sets: 4, reps: '8 a 10' },
+                        { name: 'Crucifixo Invertido', sets: 3, reps: '15' },
+                        { name: 'Rosca Direta', sets: 3, reps: '10 a 12' },
+                        { name: 'Rosca Martelo', sets: 3, reps: '12' }
+                    ]
+                },
+                {
+                    name: 'Treino C - Legs (Pernas Completas)',
+                    exercises: [
+                        { name: 'Agachamento Livre ou Hack', sets: 4, reps: '8 a 10' },
+                        { name: 'Leg Press 45º', sets: 3, reps: '12' },
+                        { name: 'Cadeira Extensora', sets: 3, reps: '12 a 15 (Drop-set na última)' },
+                        { name: 'Stiff', sets: 4, reps: '10' },
+                        { name: 'Cadeira Flexora', sets: 3, reps: '12' },
+                        { name: 'Panturrilha em Pé', sets: 4, reps: '15 a 20' }
+                    ]
+                },
+                {
+                    name: 'Treino D - Hybrid Core & HIIT',
+                    exercises: [
+                        { name: 'Abdominal Máquina ou Polia', sets: 4, reps: '15' },
+                        { name: 'Elevação de Pernas', sets: 3, reps: '15' },
+                        { name: 'Prancha Isométrica', sets: 3, reps: 'Máximo (Fadiga)' },
+                        { name: 'Tiro na Esteira (HIIT)', sets: 10, reps: '1min Sprint / 1min Descanso' }
+                    ]
+                }
+            ];
+            localStorage.setItem('vitor_workout_programs', JSON.stringify(vitorProgs));
+            localStorage.setItem('vitor_abcd_injected', 'true');
+            CloudSync.pushUp('vitor');
+        }
+
         if (u === 'vitor') {
             if (nHist['2026-07-02']) {
                 const almocoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
