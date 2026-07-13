@@ -18,6 +18,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const nHist = JSON.parse(localStorage.getItem(DB._getKey('nutrition_history')) || '{}');
         let updated = false;
 
+        if (u === 'gabi' && !localStorage.getItem('gabi_abcd_injected')) {
+            const gabiABCD = [
+                {
+                    name: 'Treino A - Quadríceps',
+                    exercises: [
+                        { name: 'Agachamento Livre', sets: 4, reps: '10' },
+                        { name: 'Leg Press 45º', sets: 3, reps: '12' },
+                        { name: 'Cadeira Extensora', sets: 4, reps: '12 (Falha)' },
+                        { name: 'Afundo com Halteres', sets: 3, reps: '10' },
+                        { name: 'Panturrilha em Pé', sets: 4, reps: '15' }
+                    ]
+                },
+                {
+                    name: 'Treino B - Costas e Bíceps',
+                    exercises: [
+                        { name: 'Puxada Frontal', sets: 3, reps: '12' },
+                        { name: 'Remada Curvada', sets: 3, reps: '12' },
+                        { name: 'Rosca Direta', sets: 3, reps: '12' },
+                        { name: 'Rosca Martelo', sets: 3, reps: '12' },
+                        { name: 'Prancha Abdominal', sets: 3, reps: '40s' }
+                    ]
+                },
+                {
+                    name: 'Treino C - Posterior e Glúteo',
+                    exercises: [
+                        { name: 'Elevação Pélvica', sets: 4, reps: '10' },
+                        { name: 'Stiff', sets: 4, reps: '10' },
+                        { name: 'Cadeira Flexora', sets: 4, reps: '12' },
+                        { name: 'Cadeira Abdutora', sets: 3, reps: '15' },
+                        { name: 'Panturrilha Sentada', sets: 4, reps: '15' }
+                    ]
+                },
+                {
+                    name: 'Treino D - Peito, Ombro e Tríceps',
+                    exercises: [
+                        { name: 'Desenvolvimento c/ Halteres', sets: 3, reps: '12' },
+                        { name: 'Elevação Lateral', sets: 4, reps: '12' },
+                        { name: 'Supino Reto c/ Halteres', sets: 3, reps: '12' },
+                        { name: 'Tríceps Polia', sets: 3, reps: '12' },
+                        { name: 'Cardio LISS', sets: 1, reps: '20 min' }
+                    ]
+                }
+            ];
+            localStorage.setItem('gabi_workout_programs', JSON.stringify(gabiABCD));
+            localStorage.setItem('gabi_abcd_injected', 'true');
+            CloudSync.pushUp('gabi');
+        }
+
         if (u === 'vitor') {
             if (nHist['2026-07-02']) {
                 const almocoIdx = nHist['2026-07-02'].findIndex(m => m.type === 'Almoço' && m.macros?.kcal === 115);
