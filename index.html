@@ -136,17 +136,17 @@
                         <div class="macro-item">
                             <span class="label">PROTEÍNA</span>
                             <span class="value"><span id="macro-p-consumed">0</span> / <span id="macro-p-goal">--</span>g</span>
-                            <progress id="progress-p" value="0" max="100" style="width: 100%; height: 6px; margin-top: 5px;"></progress>
+                            <div class="macro-progress-container macro-pro"><div id="progress-p" class="macro-progress-bar" style="width: 0%"></div></div>
                         </div>
                         <div class="macro-item">
                             <span class="label">CARBOIDRATO</span>
                             <span class="value"><span id="macro-c-consumed">0</span> / <span id="macro-c-goal">--</span>g</span>
-                            <progress id="progress-c" value="0" max="100" style="width: 100%; height: 6px; margin-top: 5px;"></progress>
+                            <div class="macro-progress-container macro-carb"><div id="progress-c" class="macro-progress-bar" style="width: 0%"></div></div>
                         </div>
                         <div class="macro-item">
                             <span class="label">GORDURA</span>
                             <span class="value"><span id="macro-f-consumed">0</span> / <span id="macro-f-goal">--</span>g</span>
-                            <progress id="progress-f" value="0" max="100" style="width: 100%; height: 6px; margin-top: 5px;"></progress>
+                            <div class="macro-progress-container macro-fat"><div id="progress-f" class="macro-progress-bar" style="width: 0%"></div></div>
                         </div>
                     </div>
 
@@ -170,7 +170,10 @@
                         <div class="input-row" style="margin-bottom: 1rem;">
                             <div class="input-group" style="flex: 2;">
                                 <label>Alimento (BD ou Anotação Livre)</label>
-                                <input type="text" id="food-input" placeholder="Ex: Arroz Branco (Cozido)" list="food-datalist">
+                                <div style="display:flex; gap:0.5rem; align-items:center;">
+                                    <input type="text" id="food-input" placeholder="Ex: Arroz Branco" list="food-datalist" style="flex:1;">
+                                    <button id="btn-custom-food" style="background:var(--primary-color); color:#fff; border:none; border-radius:8px; padding:0 0.8rem; height:42px; cursor:pointer; font-weight:bold;" title="Adicionar Novo Alimento BD">+</button>
+                                </div>
                                 <datalist id="food-datalist"></datalist>
                             </div>
                             <div class="input-group" style="flex: 1;">

@@ -6,6 +6,89 @@ import { Auth } from './src/js/store/auth.js?v=4';
 import { CloudSync } from './src/js/store/firebase-client.js?v=4';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- UI HELPERS ---
+    window.showToast = (msg, type = 'success') => {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        toast.innerHTML = (type === 'success' ? '✅ ' : '⚠️ ') + msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    };
+
+    window.showConfirm = (title, message, onConfirm) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = '<div class="modal-content"><div class="modal-title">' + title + '</div><div class="modal-body">' + message + '</div><div class="modal-actions"><button class="btn-cancel" style="background:transparent; border:none; color:var(--text-secondary); cursor:pointer; padding: 8px 16px;">Cancelar</button><button class="btn-confirm btn-primary" style="padding: 8px 16px; min-width: 100px;">Confirmar</button></div></div>';
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add('active'), 10);
+        const close = () => { overlay.classList.remove('active'); setTimeout(() => overlay.remove(), 300); };
+        overlay.querySelector('.btn-cancel').addEventListener('click', close);
+        overlay.querySelector('.btn-confirm').addEventListener('click', () => { close(); onConfirm(); });
+    };
+
+    window.showPrompt = (title, message, placeholder, onConfirm) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = '<div class="modal-content"><div class="modal-title">' + title + '</div><div class="modal-body">' + message + '<br><input type="text" id="prompt-input" placeholder="' + placeholder + '" style="width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-primary);"></div><div class="modal-actions"><button class="btn-cancel" style="background:transparent; border:none; color:var(--text-secondary); cursor:pointer; padding: 8px 16px;">Cancelar</button><button class="btn-confirm btn-primary" style="padding: 8px 16px; min-width: 100px;">Salvar</button></div></div>';
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add('active'), 10);
+        const close = () => { overlay.classList.remove('active'); setTimeout(() => overlay.remove(), 300); };
+        overlay.querySelector('.btn-cancel').addEventListener('click', close);
+        overlay.querySelector('.btn-confirm').addEventListener('click', () => {
+            const val = document.getElementById('prompt-input').value;
+            if(val) { close(); onConfirm(val); }
+        });
+    };
+
+    window.showCustomFoodModal = (onSave) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-title">Novo Alimento (BD)</div>
+            <div class="modal-body">
+                Adicione as informações nutricionais base (por 100g ou 1 unidade).
+                <input type="text" id="cf-name" placeholder="Nome do Alimento" style="width:100%; margin-top:10px; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-primary);">
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="number" id="cf-kcal" placeholder="Kcal" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-primary);">
+                    <input type="number" id="cf-p" placeholder="Proteína (g)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-primary);">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="number" id="cf-c" placeholder="Carbo (g)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-primary);">
+                    <input type="number" id="cf-f" placeholder="Gordura (g)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-primary);">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" style="background:transparent; border:none; color:var(--text-secondary); cursor:pointer; padding: 8px 16px;">Cancelar</button>
+                <button class="btn-confirm btn-primary" style="padding: 8px 16px; min-width: 100px;">Salvar no BD</button>
+            </div>
+        </div>`;
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add('active'), 10);
+        const close = () => { overlay.classList.remove('active'); setTimeout(() => overlay.remove(), 300); };
+        overlay.querySelector('.btn-cancel').addEventListener('click', close);
+        overlay.querySelector('.btn-confirm').addEventListener('click', () => {
+            const name = document.getElementById('cf-name').value;
+            const kcal = parseFloat(document.getElementById('cf-kcal').value) || 0;
+            const p = parseFloat(document.getElementById('cf-p').value) || 0;
+            const c = parseFloat(document.getElementById('cf-c').value) || 0;
+            const f = parseFloat(document.getElementById('cf-f').value) || 0;
+            if(!name) return showToast('Nome é obrigatório!', 'error');
+            close();
+            onSave({ name, kcal, p, c, f });
+        });
+    };
+
     let workoutEngine = null;
     let nutritionEngine = null;
     let activeProfile = null;
@@ -425,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {
                 console.error("Auth init error:", err);
-                alert("Erro ao iniciar sessão.");
+                showToast('');
                 Auth.logout();
                 window.location.reload();
             }
@@ -533,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = document.getElementById('admin-ex-name').value;
             const sets = document.getElementById('admin-ex-sets').value;
             const reps = document.getElementById('admin-ex-reps').value;
-            if(!name || !sets || !reps) return alert('Preencha os dados do exercício');
+            if(!name || !sets || !reps) return showToast('');
             adminCurrentProgram.exercises.push({ name, sets: parseInt(sets), reps });
             document.getElementById('admin-ex-name').value = '';
             document.getElementById('admin-ex-sets').value = '';
@@ -543,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('btn-admin-save-program').addEventListener('click', async () => {
             const pName = document.getElementById('admin-program-name').value;
-            if(!pName || adminCurrentProgram.exercises.length === 0) return alert('Dê um nome e adicione exercícios');
+            if(!pName || adminCurrentProgram.exercises.length === 0) return showToast('');
             
             const u = selUser.value;
             adminCurrentProgram.name = pName;
@@ -568,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('admin-program-name').value = '';
             renderDraftList();
             renderAdminPrograms();
-            alert('Programa salvo com sucesso!');
+            showToast('');
         });
 
         document.getElementById('btn-admin-logout').addEventListener('click', () => {
@@ -719,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 select.addEventListener('change', (e) => {
                     DB.saveCyclePhase(e.target.value);
                     updateNutritionUI(todayWorkoutType); // Recalculate macros instantly
-                    alert('Ciclo atualizado! Suas calorias e alertas foram ajustados pela IA.');
+                    showToast('');
                 });
             }
         } else {
@@ -797,9 +880,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 💪 WORKOUT BLOCK
             if (w) {
+                let totalVolume = 0;
+                w.exercises?.forEach(ex => {
+                    ex.sets.forEach(s => {
+                        const r = parseInt(s.reps) || 0;
+                        const l = parseFloat((s.load || '').replace(/[^0-9.]/g, '')) || 0;
+                        totalVolume += (r * l);
+                    });
+                });
+                
                 html += `
                 <div style="background: rgba(255, 69, 0, 0.1); padding: 0.8rem; border-radius: 8px; border-left: 3px solid var(--primary-color);">
-                    <h4 style="color:var(--primary-color); font-size: 0.95rem; margin-bottom: 0.4rem; font-family: var(--font-heading);">Treino: ${w.type}</h4>`;
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
+                        <h4 style="color:var(--primary-color); font-size: 0.95rem; margin:0; font-family: var(--font-heading);">Treino: ${w.type}</h4>
+                        <span style="font-size:0.75rem; background:var(--primary-color); color:#fff; padding:2px 6px; border-radius:12px;">💪 ${Math.round(totalVolume)}kg Volume</span>
+                    </div>`;
                 
                 if (w.notes) {
                     html += `<div style="font-size: 0.85rem; color: var(--secondary-color); font-style: italic; margin-bottom: 0.5rem;">${w.notes}</div>`;
@@ -807,11 +902,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 w.exercises?.forEach(ex => {
                     html += `<div style="margin-bottom: 0.5rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,69,0,0.3);">
-                        <strong style="color:#ccc; font-size: 0.85rem;">${ex.name}</strong><br>
+                        <strong style="color:var(--text-primary); font-size: 0.85rem;">${ex.name}</strong><br>
                         <span style="font-size:0.75rem; color:var(--text-secondary);">`;
                     
                     ex.sets.forEach((s, idx) => {
-                        html += `S${idx+1}: ${s.reps} reps (${s.load}) | `;
+                        html += `S${idx+1}: ${s.reps}x (${s.load}) &nbsp; `;
                     });
                     
                     if (ex.notes) {
@@ -935,9 +1030,31 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const foodDatalist = document.getElementById('food-datalist');
-    if (foodDatalist) {
-        Object.keys(FoodDB).forEach(foodName => {
-            foodDatalist.insertAdjacentHTML('beforeend', `<option value="${foodName}">`);
+    const refreshFoodDatalist = () => {
+        if (foodDatalist) {
+            foodDatalist.innerHTML = '';
+            const customFoods = JSON.parse(localStorage.getItem('custom_foods') || '{}');
+            Object.assign(FoodDB, customFoods); // Merge into main DB
+            Object.keys(FoodDB).forEach(foodName => {
+                foodDatalist.insertAdjacentHTML('beforeend', `<option value="${foodName}">`);
+            });
+        }
+    };
+    refreshFoodDatalist();
+
+    const btnCustomFood = document.getElementById('btn-custom-food');
+    if (btnCustomFood) {
+        btnCustomFood.addEventListener('click', () => {
+            showCustomFoodModal((data) => {
+                const customFoods = JSON.parse(localStorage.getItem('custom_foods') || '{}');
+                customFoods[data.name] = {
+                    kcal: data.kcal, p: data.p, c: data.c, f: data.f, fib: 0, baseQty: 100, unit: 'g'
+                };
+                localStorage.setItem('custom_foods', JSON.stringify(customFoods));
+                refreshFoodDatalist();
+                document.getElementById('food-input').value = data.name;
+                showToast(`Alimento ${data.name} salvo no Banco de Dados!`, 'success');
+            });
         });
     }
 
@@ -1022,7 +1139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-add-food')?.addEventListener('click', async () => {
         const name = document.getElementById('food-input').value;
         const qty = document.getElementById('food-qty-input').value;
-        if (!name || !qty) return alert('Preencha alimento e quantidade.');
+        if (!name || !qty) return showToast('');
         
         const btn = document.getElementById('btn-add-food');
         btn.textContent = 'Buscando... ⏳';
@@ -1053,7 +1170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentMealItems = JSON.parse(JSON.stringify(found.items));
             renderCurrentPlate();
         } else {
-            alert('Nenhuma refeição deste tipo encontrada no histórico.');
+            showToast('');
         }
     });
 
@@ -1112,9 +1229,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const goalP = parseInt(document.getElementById('macro-p-goal').textContent) || 1;
         const goalC = parseInt(document.getElementById('macro-c-goal').textContent) || 1;
         const goalF = parseInt(document.getElementById('macro-f-goal').textContent) || 1;
-        const pp = document.getElementById('progress-p'); if(pp) pp.value = Math.min((totalP/goalP)*100, 100);
-        const pc = document.getElementById('progress-c'); if(pc) pc.value = Math.min((totalC/goalC)*100, 100);
-        const pf = document.getElementById('progress-f'); if(pf) pf.value = Math.min((totalF/goalF)*100, 100);
+        const pp = document.getElementById('progress-p'); if(pp) pp.style.width = Math.min((totalP/goalP)*100, 100) + '%';
+        const pc = document.getElementById('progress-c'); if(pc) pc.style.width = Math.min((totalC/goalC)*100, 100) + '%';
+        const pf = document.getElementById('progress-f'); if(pf) pf.style.width = Math.min((totalF/goalF)*100, 100) + '%';
 
         document.querySelectorAll('.btn-edit-meal').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -1132,7 +1249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.getElementById('btn-save-meal')?.addEventListener('click', () => {
-        if (currentMealItems.length === 0) return alert('Adicione alimentos ao prato primeiro.');
+        if (currentMealItems.length === 0) return showToast('');
         const mealType = document.getElementById('meal-type-select').value;
         
         // Sum macros directly from the items in memory
@@ -1201,7 +1318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 exercises: [],
                 notes: "Treino pulado (Descanso forçado)"
             });
-            alert('Treino pulado com sucesso! O próximo treino já está engatilhado.');
+            showToast('');
             renderWeeklyPrograms();
             renderHistory();
         }
@@ -1258,7 +1375,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             list.innerHTML += `
             <div class="exercise-block" data-ex-name="${ex.name}">
-                <h3 style="margin-bottom: 1rem; color: var(--text-primary);">${ex.name}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <h3 style="color: var(--text-primary); margin:0;" class="ex-title-text">${ex.name}</h3>
+                    <button class="btn-swap-ex" data-ex="${ex.name}" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">🔄 Trocar</button>
+                </div>
                 <div class="sets-container">
                     ${setsHtml}
                 </div>
@@ -1267,6 +1387,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Setup rest timer buttons
         document.getElementById('rest-timer-widget').style.display = 'block';
+        
+        document.querySelectorAll('.btn-swap-ex').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const oldName = e.target.getAttribute('data-ex');
+                showPrompt('Substituir Exercício', 'Por qual exercício deseja trocar <b>' + oldName + '</b>?', 'Ex: Agachamento Hack', (newName) => {
+                    const block = e.target.closest('.exercise-block');
+                    block.setAttribute('data-ex-name', newName);
+                    block.querySelector('.ex-title-text').textContent = newName;
+                    e.target.setAttribute('data-ex', newName);
+                    showToast('Exercício trocado para ' + newName);
+                });
+            });
+        });
         document.querySelectorAll('.set-checkbox').forEach(chk => {
             chk.addEventListener('change', (e) => {
                 if(e.target.checked) {
@@ -1281,7 +1414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startRestTimer = (secs) => {
         clearInterval(restInterval);
         const disp = document.getElementById('rest-timer-display');
-        disp.style.color = '#fff';
+        disp.style.color = 'var(--text-primary)';
         restInterval = setInterval(() => {
             secs--;
             const m = Math.floor(secs / 60);
@@ -1289,8 +1422,17 @@ document.addEventListener('DOMContentLoaded', () => {
             disp.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             if (secs <= 0) {
                 clearInterval(restInterval);
-                disp.style.color = '#ff3366';
+                disp.style.color = 'var(--primary-color)';
                 disp.textContent = "TEMPO!";
+                showToast("Descanso Finalizado! Próxima série.", "success");
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    osc.connect(ctx.destination);
+                    osc.frequency.value = 800;
+                    osc.start();
+                    setTimeout(() => osc.stop(), 500);
+                } catch(e) {}
             }
         }, 1000);
     };
@@ -1331,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (finalData.length === 0) {
-            alert('Nenhuma série marcada como concluída!');
+            showToast('');
             return;
         }
 
@@ -1343,7 +1485,7 @@ document.addEventListener('DOMContentLoaded', () => {
             exercises: finalData
         });
         
-        alert('Treino Salvo com Sucesso!'); 
+        showToast(''); 
         document.getElementById('workout-mode').style.display = 'none'; 
         document.getElementById('tab-treino').style.display = 'block'; 
         renderHistory();
