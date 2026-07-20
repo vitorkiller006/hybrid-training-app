@@ -2,7 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f0f2f5">
+    <link rel="manifest" href="./manifest.json">
     <title>Hybrid Training & Nutrition</title>
     <meta name="description" content="App híbrido focado em recomposição corporal, força e corrida.">
     <link rel="stylesheet" href="style.css">
@@ -72,12 +74,6 @@
             <button id="btn-logout" style="background:transparent; border:none; color:var(--text-secondary); cursor:pointer;">Sair</button>
         </header>
 
-        <nav class="top-nav">
-                <button class="nav-btn active" data-tab="treino">Treino</button>
-                <button class="nav-btn" data-tab="nutricao">Nutrição</button>
-                <button class="nav-btn" data-tab="historico">Histórico</button>
-        </nav>
-
         <main class="dashboard">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: var(--surface-color); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color);">
                 <span style="color: var(--text-secondary); font-size: 0.95rem; font-family: var(--font-heading);">🗓️ Data de Registro/Consulta:</span>
@@ -116,37 +112,60 @@
                         </select>
                     </div>
 
-                    <p class="rpe-status">
-                        Gasto Calórico Estimado (TDEE): <strong id="tdee-display" style="color: var(--secondary-color); font-size: 1.3rem;">--</strong> kcal 
-                        <br><span style="font-size: 0.8rem;">(Treino de Hoje queimou aprox: <span id="burned-display" style="color: var(--primary-color);">--</span> kcal)</span>
-                        <br><span style="font-size: 1.1rem; color: var(--text-primary); margin-top:0.8rem; display:block; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem;">Consumido: <strong id="kcal-consumed" style="color: var(--primary-color);">0</strong> kcal</span>
-                    </p>
-                    
-                    <div id="water-tracker" style="background: rgba(0, 191, 255, 0.1); border: 1px solid rgba(0, 191, 255, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
-                        <h3 style="color: #00bfff; font-family: var(--font-heading); font-size: 1rem; margin-bottom: 0.5rem;">💧 Hidratação Diária</h3>
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-                            <button id="btn-water-minus" style="background: transparent; border: 1px solid #00bfff; color: #00bfff; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-weight: bold;">-</button>
-                            <span style="font-size: 1.2rem; font-weight: bold; color: var(--text-primary);"><span id="water-consumed">0</span> / <span id="water-goal">0</span> ml</span>
-                            <button id="btn-water-plus" style="background: #00bfff; border: none; color: #000; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-weight: bold;">+</button>
+                    <!-- Nutrition Dashboard -->
+                    <div class="nutrition-dashboard" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem;">
+                        <!-- Circular Chart -->
+                        <div class="donut-chart-container" style="position: relative; width: 220px; height: 220px;">
+                            <svg viewBox="0 0 36 36" class="donut-svg" style="width:100%; height:100%;">
+                                <path class="donut-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="3" />
+                                <path id="donut-p" class="donut-segment" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3498db" stroke-width="3" style="transition: stroke-dasharray 0.5s ease;" />
+                                <path id="donut-c" class="donut-segment" stroke-dasharray="0, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e74c3c" stroke-width="3" style="transition: stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease;" />
+                                <path id="donut-f" class="donut-segment" stroke-dasharray="0, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1c40f" stroke-width="3" style="transition: stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease;" />
+                            </svg>
+                            <div class="donut-inner" style="position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 600;">Restam</div>
+                                <div id="kcal-remaining" style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); color: var(--text-primary);">0</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 600;">kcal</div>
+                            </div>
                         </div>
-                        <progress id="progress-water" value="0" max="100" style="width: 100%; height: 6px; margin-top: 10px;"></progress>
+                        
+                        <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 1rem; text-align: center; font-size: 0.9rem; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 12px;">
+                            <div>
+                                <div style="color: var(--text-secondary); font-weight: 600;">Meta</div>
+                                <div id="tdee-display" style="font-weight: 800; color: var(--text-primary); font-size: 1.1rem;">--</div>
+                            </div>
+                            <div>
+                                <div style="color: var(--text-secondary); font-weight: 600;">Alimento</div>
+                                <div id="kcal-consumed" style="font-weight: 800; color: var(--primary-color); font-size: 1.1rem;">0</div>
+                            </div>
+                            <div>
+                                <div style="color: var(--text-secondary); font-weight: 600;">Treino</div>
+                                <div id="burned-display" style="font-weight: 800; color: #ff9800; font-size: 1.1rem;">--</div>
+                            </div>
+                        </div>
+
+                        <div class="macros" style="width: 100%; margin-top: 1.5rem; display: flex; justify-content: space-between;">
+                            <div class="macro-item">
+                                <span class="label" style="color: #3498db;">PROTEÍNA</span>
+                                <span class="value" style="font-size: 1.2rem;"><span id="macro-p-consumed">0</span>/<span id="macro-p-goal" style="font-size:0.9rem; color:var(--text-secondary);">--</span></span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="label" style="color: #e74c3c;">CARBO</span>
+                                <span class="value" style="font-size: 1.2rem;"><span id="macro-c-consumed">0</span>/<span id="macro-c-goal" style="font-size:0.9rem; color:var(--text-secondary);">--</span></span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="label" style="color: #f1c40f;">GORDURA</span>
+                                <span class="value" style="font-size: 1.2rem;"><span id="macro-f-consumed">0</span>/<span id="macro-f-goal" style="font-size:0.9rem; color:var(--text-secondary);">--</span></span>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="macros" style="margin-bottom: 2rem;">
-                        <div class="macro-item">
-                            <span class="label">PROTEÍNA</span>
-                            <span class="value"><span id="macro-p-consumed">0</span> / <span id="macro-p-goal">--</span>g</span>
-                            <div class="macro-progress-container macro-pro"><div id="progress-p" class="macro-progress-bar" style="width: 0%"></div></div>
-                        </div>
-                        <div class="macro-item">
-                            <span class="label">CARBOIDRATO</span>
-                            <span class="value"><span id="macro-c-consumed">0</span> / <span id="macro-c-goal">--</span>g</span>
-                            <div class="macro-progress-container macro-carb"><div id="progress-c" class="macro-progress-bar" style="width: 0%"></div></div>
-                        </div>
-                        <div class="macro-item">
-                            <span class="label">GORDURA</span>
-                            <span class="value"><span id="macro-f-consumed">0</span> / <span id="macro-f-goal">--</span>g</span>
-                            <div class="macro-progress-container macro-fat"><div id="progress-f" class="macro-progress-bar" style="width: 0%"></div></div>
+                    <div id="water-tracker" style="background: rgba(0, 191, 255, 0.1); border: 1px solid rgba(0, 191, 255, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+                        <h3 style="color: #00bfff; font-family: var(--font-heading); font-size: 1rem; margin-bottom: 0.5rem;">💧 Hidratação Diária</h3>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem;">
+                            <button id="btn-water-minus" style="background: transparent; border: 2px solid #00bfff; color: #00bfff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.5rem; display:flex; align-items:center; justify-content:center;">-</button>
+                            <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); font-family: monospace;"><span id="water-consumed">0</span> / <span id="water-goal">0</span> ml</span>
+                            <button id="btn-water-plus" style="background: #00bfff; border: none; color: #fff; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.5rem; display:flex; align-items:center; justify-content:center;">+</button>
                         </div>
                     </div>
 
@@ -221,22 +240,38 @@
                     <!-- Cartões de exercícios injetados via JS -->
                 </div>
                 
-                <div id="rest-timer-widget" style="display: none; background: var(--surface-color); padding: 1rem; border-radius: 16px; margin-top: 2rem; border: 1px solid var(--secondary-color); text-align: center; position: sticky; bottom: 10px; z-index: 10;">
-                    <h4 style="margin: 0 0 0.5rem 0; color: var(--secondary-color);">⏱️ Descanso</h4>
-                    <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; font-family: monospace;" id="rest-timer-display">00:00</div>
-                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                        <button class="btn-rest" data-sec="60" style="padding: 0.5rem 1rem; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">1m</button>
-                        <button class="btn-rest" data-sec="90" style="padding: 0.5rem 1rem; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">1.5m</button>
-                        <button class="btn-rest" data-sec="120" style="padding: 0.5rem 1rem; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">2m</button>
-                    </div>
-                </div>
-                
                 <div class="wm-controls" style="margin-top: 3rem;">
                     <button class="btn-primary" id="wm-finish" style="padding: 1.5rem; font-size: 1.2rem; background: linear-gradient(135deg, #00e676, #1b5e20); box-shadow: 0 4px 15px rgba(0,230,118,0.4);">✅ FINALIZAR TREINO</button>
                 </div>
             </section>
         </main>
     </div>
+    
+    <!-- Floating Rest Timer Pill -->
+    <div id="rest-timer-widget" class="floating-timer-pill" style="display: none;">
+        <span id="rest-timer-display" style="font-weight: 800; font-family: monospace; font-size: 1.1rem; color: var(--primary-color);">00:00</span>
+        <div style="display: flex; gap: 4px;">
+            <button class="btn-rest pill-btn" data-sec="60">+1m</button>
+            <button class="btn-rest pill-btn" data-sec="90">+1.5m</button>
+            <button id="btn-close-timer" class="pill-btn" style="color: #e41e3f;">✕</button>
+        </div>
+    </div>
+    
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="treino">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.57 14.86L22 13.43L20.57 12L17 15.57L8.43 7L12 3.43L10.57 2L9.14 3.43L7.71 2L5.57 4.14L4.14 2.71L2.71 4.14L4.14 5.57L2 7.71L3.43 9.14L2 10.57L3.43 12L7 8.43L15.57 17L12 20.57L13.43 22L14.86 20.57L16.29 22L18.43 19.86L19.86 21.29L21.29 19.86L19.86 18.43L22 16.29L20.57 14.86Z"/></svg>
+            Treino
+        </button>
+        <button class="nav-btn" data-tab="nutricao">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M11 9H9V2H7V9H5V2H3V9C3 11.12 4.66 12.84 6.75 12.97V22H9.25V12.97C11.34 12.84 13 11.12 13 9V2H11V9M16 6V14H18.5V22H21V2C18.24 2 16 4.24 16 6Z"/></svg>
+            Nutrição
+        </button>
+        <button class="nav-btn" data-tab="historico">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3"/></svg>
+            Histórico
+        </button>
+    </nav>
+    
     <script type="module" src="app.js?v=7"></script>
     <script>
         window.addEventListener('error', function(event) {

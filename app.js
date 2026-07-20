@@ -1225,13 +1225,33 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('macro-c-consumed').textContent = totalC;
         document.getElementById('macro-f-consumed').textContent = totalF;
 
-        // Progress bars update
+        // SVG Donut Chart update
         const goalP = parseInt(document.getElementById('macro-p-goal').textContent) || 1;
         const goalC = parseInt(document.getElementById('macro-c-goal').textContent) || 1;
         const goalF = parseInt(document.getElementById('macro-f-goal').textContent) || 1;
-        const pp = document.getElementById('progress-p'); if(pp) pp.style.width = Math.min((totalP/goalP)*100, 100) + '%';
-        const pc = document.getElementById('progress-c'); if(pc) pc.style.width = Math.min((totalC/goalC)*100, 100) + '%';
-        const pf = document.getElementById('progress-f'); if(pf) pf.style.width = Math.min((totalF/goalF)*100, 100) + '%';
+        const goalKcal = parseInt(document.getElementById('tdee-display').textContent) || 2000;
+        
+        const remaining = goalKcal - totalKcal;
+        const remainingEl = document.getElementById('kcal-remaining');
+        if(remainingEl) remainingEl.textContent = remaining > 0 ? remaining : 0;
+        
+        const calcP = Math.min((totalP * 4 / goalKcal) * 100, 100) || 0;
+        const calcC = Math.min((totalC * 4 / goalKcal) * 100, 100) || 0;
+        const calcF = Math.min((totalF * 9 / goalKcal) * 100, 100) || 0;
+        
+        const pathP = document.getElementById('donut-p');
+        const pathC = document.getElementById('donut-c');
+        const pathF = document.getElementById('donut-f');
+        
+        if(pathP) pathP.setAttribute('stroke-dasharray', `${calcP}, 100`);
+        if(pathC) {
+            pathC.setAttribute('stroke-dasharray', `${calcC}, 100`);
+            pathC.setAttribute('stroke-dashoffset', `-${calcP}`);
+        }
+        if(pathF) {
+            pathF.setAttribute('stroke-dasharray', `${calcF}, 100`);
+            pathF.setAttribute('stroke-dashoffset', `-${calcP + calcC}`);
+        }
 
         document.querySelectorAll('.btn-edit-meal').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -1386,8 +1406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Setup rest timer buttons
-        document.getElementById('rest-timer-widget').style.display = 'block';
-        
+
         document.querySelectorAll('.btn-swap-ex').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const oldName = e.target.getAttribute('data-ex');
@@ -1413,8 +1432,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startRestTimer = (secs) => {
         clearInterval(restInterval);
+        const widget = document.getElementById('rest-timer-widget');
         const disp = document.getElementById('rest-timer-display');
-        disp.style.color = 'var(--text-primary)';
+        if(widget) widget.style.display = 'flex';
+        disp.style.color = 'var(--primary-color)';
         restInterval = setInterval(() => {
             secs--;
             const m = Math.floor(secs / 60);
@@ -1439,9 +1460,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.btn-rest').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            startRestTimer(parseInt(e.target.getAttribute('data-sec')));
+            const currentSec = parseInt(e.target.getAttribute('data-sec')) || 60;
+            // Add to current time if already running, else start
+            startRestTimer(currentSec);
         });
     });
+
+    const btnCloseTimer = document.getElementById('btn-close-timer');
+    if (btnCloseTimer) {
+        btnCloseTimer.addEventListener('click', () => {
+            clearInterval(restInterval);
+            document.getElementById('rest-timer-widget').style.display = 'none';
+        });
+    }
 
     document.getElementById('wm-cancel')?.addEventListener('click', () => {
         document.getElementById('workout-mode').style.display = 'none';
@@ -1492,5 +1523,37 @@ document.addEventListener('DOMContentLoaded', () => {
         renderWeeklyPrograms();
         wmFinish.textContent = "✅ FINALIZAR TREINO";
     });
+
+    // Water Tracker Logic
+    const initWaterTracker = () => {
+        const consumedEl = document.getElementById('water-consumed');
+        const goalEl = document.getElementById('water-goal');
+        if (!consumedEl || !goalEl) return;
+        
+        let waterData = JSON.parse(localStorage.getItem(DB._getKey('water_tracker')) || '{}');
+        const today = localToday;
+        if(!waterData[today]) waterData[today] = 0;
+        
+        const goal = 2500;
+        goalEl.textContent = goal;
+        
+        const updateUI = () => {
+            consumedEl.textContent = waterData[today];
+            localStorage.setItem(DB._getKey('water_tracker'), JSON.stringify(waterData));
+            // Trigger CloudSync if available
+            if(window.cloudSyncInstance) window.cloudSyncInstance.debouncedSync();
+        };
+        updateUI();
+        
+        document.getElementById('btn-water-plus')?.addEventListener('click', () => {
+            waterData[today] += 250;
+            updateUI();
+        });
+        document.getElementById('btn-water-minus')?.addEventListener('click', () => {
+            waterData[today] = Math.max(0, waterData[today] - 250);
+            updateUI();
+        });
+    };
+    initWaterTracker();
 
 });
